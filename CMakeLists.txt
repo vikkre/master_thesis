@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 3.0)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -m64 -Wall -Wextra -lvulkan")
+
+project(RayTrace)
+
+find_package(SDL2 REQUIRED)
+find_package(Vulkan REQUIRED)
+
+include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${Vulkan_INCLUDE_DIRS})
+
+file(GLOB_RECURSE PROJECT_SRC
+	"./src/**.h"
+	"./src/**.cpp"
+)
+
+string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+string(STRIP "${Vulkan_LIBRARIES}" Vulkan_LIBRARIES)
+
+set(GLSLC_FLAGS --target-spv=spv1.5 --target-env=vulkan1.2)
+macro(add_shader input_shader output_shader)
+	add_custom_command(
+		OUTPUT ${output_shader}
+		COMMAND glslc ${GLSLC_FLAGS} ${input_shader} -o ${output_shader}
+		DEPENDS ${input_shader}
+	)
+	list(APPEND SHADER ${output_shader})
+endmacro()
+
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.vert object_shader_vert.spv)
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.frag object_shader_frag.spv)
+
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/closesthit.rchit   closesthit.spv        )
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/miss.rmiss         miss.spv              )
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/shadow.rmiss       shadow.spv            )
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/raygen.rgen        raygen.spv            )
+
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/raygen_points.rgen raygen_points.spv     )
+
+add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
+
+target_link_libraries(RayTrace ${SDL2_LIBRARIES})
+target_link_libraries(RayTrace ${Vulkan_LIBRARIES})

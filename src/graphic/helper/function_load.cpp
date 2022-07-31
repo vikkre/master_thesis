@@ -1,0 +1,12 @@
+#include "function_load.h"
+
+VkDevice FuncLoad::device = VK_NULL_HANDLE;
+PFN_vkGetAccelerationStructureBuildSizesKHR FuncLoad::vkGetAccelerationStructureBuildSizesKHR = VK_NULL_HANDLE;
+PFN_vkCreateAccelerationStructureKHR FuncLoad::vkCreateAccelerationStructureKHR = VK_NULL_HANDLE;
+PFN_vkGetAccelerationStructureDeviceAddressKHR FuncLoad::vkGetAccelerationStructureDeviceAddressKHR = VK_NULL_HANDLE;
+PFN_vkDestroyAccelerationStructureKHR FuncLoad::vkDestroyAccelerationStructureKHR = VK_NULL_HANDLE;
+PFN_vkCmdBuildAccelerationStructuresKHR FuncLoad::vkCmdBuildAccelerationStructuresKHR = VK_NULL_HANDLE;
+PFN_vkGetBufferDeviceAddressKHR FuncLoad::vkGetBufferDeviceAddressKHR = VK_NULL_HANDLE;
+PFN_vkCreateRayTracingPipelinesKHR FuncLoad::vkCreateRayTracingPipelinesKHR = VK_NULL_HANDLE;
+PFN_vkGetRayTracingShaderGroupHandlesKHR FuncLoad::vkGetRayTracingShaderGroupHandlesKHR = VK_NULL_HANDLE;
+PFN_vkCmdTraceRaysKHR FuncLoad::vkCmdTraceRaysKHR = VK_NULL_HANDLE;

@@ -79,11 +79,11 @@ void Mesh::createBlas() {
 	blas.init();
 }
 
-const Buffer& Mesh::getVertexBuffer() const {
+const DataBuffer& Mesh::getVertexBuffer() const {
 	return vertexBuffer;
 }
 
-const Buffer& Mesh::getIndexBuffer() const {
+const DataBuffer& Mesh::getIndexBuffer() const {
 	return indexBuffer;
 }
 

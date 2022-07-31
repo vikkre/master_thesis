@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "buffer.h"
+#include "data_buffer.h"
 
 
 class Device;
@@ -15,7 +15,7 @@ class Descriptor {
 		void init();
 		void bind(const VkCommandBuffer* commandBuffer);
 
-		Buffer& getBuffer();
+		DataBuffer& getBuffer();
 
 		VkDescriptorPool descriptorPool;
 		VkDeviceSize bufferSize;
@@ -24,7 +24,7 @@ class Descriptor {
 		VkDescriptorType descriptorType;
 		VkDescriptorSetLayout setLayout;
 
-		Buffer* buffer;
+		DataBuffer* buffer;
 
 	private:
 		void createBuffer();

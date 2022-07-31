@@ -92,7 +92,7 @@ void RayTracingPipelinePoints::recordPreRenderCommandBuffer(size_t index, const 
 		raysToSend, 1, 1
 	);
 
-	storageImages.at(index).copyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
+	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
 
 void RayTracingPipelinePoints::updateUniforms(size_t index) {
@@ -138,9 +138,9 @@ void RayTracingPipelinePoints::createStorageImages() {
 		storageImages.at(i).properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageImages.at(i).aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 		storageImages.at(i).layout = VK_IMAGE_LAYOUT_GENERAL;
+		storageImages.at(i).createImageView = true;
 
 		storageImages.at(i).init();
-		storageImages.at(i).createImageView();
 	}
 }
 

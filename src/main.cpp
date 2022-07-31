@@ -8,7 +8,7 @@
 #include "graphic/graphics_engine.h"
 #include "graphic/mesh.h"
 #include "graphic/graphics_object.h"
-#include "graphic/helper/top_acceleration_structure.h"
+#include "graphic/helper/top_acceleration_structure_buffer.h"
 
 #include "init_exception.h"
 #include "stl_loader.h"
@@ -156,7 +156,7 @@ int main() {
 		int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
 			engine->render();
 		});
-		SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
+		// SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
 
 		int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();
     SDL_LogVerbose(SDL_LOG_CATEGORY_SYSTEM, "Sleep time: %i", sleepTime);

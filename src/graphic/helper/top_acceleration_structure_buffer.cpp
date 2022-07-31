@@ -1,28 +1,33 @@
-#include "top_acceleration_structure.h"
+#include "top_acceleration_structure_buffer.h"
 
 #include "function_load.h"
 #include "command_buffer.h"
 #include "../device.h"
 
 
-TopAccelerationStructure::TopAccelerationStructure(const Device* device)
-:blasInstances(), device(device),
+TopAccelerationStructureBuffer::TopAccelerationStructureBuffer(const Device* device)
+:Buffer(), blasInstances(), device(device),
 structureGeometry(), buildSizeInfo(), accelerationStructure(VK_NULL_HANDLE),
 instancesBuffer(device), acBuffer(device), acDeviceAddress(0), scratchBuffer(device) {}
 
-TopAccelerationStructure::~TopAccelerationStructure() {
+TopAccelerationStructureBuffer::~TopAccelerationStructureBuffer() {
 	FuncLoad::vkDestroyAccelerationStructureKHR(device->getDevice(), accelerationStructure, nullptr);
 }
 
-void TopAccelerationStructure::init() {
+void TopAccelerationStructureBuffer::init() {
 	createInstancesBuffer();
 	getBuildSize();
 	createScratchBuffer();
 	createAccelerationStructureBuffer();
 	buildAccelerationStructure();
+
+	tlasWriteSetStructure = {};
+	tlasWriteSetStructure.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+	tlasWriteSetStructure.accelerationStructureCount = 1;
+	tlasWriteSetStructure.pAccelerationStructures = &accelerationStructure;
 }
 
-void TopAccelerationStructure::createInstancesBuffer() {
+void TopAccelerationStructureBuffer::createInstancesBuffer() {
 	instancesBuffer.bufferSize = sizeof(VkAccelerationStructureInstanceKHR) * blasInstances.size();
 	instancesBuffer.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
 	instancesBuffer.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -31,7 +36,7 @@ void TopAccelerationStructure::createInstancesBuffer() {
 	instancesBuffer.passData((void*) blasInstances.data());
 }
 
-void TopAccelerationStructure::getBuildSize() {
+void TopAccelerationStructureBuffer::getBuildSize() {
 	structureGeometry = {};
 	structureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
 	structureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
@@ -60,21 +65,21 @@ void TopAccelerationStructure::getBuildSize() {
 	);
 }
 
-void TopAccelerationStructure::createScratchBuffer() {
+void TopAccelerationStructureBuffer::createScratchBuffer() {
 	scratchBuffer.bufferSize = buildSizeInfo.buildScratchSize;
 	scratchBuffer.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	scratchBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	scratchBuffer.init();
 }
 
-void TopAccelerationStructure::createAccelerationStructureBuffer() {
+void TopAccelerationStructureBuffer::createAccelerationStructureBuffer() {
 	acBuffer.bufferSize = buildSizeInfo.accelerationStructureSize;
 	acBuffer.usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	acBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	acBuffer.init();
 }
 
-void TopAccelerationStructure::buildAccelerationStructure() {
+void TopAccelerationStructureBuffer::buildAccelerationStructure() {
 	VkAccelerationStructureCreateInfoKHR accelerationStructureCreateInfo{};
 	accelerationStructureCreateInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
 	accelerationStructureCreateInfo.buffer = acBuffer.getBuffer();
@@ -116,14 +121,31 @@ void TopAccelerationStructure::buildAccelerationStructure() {
 	acDeviceAddress = FuncLoad::vkGetAccelerationStructureDeviceAddressKHR(device->getDevice(), &accelerationDeviceAddressInfo);
 }
 
-const Buffer& TopAccelerationStructure::getBuffer() const {
+VkWriteDescriptorSet TopAccelerationStructureBuffer::getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const {
+	VkWriteDescriptorSet writeSet{};
+
+	writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeSet.pNext = &tlasWriteSetStructure;
+	writeSet.dstSet = descriptorSet;
+	writeSet.dstBinding = binding;
+	writeSet.descriptorCount = 1;
+	writeSet.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+
+	return writeSet;
+}
+
+VkDescriptorType TopAccelerationStructureBuffer::getDescriptorType() const {
+	return VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+}
+
+const DataBuffer& TopAccelerationStructureBuffer::getBuffer() const {
 	return acBuffer;
 }
 
-const VkAccelerationStructureKHR& TopAccelerationStructure::getAccelerationStructure() const {
+const VkAccelerationStructureKHR& TopAccelerationStructureBuffer::getAccelerationStructure() const {
 	return accelerationStructure;
 }
 
-const VkDeviceAddress& TopAccelerationStructure::getAddress() const {
+const VkDeviceAddress& TopAccelerationStructureBuffer::getAddress() const {
 	return acDeviceAddress;
 }

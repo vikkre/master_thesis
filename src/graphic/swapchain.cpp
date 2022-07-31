@@ -81,10 +81,6 @@ void Swapchain::render() {
 
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(device->getDevice(), swapchain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-	// VkResult acquireResult = vkAcquireNextImageKHR(device->getDevice(), swapchain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-	// if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR) {
-	// 	throw std::runtime_error("failed to acquire swap chain image!");
-	// }
 
 	if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
 		vkWaitForFences(device->getDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
@@ -128,10 +124,6 @@ void Swapchain::render() {
 
 	VkResult queuePresentResult = vkQueuePresentKHR(device->getQueues().getPresentQueue().queue, &presentInfo);
 
-	// if (queuePresentResult == VK_ERROR_OUT_OF_DATE_KHR || queuePresentResult == VK_SUBOPTIMAL_KHR || framebufferResized) {
-	// 	framebufferResized = false;
-	// 	recreateSwapChain();
-	// } else
 	if (queuePresentResult != VK_SUCCESS) {
 		throw std::runtime_error("failed to present swap chain image!");
 	}

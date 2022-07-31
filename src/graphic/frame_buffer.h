@@ -4,7 +4,7 @@
 
 #include "../init_exception.h"
 
-#include "helper/image.h"
+#include "helper/image_buffer.h"
 
 
 class Device;
@@ -17,7 +17,7 @@ class FrameBuffer {
 		void init(const VkImage& image);
 		void recordCommandBuffer(size_t index);
 
-		const Image& getImage() const;
+		const ImageBuffer& getImage() const;
 		const VkFramebuffer& getFrameBuffer() const;
 		const VkCommandBuffer& getCommandBuffer() const;
 
@@ -28,8 +28,8 @@ class FrameBuffer {
 
 		Device* device;
 
-		Image image;
-		Image depthImage;
+		ImageBuffer image;
+		ImageBuffer depthImage;
 
 		VkFramebuffer frameBuffer;
 		VkCommandBuffer renderCommandBuffer;

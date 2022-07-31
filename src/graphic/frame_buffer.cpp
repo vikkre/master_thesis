@@ -15,10 +15,9 @@ FrameBuffer::~FrameBuffer() {
 }
 
 void FrameBuffer::init(const VkImage& image) {
-	this->image.init(image);
 	this->image.format = device->renderInfo.swapchainImageFormat;
 	this->image.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	this->image.createImageView();
+	this->image.init(image, true);
 
 	createDepthResources();
 	createFramebuffer();
@@ -71,9 +70,9 @@ void FrameBuffer::createDepthResources() {
 	depthImage.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	depthImage.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	depthImage.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+	depthImage.createImageView = true;
 
 	depthImage.init();
-	depthImage.createImageView();
 }
 
 void FrameBuffer::createFramebuffer() {
@@ -108,7 +107,7 @@ void FrameBuffer::createCommandBuffer() {
 	}
 }
 
-const Image& FrameBuffer::getImage() const {
+const ImageBuffer& FrameBuffer::getImage() const {
 	return image;
 }
 

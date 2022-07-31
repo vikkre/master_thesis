@@ -19,29 +19,36 @@ objects(), globalData(),
 rayTracingPipelineProperties(),
 tlas(device),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
-storageImages(), shaderGroups(),
-pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), globalDataBuffers(), descriptorSets(),
-rgenCode(), rmissCode(), rchitCode() {}
+storageImages(),
+pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), globalDataBuffers(), descriptorSets(), bufferDescriptors(),
+raygenShaders(), missShaders(), hitShaders() {}
 
 RayTracingPipeline::~RayTracingPipeline() {
 	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyPipeline(device->getDevice(), pipeline, nullptr);
 	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
 	vkDestroyDescriptorSetLayout(device->getDevice(), device->renderInfo.globalDescriptorSetLayout, nullptr);
+	for (BufferDescriptor* bd: bufferDescriptors) delete bd;
 }
 
 void RayTracingPipeline::init() {
-	rgenCode    = readFile(RGEN_SHADER   );
-	rchitCode   = readFile(RCHIT_SHADER  );
-	rmissCode   = readFile(RMISS_SHADER  );
-	rshadowCode = readFile(RSHADOW_SHADER);
+	raygenShaders.push_back(readFile(RGEN_SHADER));
+	missShaders.push_back(readFile(RMISS_SHADER));
+	hitShaders.push_back(readFile(RCHIT_SHADER));
+	missShaders.push_back(readFile(RSHADOW_SHADER));
 
 	getProperties();
 
-	createDescriptorSetLayout(RayTracingPipeline::getUniformBindings(), &device->renderInfo.globalDescriptorSetLayout);
 	createStorageImages();
-	createDescriptorPool();
 	createBuffers();
+
+	bufferDescriptors.push_back(new SingleBufferDescriptor(&tlas, 0, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
+	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(storageImages), 1, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
+	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(globalDataBuffers), 2, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR));
+	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(rtDataBuffers), 3, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
+
+	createDescriptorSetLayout();
+	createDescriptorPool();
 	createDescriptorSets();
 	createRayTracingPipeline();
 	createShaderBindingTable();
@@ -94,7 +101,7 @@ void RayTracingPipeline::recordPreRenderCommandBuffer(size_t index, const VkComm
 		1
 	);
 
-	storageImages.at(index).copyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
+	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
 
 void RayTracingPipeline::updateUniforms(size_t index) {
@@ -133,16 +140,16 @@ void RayTracingPipeline::createStorageImages() {
 		storageImages.at(i).properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		storageImages.at(i).aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 		storageImages.at(i).layout = VK_IMAGE_LAYOUT_GENERAL;
+		storageImages.at(i).createImageView = true;
 
 		storageImages.at(i).init();
-		storageImages.at(i).createImageView();
 	}
 }
 
 void RayTracingPipeline::createShaderBindingTable() {
 	const uint32_t handleSize = rayTracingPipelineProperties.shaderGroupHandleSize;
 	const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
-	const uint32_t groupCount = shaderGroups.size();
+	const uint32_t groupCount = raygenShaders.size() + missShaders.size() + hitShaders.size();
 	const uint32_t sbtSize = groupCount * handleSizeAligned;
 
 	std::vector<uint8_t> shaderHandleStorage(sbtSize);
@@ -153,44 +160,39 @@ void RayTracingPipeline::createShaderBindingTable() {
 	const VkBufferUsageFlags bufferUsageFlags = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	const VkMemoryPropertyFlags memoryUsageFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	
-	raygenShaderBindingTable.bufferSize = handleSize * 1;
+	raygenShaderBindingTable.bufferSize = handleSize * raygenShaders.size();
 	raygenShaderBindingTable.usage      = bufferUsageFlags;
 	raygenShaderBindingTable.properties = memoryUsageFlags;
 	raygenShaderBindingTable.init();
 	
-	missShaderBindingTable.bufferSize = handleSize * 2;
+	missShaderBindingTable.bufferSize = handleSize * missShaders.size();
 	missShaderBindingTable.usage      = bufferUsageFlags;
 	missShaderBindingTable.properties = memoryUsageFlags;
 	missShaderBindingTable.init();
 	
-	hitShaderBindingTable.bufferSize = handleSize * 1;
+	hitShaderBindingTable.bufferSize = handleSize * hitShaders.size();
 	hitShaderBindingTable.usage      = bufferUsageFlags;
 	hitShaderBindingTable.properties = memoryUsageFlags;
 	hitShaderBindingTable.init();
 
-	raygenShaderBindingTable.passData((void*) &shaderHandleStorage[0 * handleSizeAligned]);
-	missShaderBindingTable.passData  ((void*) &shaderHandleStorage[1 * handleSizeAligned]);
-	hitShaderBindingTable.passData   ((void*) &shaderHandleStorage[3 * handleSizeAligned]);
+	unsigned int raygenTableOffset = 0;
+	unsigned int missTableOffset = raygenShaders.size();
+	unsigned int hitTableOffset = raygenShaders.size() + missShaders.size();
+
+	raygenShaderBindingTable.passData((void*) &shaderHandleStorage[handleSizeAligned * raygenTableOffset]);
+	missShaderBindingTable.passData  ((void*) &shaderHandleStorage[handleSizeAligned * missTableOffset]);
+	hitShaderBindingTable.passData   ((void*) &shaderHandleStorage[handleSizeAligned * hitTableOffset]);
 }
 
 void RayTracingPipeline::createDescriptorPool() {
-	VkDescriptorPoolSize tlasPoolSize{};
-	tlasPoolSize.type = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
-	tlasPoolSize.descriptorCount = device->renderInfo.swapchainImageCount;
+	std::vector<VkDescriptorPoolSize> poolSizes;
 
-	VkDescriptorPoolSize imagePoolSize{};
-	imagePoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	imagePoolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-
-	VkDescriptorPoolSize dataPoolSize{};
-	dataPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	dataPoolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-
-	VkDescriptorPoolSize rtPoolSize{};
-	rtPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	rtPoolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-
-	std::vector<VkDescriptorPoolSize> poolSizes = {tlasPoolSize, imagePoolSize, dataPoolSize, rtPoolSize};
+	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
+		VkDescriptorPoolSize poolSize{};
+		poolSize.type = bufferDescriptor->getBuffer()->getDescriptorType();
+		poolSize.descriptorCount = device->renderInfo.swapchainImageCount;
+		poolSizes.push_back(poolSize);
+	}
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -244,81 +246,13 @@ void RayTracingPipeline::createDescriptorSets() {
 		throw InitException("vkAllocateDescriptorSets", "failed to allocate rt pipeline descriptor sets!");
 	}
 
-	VkWriteDescriptorSetAccelerationStructureKHR tlasWriteSetStructure{};
-	tlasWriteSetStructure.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
-	tlasWriteSetStructure.accelerationStructureCount = 1;
-	tlasWriteSetStructure.pAccelerationStructures = &tlas.getAccelerationStructure();
-
 	std::vector<VkWriteDescriptorSet> writeSets;
 
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		VkWriteDescriptorSet tlasWriteSet{};
-		tlasWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		tlasWriteSet.pNext = &tlasWriteSetStructure;
-		tlasWriteSet.dstSet = descriptorSets.at(i);
-		tlasWriteSet.dstBinding = 0;
-		tlasWriteSet.descriptorCount = 1;
-		tlasWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
-
-		writeSets.push_back(tlasWriteSet);
-
-		VkDescriptorImageInfo* imageInfo = new VkDescriptorImageInfo();
-		imageInfo->imageView = storageImages.at(i).getImageView();
-		imageInfo->imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-
-		VkWriteDescriptorSet imageWriteSet{};
-		imageWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		imageWriteSet.pNext = nullptr;
-		imageWriteSet.dstSet = descriptorSets.at(i);
-		imageWriteSet.dstBinding = 1;
-		imageWriteSet.descriptorCount = 1;
-		imageWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-		imageWriteSet.pImageInfo = imageInfo;
-
-		writeSets.push_back(imageWriteSet);
-
-		VkDescriptorBufferInfo* dataBufferInfo = new VkDescriptorBufferInfo();
-		dataBufferInfo->offset = 0;
-		dataBufferInfo->buffer = globalDataBuffers.at(i).getBuffer();
-		dataBufferInfo->range = globalDataBuffers.at(i).bufferSize;
-
-		VkWriteDescriptorSet dataWriteSet{};
-		dataWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		dataWriteSet.pNext = nullptr;
-		dataWriteSet.dstSet = descriptorSets.at(i);
-		dataWriteSet.dstBinding = 2;
-		dataWriteSet.descriptorCount = 1;
-		dataWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		dataWriteSet.pBufferInfo = dataBufferInfo;
-
-		writeSets.push_back(dataWriteSet);
-
-		VkDescriptorBufferInfo* rtBufferInfo = new VkDescriptorBufferInfo();
-		rtBufferInfo->offset = 0;
-		rtBufferInfo->buffer = rtDataBuffers.at(i).getBuffer();
-		rtBufferInfo->range = rtDataBuffers.at(i).bufferSize;
-
-		VkWriteDescriptorSet rtWriteSet{};
-		rtWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		rtWriteSet.pNext = nullptr;
-		rtWriteSet.dstSet = descriptorSets.at(i);
-		rtWriteSet.dstBinding = 3;
-		rtWriteSet.descriptorCount = 1;
-		rtWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		rtWriteSet.pBufferInfo = rtBufferInfo;
-
-		writeSets.push_back(rtWriteSet);
+	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
+		bufferDescriptor->getWriteDescriptorSets(writeSets, descriptorSets);
 	}
 
 	vkUpdateDescriptorSets(device->getDevice(), writeSets.size(), writeSets.data(), 0, VK_NULL_HANDLE);
-
-	for (const VkWriteDescriptorSet& writeSet: writeSets) {
-		if (writeSet.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE) {
-			delete writeSet.pImageInfo;
-		} else if (writeSet.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
-			delete writeSet.pBufferInfo;
-		}
-	}
 }
 
 void RayTracingPipeline::createRayTracingPipeline() {
@@ -335,86 +269,45 @@ void RayTracingPipeline::createRayTracingPipeline() {
 		throw InitException("vkCreatePipelineLayout", "failed to create pipeline layout!");
 	}
 
-	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+	std::vector<VkShaderModule> shaderModules;
+	std::vector<VkPipelineShaderStageCreateInfo> shaderStageInfos;
+	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
 
-	VkShaderModule rgenShaderModule         = createShaderModule(device->getDevice(), rgenCode        );
-	VkShaderModule rmissShaderModule        = createShaderModule(device->getDevice(), rmissCode       );
-	VkShaderModule rshadowShaderModule      = createShaderModule(device->getDevice(), rshadowCode     );
-	VkShaderModule rchitShaderModule        = createShaderModule(device->getDevice(), rchitCode       );
+	struct ShaderStage {
+		ShaderCode& shaderCode;
+		VkShaderStageFlagBits shaderStageFlags;
+	};
+	std::vector<ShaderStage> shaderStages;
+	for (ShaderCode& shaderCode: raygenShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_RAYGEN_BIT_KHR});
+	for (ShaderCode& shaderCode: missShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_MISS_BIT_KHR});
+	for (ShaderCode& shaderCode: hitShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
 
-	// Ray generation group
-	{
-		VkPipelineShaderStageCreateInfo rgenShaderStageInfo{};
-		rgenShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		rgenShaderStageInfo.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-		rgenShaderStageInfo.module = rgenShaderModule;
-		rgenShaderStageInfo.pName = "main";
-		shaderStages.push_back(rgenShaderStageInfo);
+	for (const ShaderStage& shaderStage: shaderStages) {
+		VkShaderModule shaderModule = createShaderModule(device->getDevice(), shaderStage.shaderCode);
+		shaderModules.push_back(shaderModule);
 
-		VkRayTracingShaderGroupCreateInfoKHR shaderGroup{};
-		shaderGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		shaderGroup.generalShader = (uint32_t) shaderStages.size() - 1;
-		shaderGroup.closestHitShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.anyHitShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-		shaderGroups.push_back(shaderGroup);
-	}
-
-	// Miss group
-	{
-		VkPipelineShaderStageCreateInfo rmissShaderStageInfo{};
-		rmissShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		rmissShaderStageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-		rmissShaderStageInfo.module = rmissShaderModule;
-		rmissShaderStageInfo.pName = "main";
-		shaderStages.push_back(rmissShaderStageInfo);
+		VkPipelineShaderStageCreateInfo shaderStageInfo{};
+		shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStageInfo.stage = shaderStage.shaderStageFlags;
+		shaderStageInfo.module = shaderModule;
+		shaderStageInfo.pName = "main";
+		shaderStageInfos.push_back(shaderStageInfo);
 
 		VkRayTracingShaderGroupCreateInfoKHR shaderGroup{};
 		shaderGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		shaderGroup.generalShader = (uint32_t) shaderStages.size() - 1;
-		shaderGroup.closestHitShader = VK_SHADER_UNUSED_KHR;
 		shaderGroup.anyHitShader = VK_SHADER_UNUSED_KHR;
 		shaderGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-		shaderGroups.push_back(shaderGroup);
-	}
 
-	// Shadow group
-	{
-		VkPipelineShaderStageCreateInfo rshadowShaderStageInfo{};
-		rshadowShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		rshadowShaderStageInfo.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-		rshadowShaderStageInfo.module = rshadowShaderModule;
-		rshadowShaderStageInfo.pName = "main";
-		shaderStages.push_back(rshadowShaderStageInfo);
+		if (shaderStage.shaderStageFlags == VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR) {
+			shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+			shaderGroup.generalShader = VK_SHADER_UNUSED_KHR;
+			shaderGroup.closestHitShader = (uint32_t) shaderStageInfos.size() - 1;
+		} else {
+			shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
+			shaderGroup.generalShader = (uint32_t) shaderStageInfos.size() - 1;
+			shaderGroup.closestHitShader = VK_SHADER_UNUSED_KHR;
+		}
 
-		VkRayTracingShaderGroupCreateInfoKHR shaderGroup{};
-		shaderGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		shaderGroup.generalShader = (uint32_t) shaderStages.size() - 1;
-		shaderGroup.closestHitShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.anyHitShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
-		shaderGroups.push_back(shaderGroup);
-	}
-
-	// Closest hit group
-	{
-		VkPipelineShaderStageCreateInfo rchitShaderStageInfo{};
-		rchitShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		rchitShaderStageInfo.stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-		rchitShaderStageInfo.module = rchitShaderModule;
-		rchitShaderStageInfo.pName = "main";
-		shaderStages.push_back(rchitShaderStageInfo);
-
-		VkRayTracingShaderGroupCreateInfoKHR shaderGroup{};
-		shaderGroup.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		shaderGroup.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-		shaderGroup.generalShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.closestHitShader = (uint32_t) shaderStages.size() - 1;
-		shaderGroup.anyHitShader = VK_SHADER_UNUSED_KHR;
-		shaderGroup.intersectionShader = VK_SHADER_UNUSED_KHR;
 		shaderGroups.push_back(shaderGroup);
 	}
 
@@ -423,8 +316,8 @@ void RayTracingPipeline::createRayTracingPipeline() {
 	*/
 	VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCI{};
 	rayTracingPipelineCI.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
-	rayTracingPipelineCI.stageCount = (uint32_t) shaderStages.size();
-	rayTracingPipelineCI.pStages = shaderStages.data();
+	rayTracingPipelineCI.stageCount = (uint32_t) shaderStageInfos.size();
+	rayTracingPipelineCI.pStages = shaderStageInfos.data();
 	rayTracingPipelineCI.groupCount = (uint32_t) shaderGroups.size();
 	rayTracingPipelineCI.pGroups = shaderGroups.data();
 	rayTracingPipelineCI.maxPipelineRayRecursionDepth = 2;
@@ -434,49 +327,26 @@ void RayTracingPipeline::createRayTracingPipeline() {
 		throw InitException("vkCreateRayTracingPipelinesKHR", "Could not create ray tracing pipeline!");
 	}
 
-	vkDestroyShaderModule(device->getDevice(), rgenShaderModule,    nullptr);
-	vkDestroyShaderModule(device->getDevice(), rmissShaderModule,   nullptr);
-	vkDestroyShaderModule(device->getDevice(), rshadowShaderModule, nullptr);
-	vkDestroyShaderModule(device->getDevice(), rchitShaderModule,   nullptr);
-}
-
-void RayTracingPipeline::createDescriptorSetLayout(const std::vector<VkDescriptorSetLayoutBinding>& uniformBindings, VkDescriptorSetLayout* pSetLayout) {
-	VkDescriptorSetLayoutCreateInfo layoutInfo{};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = (uint32_t) uniformBindings.size();
-	layoutInfo.pBindings = uniformBindings.data();
-
-	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, pSetLayout) != VK_SUCCESS) {
-		throw InitException("vkCreateDescriptorSetLayout", "failed to create descriptor set layout!");
+	for (VkShaderModule& shaderModule: shaderModules) {
+		vkDestroyShaderModule(device->getDevice(), shaderModule, nullptr);
 	}
 }
 
-std::vector<VkDescriptorSetLayoutBinding> RayTracingPipeline::getUniformBindings() {
-	VkDescriptorSetLayoutBinding accelerationStructureLayoutBinding{};
-	accelerationStructureLayoutBinding.binding = 0;
-	accelerationStructureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
-	accelerationStructureLayoutBinding.descriptorCount = 1;
-	accelerationStructureLayoutBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+void RayTracingPipeline::createDescriptorSetLayout() {
+	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 
-	VkDescriptorSetLayoutBinding resultImageLayoutBinding{};
-	resultImageLayoutBinding.binding = 1;
-	resultImageLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	resultImageLayoutBinding.descriptorCount = 1;
-	resultImageLayoutBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
+		layoutBindings.push_back(bufferDescriptor->getLayoutBinding());
+	}
+	
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = (uint32_t) layoutBindings.size();
+	layoutInfo.pBindings = layoutBindings.data();
 
-	VkDescriptorSetLayoutBinding uniformBufferBinding{};
-	uniformBufferBinding.binding = 2;
-	uniformBufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uniformBufferBinding.descriptorCount = 1;
-	uniformBufferBinding.stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR;
-
-	VkDescriptorSetLayoutBinding objectBufferBinding{};
-	objectBufferBinding.binding = 3;
-	objectBufferBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	objectBufferBinding.descriptorCount = 1;
-	objectBufferBinding.stageFlags = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-
-	return {accelerationStructureLayoutBinding, resultImageLayoutBinding, uniformBufferBinding, objectBufferBinding};
+	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &device->renderInfo.globalDescriptorSetLayout) != VK_SUCCESS) {
+		throw InitException("vkCreateDescriptorSetLayout", "failed to create descriptor set layout!");
+	}
 }
 
 uint32_t RayTracingPipeline::getBindingSet() {
@@ -491,6 +361,6 @@ const VkPipeline& RayTracingPipeline::getGraphicsPipeline() const {
 	return pipeline;
 }
 
-uint32_t RayTracingPipeline::alignedSize(uint32_t value, uint32_t alignment) {
-	return (value + alignment - 1) & ~(alignment - 1);
+uint32_t RayTracingPipeline::alignedSize(uint32_t size, uint32_t alignment) {
+	return (size + alignment - 1) & ~(alignment - 1);
 }

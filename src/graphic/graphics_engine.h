@@ -24,8 +24,8 @@ class GraphicsEngine {
 		Device device;
 		Swapchain swapchain;
 		// GraphicsPipeline pipeline;
-		// RayTracingPipeline rtpipeline;
-		RayTracingPipelinePoints rtpipeline;
+		RayTracingPipeline rtpipeline;
+		// RayTracingPipelinePoints rtpipeline;
 
 		bool commandBuffersRecorded;
 };

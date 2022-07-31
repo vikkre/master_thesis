@@ -8,7 +8,7 @@
 #include "../pipeline/pipeline.h"
 
 
-class Image;
+class ImageBuffer;
 
 struct RenderInfo {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
@@ -20,7 +20,7 @@ struct RenderInfo {
 	VkExtent2D swapchainExtend;
 	VkFormat swapchainImageFormat;
 	VkFormat swapchainDepthFormat;
-	std::vector<Image*> swapchainImages;
+	std::vector<ImageBuffer*> swapchainImages;
 
 	Pipeline* renderPipeline;
 	VkDescriptorSetLayout globalDescriptorSetLayout;

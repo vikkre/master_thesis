@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "helper/buffer.h"
+#include "helper/data_buffer.h"
 #include "helper/bottom_acceleration_structure.h"
 
 #include "../init_exception.h"
@@ -29,8 +29,8 @@ class Mesh {
 		void addPoint(const Vector3f& point, const Vector3f& normal);
 		void addIndex(const Vector3u& index);
 
-		const Buffer& getVertexBuffer() const;
-		const Buffer& getIndexBuffer() const;
+		const DataBuffer& getVertexBuffer() const;
+		const DataBuffer& getIndexBuffer() const;
 		const BottomAccelerationStructure& getBlas() const;
 
 		static VkVertexInputBindingDescription getBindingDescription();
@@ -46,8 +46,8 @@ class Mesh {
 
 		const Device* device;
 
-		Buffer vertexBuffer;
-		Buffer indexBuffer;
+		DataBuffer vertexBuffer;
+		DataBuffer indexBuffer;
 
 		std::vector<VkBuffer> vertexBuffers;
 		std::vector<VkDeviceSize> vertexBufferOffsets;

@@ -5,21 +5,24 @@
 #include <vector>
 
 #include "buffer.h"
+#include "data_buffer.h"
 #include "../../init_exception.h"
 
 
 class Device;
 
-class TopAccelerationStructure {
+class TopAccelerationStructureBuffer: public Buffer {
 	public:
-		TopAccelerationStructure(const Device* device);
-		~TopAccelerationStructure();
+		TopAccelerationStructureBuffer(const Device* device);
+		~TopAccelerationStructureBuffer();
 
 		void init();
 
-		const Buffer& getBuffer() const;
+		const DataBuffer& getBuffer() const;
 		const VkAccelerationStructureKHR& getAccelerationStructure() const;
 		const VkDeviceAddress& getAddress() const;
+		virtual VkWriteDescriptorSet getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const override;
+		virtual VkDescriptorType getDescriptorType() const override;
 
 		std::vector<VkAccelerationStructureInstanceKHR> blasInstances;
 	private:
@@ -35,8 +38,9 @@ class TopAccelerationStructure {
 		VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo;
 		VkAccelerationStructureKHR accelerationStructure;
 
-		Buffer instancesBuffer;
-		Buffer acBuffer;
+		DataBuffer instancesBuffer;
+		DataBuffer acBuffer;
 		VkDeviceAddress acDeviceAddress;
-		Buffer scratchBuffer;
+		DataBuffer scratchBuffer;
+		VkWriteDescriptorSetAccelerationStructureKHR tlasWriteSetStructure;
 };

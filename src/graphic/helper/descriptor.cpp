@@ -28,7 +28,7 @@ void Descriptor::bind(const VkCommandBuffer* commandBuffer) {
 
 void Descriptor::createBuffer() {
 	if (buffer == nullptr) {
-		buffer = new Buffer(device);
+		buffer = new DataBuffer(device);
 
 		buffer->bufferSize = bufferSize;
 		buffer->usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
@@ -67,6 +67,6 @@ void Descriptor::createDescriptorSet() {
 	vkUpdateDescriptorSets(device->getDevice(), 1, &write, 0, nullptr);
 }
 
-Buffer& Descriptor::getBuffer() {
+DataBuffer& Descriptor::getBuffer() {
 	return *buffer;
 }

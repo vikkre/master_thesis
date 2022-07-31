@@ -5,9 +5,12 @@
 #include <vector>
 
 #include "pipeline.h"
-#include "../helper/buffer.h"
-#include "../helper/image.h"
-#include "../helper/top_acceleration_structure.h"
+#include "../helper/data_buffer.h"
+#include "../helper/image_buffer.h"
+#include "../helper/top_acceleration_structure_buffer.h"
+#include "../helper/buffer_descriptor.h"
+#include "../helper/single_buffer_descriptor.h"
+#include "../helper/multi_buffer_descriptor.h"
 
 #include "../../math/vector.h"
 #include "../../math/matrix.h"
@@ -40,7 +43,6 @@ class RayTracingPipeline: public Pipeline {
 		virtual const VkPipelineLayout& getPipelineLayout() const override;
 		virtual const VkPipeline& getGraphicsPipeline() const override;
 
-		static std::vector<VkDescriptorSetLayoutBinding> getUniformBindings();
 		static uint32_t getBindingSet();
 
 		std::vector<GraphicsObject*> objects;
@@ -48,7 +50,7 @@ class RayTracingPipeline: public Pipeline {
 
 	private:
 		void getProperties();
-		void createDescriptorSetLayout(const std::vector<VkDescriptorSetLayoutBinding>& uniformBindings, VkDescriptorSetLayout* pSetLayout);
+		void createDescriptorSetLayout();
 		void createStorageImages();
 		void createShaderBindingTable();
 		void createDescriptorPool();
@@ -56,24 +58,27 @@ class RayTracingPipeline: public Pipeline {
 		void createDescriptorSets();
 		void createRayTracingPipeline();
 
+		VkRayTracingShaderGroupCreateInfoKHR createShaderGroup();
+
 		uint32_t alignedSize(uint32_t value, uint32_t alignment);
 
 		VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties;
 
-		TopAccelerationStructure tlas;
-		Buffer raygenShaderBindingTable;
-		Buffer missShaderBindingTable;
-		Buffer hitShaderBindingTable;
-		std::vector<Image> storageImages;
-		std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
+		TopAccelerationStructureBuffer tlas;
+		DataBuffer raygenShaderBindingTable;
+		DataBuffer missShaderBindingTable;
+		DataBuffer hitShaderBindingTable;
+		std::vector<ImageBuffer> storageImages;
 
 		VkPipeline pipeline;
 		VkPipelineLayout pipelineLayout;
 		VkDescriptorPool descriptorPool;
-		std::vector<Buffer> globalDataBuffers;
-		std::vector<Buffer> rtDataBuffers;
+		std::vector<DataBuffer> globalDataBuffers;
+		std::vector<DataBuffer> rtDataBuffers;
 		std::vector<void*> rtDataPtrs;
 		std::vector<VkDescriptorSet> descriptorSets;
+		std::vector<BufferDescriptor*> bufferDescriptors; 
 
-		std::vector<char> rgenCode, rmissCode, rshadowCode, rchitCode;
+		typedef std::vector<char> ShaderCode;
+		std::vector<ShaderCode> raygenShaders, missShaders, hitShaders;
 };

@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "pipeline.h"
-#include "../helper/buffer.h"
-#include "../helper/image.h"
-#include "../helper/top_acceleration_structure.h"
+#include "../helper/data_buffer.h"
+#include "../helper/image_buffer.h"
+#include "../helper/top_acceleration_structure_buffer.h"
 
 #include "../../math/vector.h"
 #include "../../math/matrix.h"
@@ -62,19 +62,19 @@ class RayTracingPipelinePoints: public Pipeline {
 
 		VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties;
 
-		TopAccelerationStructure tlas;
-		Buffer raygenShaderBindingTable;
-		Buffer missShaderBindingTable;
-		Buffer hitShaderBindingTable;
-		std::vector<Image> storageImages;
+		TopAccelerationStructureBuffer tlas;
+		DataBuffer raygenShaderBindingTable;
+		DataBuffer missShaderBindingTable;
+		DataBuffer hitShaderBindingTable;
+		std::vector<ImageBuffer> storageImages;
 		std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
 
 		VkPipeline pipeline;
 		VkPipelineLayout pipelineLayout;
 		VkDescriptorPool descriptorPool;
-		std::vector<Buffer> globalDataBuffers;
-		std::vector<Buffer> countBuffers;
-		std::vector<Buffer> rtDataBuffers;
+		std::vector<DataBuffer> globalDataBuffers;
+		std::vector<DataBuffer> countBuffers;
+		std::vector<DataBuffer> rtDataBuffers;
 		std::vector<void*> rtDataPtrs;
 		std::vector<VkDescriptorSet> descriptorSets;
 

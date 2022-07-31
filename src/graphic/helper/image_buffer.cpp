@@ -1,22 +1,22 @@
-#include "image.h"
+#include "image_buffer.h"
 
 #include "../device.h"
 #include "command_buffer.h"
 
 
-Image::Image(Device* device)
-:width(), height(), format(), tiling(), usage(), properties(), aspectFlags(),
-layout(VK_IMAGE_LAYOUT_UNDEFINED),
+ImageBuffer::ImageBuffer(Device* device)
+:Buffer(), width(), height(), format(), tiling(), usage(), properties(), aspectFlags(),
+layout(VK_IMAGE_LAYOUT_UNDEFINED), createImageView(false),
 device(device), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE),
 deleteImage(true) {}
 
-Image::~Image() {
+ImageBuffer::~ImageBuffer() {
 	if (imageView != VK_NULL_HANDLE) vkDestroyImageView(device->getDevice(), imageView, nullptr);
 	if (imageMemory != VK_NULL_HANDLE) vkFreeMemory(device->getDevice(), imageMemory, nullptr);
 	if (deleteImage) vkDestroyImage(device->getDevice(), image, nullptr);
 }
 
-void Image::init() {
+void ImageBuffer::init() {
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -56,23 +56,82 @@ void Image::init() {
 
 		SingleUseCommandBuffer commandBuffer(device, &device->getQueues().getGraphicsQueue());
 		commandBuffer.start();
-		Image::transitionImageLayout(&commandBuffer.getCommandBuffer(), wantedLayout);
+		ImageBuffer::cmdTransitionImageLayout(&commandBuffer.getCommandBuffer(), wantedLayout);
 		commandBuffer.end();
+	}
+
+	if (createImageView) {
+		initImageView();
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.imageView = imageView;
+		descriptorImageInfo.imageLayout = layout;
 	}
 }
 
-void Image::init(VkImage image) {
+void ImageBuffer::init(VkImage image, bool createImageView) {
+	this->createImageView = createImageView;
 	this->image = image;
 	deleteImage = false;
 	layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 	SingleUseCommandBuffer commandBuffer(device, &device->getQueues().getGraphicsQueue());
 	commandBuffer.start();
-	Image::transitionImageLayout(&commandBuffer.getCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	ImageBuffer::cmdTransitionImageLayout(&commandBuffer.getCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	commandBuffer.end();
+
+	if (createImageView) {
+		initImageView();
+
+		descriptorImageInfo = {};
+		descriptorImageInfo.imageView = imageView;
+		descriptorImageInfo.imageLayout = layout;
+	}
 }
 
-void Image::createImageView() {
+void ImageBuffer::cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer* destination) {
+	VkImageLayout oldSrcLayout = (this->layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : this->layout);
+	VkImageLayout oldDstLayout = (destination->layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : destination->layout);
+
+	this->cmdTransitionImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	destination->cmdTransitionImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+	VkImageCopy copyRegion{};
+	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+	copyRegion.srcOffset = { 0, 0, 0 };
+	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+	copyRegion.dstOffset = { 0, 0, 0 };
+	copyRegion.extent = { width, height, 1 };
+	vkCmdCopyImage(
+		*commandBuffer,
+		this->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+		destination->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1, &copyRegion
+	);
+
+	this->cmdTransitionImageLayout(commandBuffer, oldSrcLayout);
+	destination->cmdTransitionImageLayout(commandBuffer, oldDstLayout);
+}
+
+VkWriteDescriptorSet ImageBuffer::getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const {
+	VkWriteDescriptorSet writeSet{};
+
+	writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeSet.pNext = nullptr;
+	writeSet.dstSet = descriptorSet;
+	writeSet.dstBinding = binding;
+	writeSet.descriptorCount = 1;
+	writeSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	writeSet.pImageInfo = &descriptorImageInfo;
+
+	return writeSet;
+}
+
+VkDescriptorType ImageBuffer::getDescriptorType() const {
+	return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+}
+
+void ImageBuffer::initImageView() {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image = image;
@@ -93,31 +152,7 @@ void Image::createImageView() {
 	}
 }
 
-void Image::copyImage(const VkCommandBuffer* commandBuffer, Image* destination) {
-	VkImageLayout oldSrcLayout = (this->layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : this->layout);
-	VkImageLayout oldDstLayout = (destination->layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : destination->layout);
-
-	this->transitionImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-	destination->transitionImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-	VkImageCopy copyRegion{};
-	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.srcOffset = { 0, 0, 0 };
-	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.dstOffset = { 0, 0, 0 };
-	copyRegion.extent = { width, height, 1 };
-	vkCmdCopyImage(
-		*commandBuffer,
-		this->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-		destination->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		1, &copyRegion
-	);
-
-	this->transitionImageLayout(commandBuffer, oldSrcLayout);
-	destination->transitionImageLayout(commandBuffer, oldDstLayout);
-}
-
-void Image::transitionImageLayout(const VkCommandBuffer* commandBuffer, VkImageLayout newLayout) {
+void ImageBuffer::cmdTransitionImageLayout(const VkCommandBuffer* commandBuffer, VkImageLayout newLayout) {
 	VkImageMemoryBarrier barrier{};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	barrier.oldLayout = layout;
@@ -146,14 +181,14 @@ void Image::transitionImageLayout(const VkCommandBuffer* commandBuffer, VkImageL
 }
 
 
-const VkImage& Image::getImage() const {
+const VkImage& ImageBuffer::getImage() const {
 	return image;
 }
 
-const VkDeviceMemory& Image::getMemory() const {
+const VkDeviceMemory& ImageBuffer::getMemory() const {
 	return imageMemory;
 }
 
-const VkImageView& Image::getImageView() const {
+const VkImageView& ImageBuffer::getImageView() const {
 	return imageView;
 }

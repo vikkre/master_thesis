@@ -9,7 +9,7 @@
 
 
 layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
-layout(binding = 1, set = 0) buffer Values {uint values[];} v;
+layout(binding = 1, set = 0) buffer Values {uint count;} v;
 layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	mat4 viewInverse;
 	mat4 projInverse;
@@ -26,13 +26,11 @@ struct RayPayload {
 	float reflector;
 };
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
-layout(location = 1) uint index = 0;
 
 float rand(vec2 co, int i, int v){
 	return fract(sin(dot(co, vec2(12.9898, 78.233)) * v + i) * 43758.5453);
 }
 
 void main() {
-	uint i = atomicAdd(index, 1);
-	v.values[]
+	atomicAdd(v.count, 1);
 }

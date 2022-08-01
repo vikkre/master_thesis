@@ -34,8 +34,8 @@ class RayTracingPipelinePoints: public Pipeline {
 
 		virtual void init() override;
 		void initTlas();
-		virtual void recordPreRenderCommandBuffer(size_t index, const VkCommandBuffer* commandBuffer) override;
-		virtual void updateUniforms(size_t index) override;
+		virtual void recordPreRenderCommandBuffer(size_t index, const VkCommandBuffer* commandBuffer);
+		virtual void updateUniforms(size_t index);
 
 		virtual const VkPipelineLayout& getPipelineLayout() const override;
 		virtual const VkPipeline& getGraphicsPipeline() const override;
@@ -79,4 +79,5 @@ class RayTracingPipelinePoints: public Pipeline {
 		std::vector<VkDescriptorSet> descriptorSets;
 
 		std::vector<char> rgenCode, rmissCode, rshadowCode, rchitCode;
+		VkDescriptorSetLayout descriptorSetLayout;
 };

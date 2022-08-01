@@ -2,7 +2,7 @@
 
 
 GraphicsEngine::GraphicsEngine()
-:device(), swapchain(&device), rtpipeline(&device),
+:device(), swapchain(&device), renderer(&device),
 commandBuffersRecorded(false) {}
 
 GraphicsEngine::~GraphicsEngine() {}
@@ -35,17 +35,25 @@ void GraphicsEngine::init() {
 }
 
 void GraphicsEngine::initTlas() {
-	rtpipeline.initTlas();
+	// rtpipeline.initTlas();
 
-	rtpipeline.init();
-	device.renderInfo.renderPipeline = &rtpipeline;
+	// rtpipeline.init();
+	// device.renderInfo.renderPipeline = &rtpipeline;
+
+	renderer.init();
+
+	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer* commandBuffer) {
+		this->renderer.cmdRender(index, commandBuffer);
+	});
 }
 
 void GraphicsEngine::render() {
-	if (!commandBuffersRecorded) {
-		swapchain.recordCommandBuffers();
-		commandBuffersRecorded = true;
-	}
+	// if (!commandBuffersRecorded) {
+	// 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer* commandBuffer) {
+	// 		this->renderer.cmdRender(index, commandBuffer);
+	// 	});
+	// 	commandBuffersRecorded = true;
+	// }
 
 	float aspect = device.renderInfo.swapchainExtend.width / (float) device.renderInfo.swapchainExtend.height;
 	// pipeline.globalData.projectionMatrix = device.renderInfo.camera.getProjectionMatrix(aspect);
@@ -54,10 +62,12 @@ void GraphicsEngine::render() {
 	Matrix4f projectionMatrix = device.renderInfo.camera.getProjectionMatrix(aspect);
 	Matrix4f viewMatrix = device.renderInfo.camera.getViewMatrix();
 
-	rtpipeline.globalData.projInverse = projectionMatrix.inverseMatrix();
-	rtpipeline.globalData.viewInverse = viewMatrix.inverseMatrix();
-	rtpipeline.globalData.proj = projectionMatrix;
-	rtpipeline.globalData.view = viewMatrix;
+	renderer.globalData.projInverse = projectionMatrix.inverseMatrix();
+	renderer.globalData.viewInverse = viewMatrix.inverseMatrix();
+	renderer.globalData.proj = projectionMatrix;
+	renderer.globalData.view = viewMatrix;
 
-	swapchain.render();
+	swapchain.render([this](size_t index) {
+		this->renderer.updateUniforms(index);
+	});
 }

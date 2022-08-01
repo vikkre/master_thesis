@@ -17,11 +17,11 @@ class Pipeline {
 		virtual ~Pipeline() {}
 
 		virtual void init()=0;
-		virtual void updateUniforms(size_t index)=0;
+		// virtual void updateUniforms(size_t /* index */) {};
 		
-		virtual void recordPreRenderCommandBuffer (size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
-		virtual void recordRenderCommandBuffer    (size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
-		virtual void recordPostRenderCommandBuffer(size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
+		// virtual void recordPreRenderCommandBuffer (size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
+		// virtual void recordRenderCommandBuffer    (size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
+		// virtual void recordPostRenderCommandBuffer(size_t /* index */, const VkCommandBuffer* /* commandBuffer */) {}
 
 		virtual const VkPipelineLayout& getPipelineLayout() const=0;
 		virtual const VkPipeline& getGraphicsPipeline() const=0;

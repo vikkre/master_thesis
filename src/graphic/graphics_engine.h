@@ -6,10 +6,10 @@
 #include "swapchain.h"
 #include "window/sdl_window.h"
 #include "camera.h"
-#include "pipeline/graphics_pipeline.h"
 #include "pipeline/ray_tracing_pipeline.h"
 #include "pipeline/ray_tracing_pipeline_points.h"
 #include "helper/function_load.h"
+#include "renderer/praktikums_render.h"
 
 
 class GraphicsEngine {
@@ -23,8 +23,9 @@ class GraphicsEngine {
 
 		Device device;
 		Swapchain swapchain;
+		PraktikumsRenderer renderer;
 		// GraphicsPipeline pipeline;
-		RayTracingPipeline rtpipeline;
+		// RayTracingPipeline rtpipeline;
 		// RayTracingPipelinePoints rtpipeline;
 
 		bool commandBuffersRecorded;

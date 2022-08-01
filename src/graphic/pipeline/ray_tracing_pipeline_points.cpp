@@ -21,13 +21,14 @@ tlas(device),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
 storageImages(), shaderGroups(),
 pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), globalDataBuffers(), descriptorSets(),
-rgenCode(), rmissCode(), rchitCode() {}
+rgenCode(), rmissCode(), rchitCode(),
+descriptorSetLayout(VK_NULL_HANDLE) {}
 
 RayTracingPipelinePoints::~RayTracingPipelinePoints() {
 	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyPipeline(device->getDevice(), pipeline, nullptr);
 	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
-	vkDestroyDescriptorSetLayout(device->getDevice(), device->renderInfo.globalDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(device->getDevice(), descriptorSetLayout, nullptr);
 }
 
 void RayTracingPipelinePoints::init() {
@@ -38,7 +39,7 @@ void RayTracingPipelinePoints::init() {
 
 	getProperties();
 
-	createDescriptorSetLayout(RayTracingPipelinePoints::getUniformBindings(), &device->renderInfo.globalDescriptorSetLayout);
+	createDescriptorSetLayout(RayTracingPipelinePoints::getUniformBindings(), &descriptorSetLayout);
 	createStorageImages();
 	createDescriptorPool();
 	createBuffers();
@@ -245,7 +246,7 @@ void RayTracingPipelinePoints::createDescriptorSets() {
 
 	std::vector<VkDescriptorSetLayout> setLayouts;
 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		setLayouts.push_back(device->renderInfo.globalDescriptorSetLayout);
+		setLayouts.push_back(descriptorSetLayout);
 	}
 
 	VkDescriptorSetAllocateInfo allocInfo{};
@@ -338,7 +339,7 @@ void RayTracingPipelinePoints::createDescriptorSets() {
 
 void RayTracingPipelinePoints::createRayTracingPipeline() {
 	std::vector<VkDescriptorSetLayout> setLayouts {
-		device->renderInfo.globalDescriptorSetLayout,
+		descriptorSetLayout,
 	};
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

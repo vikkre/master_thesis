@@ -50,24 +50,24 @@ void blocksAndBall(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vect
 	meshes.push_back(ball);
 
 	GraphicsObject* white = new GraphicsObject(&engine->device, ball, Vector3f({0.0f, 0.0f, 0.0f}));
-	white->objectData.color = Vector3f({1.0f, 1.0f, 1.0f});
+	white->color = Vector3f({1.0f, 1.0f, 1.0f});
 	objs.push_back(white);
 	white->rtData.reflect = reflect;
 	
 	GraphicsObject* cyan = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 3.0f}));
-	cyan->objectData.color = Vector3f({0.0f, 0.0f, 1.0f});
+	cyan->color = Vector3f({0.0f, 0.0f, 1.0f});
 	objs.push_back(cyan);
 	
 	GraphicsObject* magenta = new GraphicsObject(&engine->device, block, Vector3f({-3.0f, 0.0f, 0.0f}));
-	magenta->objectData.color = Vector3f({1.0f, 0.0f, 0.0f});
+	magenta->color = Vector3f({1.0f, 0.0f, 0.0f});
 	objs.push_back(magenta);
 	
 	GraphicsObject* yellow = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -3.0f}));
-	yellow->objectData.color = Vector3f({0.0f, 1.0f, 0.0f});
+	yellow->color = Vector3f({0.0f, 1.0f, 0.0f});
 	objs.push_back(yellow);
 	
 	GraphicsObject* black = new GraphicsObject(&engine->device, block, Vector3f({3.0f, 0.0f, 0.0f}));
-	black->objectData.color = Vector3f({0.1f, 0.1f, 0.1f});
+	black->color = Vector3f({0.1f, 0.1f, 0.1f});
 	objs.push_back(black);
 }
 
@@ -82,11 +82,11 @@ void teeth(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<Graph
 	meshes.push_back(lower_mesh);
 
 	GraphicsObject* upper = new GraphicsObject(&engine->device, upper_mesh, Vector3f({0.0f, 0.0f, 0.0f}));
-	upper->objectData.color = Vector3f({1.0f, 0.0f, 0.0f});
+	upper->color = Vector3f({1.0f, 0.0f, 0.0f});
 	objs.push_back(upper);
 
 	GraphicsObject* lower = new GraphicsObject(&engine->device, lower_mesh, Vector3f({0.0f, 0.0f, 0.0f}));
-	lower->objectData.color = Vector3f({0.0f, 1.0f, 0.0f});
+	lower->color = Vector3f({0.0f, 1.0f, 0.0f});
 	objs.push_back(lower);
 	lower->rtData.reflect = reflect;
 }
@@ -115,7 +115,7 @@ int main() {
 	// teeth(engine, meshes, objs, 1.0f);
 
 	for (GraphicsObject* obj: objs) {
-		engine->rtpipeline.objects.push_back(obj);
+		engine->renderer.objects.push_back(obj);
 	}
 	engine->initTlas();
 
@@ -153,9 +153,11 @@ int main() {
 		float lightY = engine->device.renderInfo.lightPosition[1];
 		engine->device.renderInfo.lightPosition = Vector3f({cos(lightAngle) * 10.0f, lightY, sin(lightAngle) * 10.0f});
 
-		int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
-			engine->render();
-		});
+		engine->render();
+
+		// int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
+		// 	engine->render();
+		// });
 		// SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
 
 		int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();

@@ -15,37 +15,24 @@
 
 RayTracingPipeline::RayTracingPipeline(Device* device)
 :Pipeline(device),
-objects(), globalData(),
+raygenShaders(), missShaders(), hitShaders(),
+bufferDescriptors(),
+width(1), height(1),
 rayTracingPipelineProperties(),
-tlas(device),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
-storageImages(),
-pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), globalDataBuffers(), descriptorSets(), bufferDescriptors(),
-raygenShaders(), missShaders(), hitShaders() {}
+pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE),
+descriptorPool(VK_NULL_HANDLE), descriptorSets(), descriptorSetLayout(VK_NULL_HANDLE) {}
 
 RayTracingPipeline::~RayTracingPipeline() {
 	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyPipeline(device->getDevice(), pipeline, nullptr);
 	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
-	vkDestroyDescriptorSetLayout(device->getDevice(), device->renderInfo.globalDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(device->getDevice(), descriptorSetLayout, nullptr);
 	for (BufferDescriptor* bd: bufferDescriptors) delete bd;
 }
 
 void RayTracingPipeline::init() {
-	raygenShaders.push_back(readFile(RGEN_SHADER));
-	missShaders.push_back(readFile(RMISS_SHADER));
-	hitShaders.push_back(readFile(RCHIT_SHADER));
-	missShaders.push_back(readFile(RSHADOW_SHADER));
-
 	getProperties();
-
-	createStorageImages();
-	createBuffers();
-
-	bufferDescriptors.push_back(new SingleBufferDescriptor(&tlas, 0, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
-	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(storageImages), 1, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
-	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(globalDataBuffers), 2, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR));
-	bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(rtDataBuffers), 3, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
 
 	createDescriptorSetLayout();
 	createDescriptorPool();
@@ -62,27 +49,7 @@ void RayTracingPipeline::getProperties() {
 	vkGetPhysicalDeviceProperties2(device->getPhysicalDevice(), &deviceProperties2);
 }
 
-void RayTracingPipeline::recordPreRenderCommandBuffer(size_t index, const VkCommandBuffer* commandBuffer) {
-	const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
-
-	VkStridedDeviceAddressRegionKHR raygenShaderSbtEntry{};
-	raygenShaderSbtEntry.deviceAddress = raygenShaderBindingTable.getAddress();
-	raygenShaderSbtEntry.stride = handleSizeAligned;
-	raygenShaderSbtEntry.size = handleSizeAligned;
-
-	VkStridedDeviceAddressRegionKHR missShaderSbtEntry{};
-	missShaderSbtEntry.deviceAddress = missShaderBindingTable.getAddress();
-	missShaderSbtEntry.stride = handleSizeAligned;
-	missShaderSbtEntry.size = handleSizeAligned;
-
-	VkStridedDeviceAddressRegionKHR hitShaderSbtEntry{};
-	hitShaderSbtEntry.deviceAddress = hitShaderBindingTable.getAddress();
-	hitShaderSbtEntry.stride = handleSizeAligned;
-	hitShaderSbtEntry.size = handleSizeAligned;
-
-	VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
-
-	vkCmdBindPipeline(*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline);
+void RayTracingPipeline::cmdExecutePipeline(size_t index, const VkCommandBuffer* commandBuffer) {
 	vkCmdBindDescriptorSets(
 		*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
 		pipelineLayout,
@@ -90,60 +57,33 @@ void RayTracingPipeline::recordPreRenderCommandBuffer(size_t index, const VkComm
 		0, nullptr
 	);
 
+	vkCmdBindPipeline(*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline);
+
+	const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
+
+	VkStridedDeviceAddressRegionKHR generalShaderSbtEntry{};
+	generalShaderSbtEntry.stride = handleSizeAligned;
+	generalShaderSbtEntry.size = handleSizeAligned;
+
+	VkStridedDeviceAddressRegionKHR raygenShaderSbtEntry = generalShaderSbtEntry;
+	raygenShaderSbtEntry.deviceAddress = raygenShaderBindingTable.getAddress();
+
+	VkStridedDeviceAddressRegionKHR missShaderSbtEntry = generalShaderSbtEntry;
+	missShaderSbtEntry.deviceAddress = missShaderBindingTable.getAddress();
+
+	VkStridedDeviceAddressRegionKHR hitShaderSbtEntry = generalShaderSbtEntry;
+	hitShaderSbtEntry.deviceAddress = hitShaderBindingTable.getAddress();
+
+	VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
+
 	FuncLoad::vkCmdTraceRaysKHR(
 		*commandBuffer,
 		&raygenShaderSbtEntry,
 		&missShaderSbtEntry,
 		&hitShaderSbtEntry,
 		&callableShaderSbtEntry,
-		device->renderInfo.swapchainExtend.width,
-		device->renderInfo.swapchainExtend.height,
-		1
+		width, height, 1
 	);
-
-	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
-}
-
-void RayTracingPipeline::updateUniforms(size_t index) {
-	globalData.backgroundColor = device->renderInfo.backgroundColor;
-	globalData.lightPosition = device->renderInfo.lightPosition;
-
-	globalDataBuffers.at(index).passData((void*) &globalData);
-
-	for (size_t i = 0; i < objects.size(); ++i) {
-		objects.at(i)->passBufferData(index);
-		rtDataBuffers.at(index).passData(rtDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
-	}
-}
-
-void RayTracingPipeline::initTlas() {
-	for (GraphicsObject* obj: objects) {
-		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
-		tlas.blasInstances.push_back(info.instance);
-		rtDataPtrs.push_back(info.dataPtr);
-	}
-
-	tlas.init();
-}
-
-void RayTracingPipeline::createStorageImages() {
-	storageImages.reserve(device->renderInfo.swapchainImageCount);
-
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		storageImages.emplace_back(device);
-
-		storageImages.at(i).width = device->renderInfo.swapchainExtend.width;
-		storageImages.at(i).height = device->renderInfo.swapchainExtend.height;
-		storageImages.at(i).format = device->renderInfo.swapchainImageFormat;
-		storageImages.at(i).tiling = VK_IMAGE_TILING_OPTIMAL;
-		storageImages.at(i).usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		storageImages.at(i).properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		storageImages.at(i).aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-		storageImages.at(i).layout = VK_IMAGE_LAYOUT_GENERAL;
-		storageImages.at(i).createImageView = true;
-
-		storageImages.at(i).init();
-	}
 }
 
 void RayTracingPipeline::createShaderBindingTable() {
@@ -205,35 +145,12 @@ void RayTracingPipeline::createDescriptorPool() {
 	}
 }
 
-void RayTracingPipeline::createBuffers() {
-	globalDataBuffers.reserve(device->renderInfo.swapchainImageCount);
-	rtDataBuffers.reserve(device->renderInfo.swapchainImageCount);
-
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		globalDataBuffers.emplace_back(device);
-
-		globalDataBuffers.at(i).bufferSize = sizeof(RayTracingPipeline::GlobalData);
-		globalDataBuffers.at(i).usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		globalDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		globalDataBuffers.at(i).init();
-
-		rtDataBuffers.emplace_back(device);
-
-		rtDataBuffers.at(i).bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
-		rtDataBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		rtDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		rtDataBuffers.at(i).init();
-	}
-}
-
 void RayTracingPipeline::createDescriptorSets() {
 	descriptorSets.resize(device->renderInfo.swapchainImageCount);
 
 	std::vector<VkDescriptorSetLayout> setLayouts;
 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		setLayouts.push_back(device->renderInfo.globalDescriptorSetLayout);
+		setLayouts.push_back(descriptorSetLayout);
 	}
 
 	VkDescriptorSetAllocateInfo allocInfo{};
@@ -257,7 +174,7 @@ void RayTracingPipeline::createDescriptorSets() {
 
 void RayTracingPipeline::createRayTracingPipeline() {
 	std::vector<VkDescriptorSetLayout> setLayouts {
-		device->renderInfo.globalDescriptorSetLayout,
+		descriptorSetLayout,
 	};
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -273,14 +190,15 @@ void RayTracingPipeline::createRayTracingPipeline() {
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStageInfos;
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
 
+
 	struct ShaderStage {
-		ShaderCode& shaderCode;
+		std::vector<char> shaderCode;
 		VkShaderStageFlagBits shaderStageFlags;
 	};
 	std::vector<ShaderStage> shaderStages;
-	for (ShaderCode& shaderCode: raygenShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_RAYGEN_BIT_KHR});
-	for (ShaderCode& shaderCode: missShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_MISS_BIT_KHR});
-	for (ShaderCode& shaderCode: hitShaders) shaderStages.push_back({shaderCode, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
+	for (const std::string& shaderCode: raygenShaders) shaderStages.push_back({readFile(shaderCode), VK_SHADER_STAGE_RAYGEN_BIT_KHR});
+	for (const std::string& shaderCode: missShaders)   shaderStages.push_back({readFile(shaderCode), VK_SHADER_STAGE_MISS_BIT_KHR});
+	for (const std::string& shaderCode: hitShaders)    shaderStages.push_back({readFile(shaderCode), VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
 
 	for (const ShaderStage& shaderStage: shaderStages) {
 		VkShaderModule shaderModule = createShaderModule(device->getDevice(), shaderStage.shaderCode);
@@ -311,9 +229,6 @@ void RayTracingPipeline::createRayTracingPipeline() {
 		shaderGroups.push_back(shaderGroup);
 	}
 
-	/*
-		Create the ray tracing pipeline
-	*/
 	VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCI{};
 	rayTracingPipelineCI.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
 	rayTracingPipelineCI.stageCount = (uint32_t) shaderStageInfos.size();
@@ -344,7 +259,7 @@ void RayTracingPipeline::createDescriptorSetLayout() {
 	layoutInfo.bindingCount = (uint32_t) layoutBindings.size();
 	layoutInfo.pBindings = layoutBindings.data();
 
-	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &device->renderInfo.globalDescriptorSetLayout) != VK_SUCCESS) {
+	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
 		throw InitException("vkCreateDescriptorSetLayout", "failed to create descriptor set layout!");
 	}
 }

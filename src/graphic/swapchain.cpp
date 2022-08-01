@@ -70,13 +70,13 @@ void Swapchain::init() {
 	createSyncObjects();
 }
 
-void Swapchain::recordCommandBuffers() {
+void Swapchain::recordCommandBuffers(std::function<void(size_t, VkCommandBuffer*)> recordCommandBuffer) {
 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		frames.at(i).recordCommandBuffer(i);
+		frames.at(i).recordCommandBuffer(recordCommandBuffer, i);
 	}
 }
 
-void Swapchain::render() {
+void Swapchain::render(std::function<void(size_t)> updateUniform) {
 	vkWaitForFences(device->getDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
@@ -87,7 +87,8 @@ void Swapchain::render() {
 	}
 	imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
-	device->renderInfo.renderPipeline->updateUniforms(imageIndex);
+	// device->renderInfo.renderPipeline->updateUniforms(imageIndex);
+	updateUniform(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -134,7 +135,7 @@ void Swapchain::render() {
 void Swapchain::createSwapChain() {
 	VkSurfaceFormatKHR surfaceFormat = special_chooseSwapSurfaceFormat(device->renderInfo.surfaceFormats);
 	VkPresentModeKHR presentMode = special_chooseSwapPresentMode(device->renderInfo.presentModes);
-	device->renderInfo.swapchainExtend  = special_chooseSwapExtent(device->renderInfo.surfaceCapabilities, device->window->getWindowExtend());
+	device->renderInfo.swapchainExtend = special_chooseSwapExtent(device->renderInfo.surfaceCapabilities, device->window->getWindowExtend());
 
 	uint32_t imageCount = device->renderInfo.surfaceCapabilities.minImageCount + 1;
 

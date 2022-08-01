@@ -22,10 +22,6 @@ struct RenderInfo {
 	VkFormat swapchainDepthFormat;
 	std::vector<ImageBuffer*> swapchainImages;
 
-	Pipeline* renderPipeline;
-	VkDescriptorSetLayout globalDescriptorSetLayout;
-	VkDescriptorSetLayout objectDescriptorSetLayout;
-
 	Camera camera;
 	Vector3f backgroundColor;
 	Vector3f lightPosition;

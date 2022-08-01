@@ -11,15 +11,9 @@
 
 class Mesh;
 class Device;
-class Descriptor;
 
 class GraphicsObject {
 	public:
-		struct ObjectData {
-			Matrix4f objectMatrix;
-			Vector3f color;
-		};
-
 		struct RTData {
 			Matrix4f objectMatrix;
 			Vector3f color;
@@ -43,24 +37,16 @@ class GraphicsObject {
 		ObjectInfo getObjectInfo() const;
 		Matrix4f getMatrix() const;
 
-		static std::vector<VkDescriptorSetLayoutBinding> getUniformBindings();
-		static uint32_t getBindingSet();
 		static size_t getRTDataSize();
 
 		Vector3f scale;
 		Rotation rotation;
 		Vector3f position;
 
-		ObjectData objectData;
+		Vector3f color;
 		RTData rtData;
 	
 	private:
-		void createDescriptorPool();
-		void createDescriptors();
-
 		const Mesh* mesh;
 		const Device* device;
-
-		VkDescriptorPool descriptorPool;
-		std::vector<Descriptor> descriptors;
 };

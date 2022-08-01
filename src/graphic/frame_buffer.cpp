@@ -1,7 +1,6 @@
 #include "frame_buffer.h"
 
 #include "device.h"
-#include "pipeline/pipeline.h"
 
 
 FrameBuffer::FrameBuffer(Device* device)

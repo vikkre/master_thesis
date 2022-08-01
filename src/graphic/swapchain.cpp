@@ -1,7 +1,6 @@
 #include "swapchain.h"
 
 #include "device.h"
-#include "pipeline/pipeline.h"
 
 
 #define MAX_FRAMES_IN_FLIGHT 2

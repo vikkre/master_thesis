@@ -4,30 +4,25 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
-#include "pipeline.h"
-#include "../helper/data_buffer.h"
-#include "../helper/buffer_descriptor.h"
+#include "helper/data_buffer.h"
+#include "helper/buffer_descriptor.h"
 
-#include "../../init_exception.h"
+#include "../init_exception.h"
 
 
 class Device;
 class GraphicsObject;
 
 
-class RayTracingPipeline: public Pipeline {
+class RayTracingPipeline {
 	public:
 		RayTracingPipeline(Device* device);
-		~RayTracingPipeline() override;
+		~RayTracingPipeline();
 
-		virtual void init() override;
+		void init();
 		void cmdExecutePipeline(size_t index, const VkCommandBuffer* commandBuffer);
-
-		virtual const VkPipelineLayout& getPipelineLayout() const override;
-		virtual const VkPipeline& getGraphicsPipeline() const override;
-
-		static uint32_t getBindingSet();
 
 		std::vector<std::string> raygenShaders, missShaders, hitShaders;
 		std::vector<BufferDescriptor*> bufferDescriptors;
@@ -45,6 +40,8 @@ class RayTracingPipeline: public Pipeline {
 		VkRayTracingShaderGroupCreateInfoKHR createShaderGroup();
 
 		uint32_t alignedSize(uint32_t value, uint32_t alignment);
+
+		Device* device;
 
 		VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingPipelineProperties;
 

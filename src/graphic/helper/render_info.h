@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "../camera.h"
-#include "../pipeline/pipeline.h"
 
 
 class ImageBuffer;

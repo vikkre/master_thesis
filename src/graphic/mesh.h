@@ -24,17 +24,13 @@ class Mesh {
 		~Mesh();
 
 		void init();
-		void recordCommandBuffer(const VkCommandBuffer* commandBuffer) const;
-
+		
 		void addPoint(const Vector3f& point, const Vector3f& normal);
 		void addIndex(const Vector3u& index);
 
 		const DataBuffer& getVertexBuffer() const;
 		const DataBuffer& getIndexBuffer() const;
 		const BottomAccelerationStructure& getBlas() const;
-
-		static VkVertexInputBindingDescription getBindingDescription();
-		static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;

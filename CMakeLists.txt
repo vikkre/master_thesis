@@ -30,9 +30,6 @@ macro(add_shader input_shader output_shader)
 	list(APPEND SHADER ${output_shader})
 endmacro()
 
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.vert object_shader_vert.spv)
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.frag object_shader_frag.spv)
-
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/closesthit.rchit   closesthit.spv        )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/miss.rmiss         miss.spv              )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/shadow.rmiss       shadow.spv            )

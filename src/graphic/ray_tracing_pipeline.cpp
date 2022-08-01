@@ -1,8 +1,8 @@
 #include "ray_tracing_pipeline.h"
 
-#include "../helper/function_load.h"
-#include "../device.h"
-#include "../graphics_object.h"
+#include "helper/function_load.h"
+#include "device.h"
+#include "graphics_object.h"
 
 
 #define GLOBAL_BINDING_SET_INDEX 0
@@ -13,12 +13,47 @@
 #define RSHADOW_SHADER "shadow.spv"
 
 
+std::vector<char> readFile(const std::string& filename) {
+	std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open()) {
+		std::string text = "failed to open file \"";
+		text += filename;
+		text += "\"!";
+		throw InitException("Pipeline readFile", text);
+	}
+
+	size_t fileSize = (size_t) file.tellg();
+	std::vector<char> buffer(fileSize);
+
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+
+	file.close();
+
+	return buffer;
+}
+
+VkShaderModule createShaderModule(VkDevice device, const std::vector<char>& code) {
+	VkShaderModuleCreateInfo createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.codeSize = code.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+	VkShaderModule shaderModule;
+	if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+		throw InitException("vkCreateShaderModule", "failed to create shader module!");
+	}
+
+	return shaderModule;
+}
+
+
 RayTracingPipeline::RayTracingPipeline(Device* device)
-:Pipeline(device),
-raygenShaders(), missShaders(), hitShaders(),
+:raygenShaders(), missShaders(), hitShaders(),
 bufferDescriptors(),
 width(1), height(1),
-rayTracingPipelineProperties(),
+device(device), rayTracingPipelineProperties(),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
 pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE),
 descriptorPool(VK_NULL_HANDLE), descriptorSets(), descriptorSetLayout(VK_NULL_HANDLE) {}
@@ -262,18 +297,6 @@ void RayTracingPipeline::createDescriptorSetLayout() {
 	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
 		throw InitException("vkCreateDescriptorSetLayout", "failed to create descriptor set layout!");
 	}
-}
-
-uint32_t RayTracingPipeline::getBindingSet() {
-	return GLOBAL_BINDING_SET_INDEX;
-}
-
-const VkPipelineLayout& RayTracingPipeline::getPipelineLayout() const {
-	return pipelineLayout;
-}
-
-const VkPipeline& RayTracingPipeline::getGraphicsPipeline() const {
-	return pipeline;
 }
 
 uint32_t RayTracingPipeline::alignedSize(uint32_t size, uint32_t alignment) {

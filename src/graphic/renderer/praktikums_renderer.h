@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "../pipeline/ray_tracing_pipeline.h"
+#include "../ray_tracing_pipeline.h"
 
 #include "../device.h"
 #include "../helper/data_buffer.h"

@@ -26,13 +26,6 @@ void Mesh::init() {
 	createBlas();
 }
 
-void Mesh::recordCommandBuffer(const VkCommandBuffer* commandBuffer) const {
-	vkCmdBindVertexBuffers(*commandBuffer, 0, vertexBuffers.size(), vertexBuffers.data(), vertexBufferOffsets.data());
-	vkCmdBindIndexBuffer(*commandBuffer, indexBuffer.getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
-	vkCmdDrawIndexed(*commandBuffer, indices.size(), 1, 0, 0, 0);
-}
-
 void Mesh::addPoint(const Vector3f& point, const Vector3f& normal) {
 	Mesh::Vertex vertex{};
 
@@ -89,33 +82,4 @@ const DataBuffer& Mesh::getIndexBuffer() const {
 
 const BottomAccelerationStructure& Mesh::getBlas() const {
 	return blas;
-}
-
-VkVertexInputBindingDescription Mesh::getBindingDescription() {
-	VkVertexInputBindingDescription bindingDescription{};
-	bindingDescription.binding = 0;
-	bindingDescription.stride = sizeof(Mesh::Vertex);
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-	return bindingDescription;
-}
-
-std::vector<VkVertexInputAttributeDescription> Mesh::getAttributeDescriptions() {
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-	VkVertexInputAttributeDescription positionAttribute{};
-	positionAttribute.binding = 0;
-	positionAttribute.location = 0;
-	positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
-	positionAttribute.offset = offsetof(Mesh::Vertex, point);
-	attributeDescriptions.push_back(positionAttribute);
-
-	VkVertexInputAttributeDescription normalAttribute{};
-	normalAttribute.binding = 0;
-	normalAttribute.location = 1;
-	normalAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
-	normalAttribute.offset = offsetof(Mesh::Vertex, normal);
-	attributeDescriptions.push_back(normalAttribute);
-
-	return attributeDescriptions;
 }

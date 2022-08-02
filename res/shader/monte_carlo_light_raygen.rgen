@@ -1,0 +1,81 @@
+#version 460
+#extension GL_EXT_ray_tracing : enable
+#extension GL_EXT_scalar_block_layout : enable
+
+
+#define DEPTH 4
+#define ITERATIONS 200
+#define DIFFUSE_PART 0.5
+
+
+struct PointData {
+	vec3 pos;
+	vec3 color;
+};
+
+
+layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout(binding = 2, set = 0, scalar) uniform GlobalData {
+	mat4 viewInverse;
+	mat4 projInverse;
+	mat4 view;
+	mat4 proj;
+	vec3 backgroundColor;
+	vec3 lightPosition;
+	uint lightJumpCount;
+	uint visionJumpCount;
+} globalData;
+layout(binding = 3, set = 0) buffer Count {uint count;} c;
+layout(binding = 4, set = 0, scalar) buffer XYZ { PointData d[]; } pointData;
+
+struct RayPayload {
+	bool miss;
+	vec3 pos;
+	vec3 normal;
+	vec3 color;
+};
+layout(location = 0) rayPayloadEXT RayPayload rayPayload;
+
+float rand(vec2 co, int i, int v){
+	return fract(sin(dot(co, vec2(12.9898, 78.233)) * (v + 1.0) + i) * 43758.5453);
+}
+
+void main() {
+	float tx = rand(gl_LaunchIDEXT.xy, 0, 0) * 2.0 - 1.0;
+	float ty = rand(gl_LaunchIDEXT.xy, 0, 1) * 2.0 - 1.0;
+	float tz = rand(gl_LaunchIDEXT.xy, 0, 2) * 2.0 - 1.0;
+
+	vec3 origin = globalData.lightPosition;
+	vec3 target = vec3(tx, ty, tz);
+	vec3 direction = normalize(target.xyz);
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	float tmax = 10000.0;
+
+	vec3 WHITE = vec3(1.0, 1.0, 1.0);
+	vec3 color = WHITE;
+
+	for (int i = 0; i < globalData.lightJumpCount; i++) {
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+		if (rayPayload.miss) break;
+
+		color -= (WHITE - rayPayload.color);
+
+		origin = rayPayload.pos;
+		vec3 randomDirection = vec3(
+			rand(origin.xy, i, 0) * 2.0 - 1.0,
+			rand(origin.xy, i, 1) * 2.0 - 1.0,
+			rand(origin.xy, i, 2) * 2.0 - 1.0
+		);
+		direction = normalize((randomDirection + rayPayload.normal) * 0.5);
+	}
+
+	if (!rayPayload.miss) {
+		uint index = atomicAdd(c.count, 1);
+		pointData.d[index].pos = rayPayload.pos;
+		pointData.d[index].color = color;
+	}
+}

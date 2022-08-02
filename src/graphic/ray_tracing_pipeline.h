@@ -24,6 +24,8 @@ class RayTracingPipeline {
 		void init();
 		void cmdExecutePipeline(size_t index, const VkCommandBuffer* commandBuffer);
 
+		static void cmdRayTracingBarrier(const VkCommandBuffer* commandBuffer);
+
 		std::vector<std::string> raygenShaders, missShaders, hitShaders;
 		std::vector<BufferDescriptor*> bufferDescriptors;
 

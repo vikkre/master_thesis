@@ -14,6 +14,8 @@
 #include "../helper/multi_buffer_descriptor.h"
 #include "../helper/top_acceleration_structure_buffer.h"
 
+#include "../../math/vector.h"
+
 #include "renderer.h"
 
 
@@ -34,20 +36,26 @@ class MonteCarloRenderer: public Renderer {
 			Matrix4f proj;
 			Vector3f backgroundColor;
 			Vector3f lightPosition;
+			u_int32_t lightJumpCount;
+			u_int32_t visionJumpCount;
 		} globalData;
 
 	private:
 		void createTLAS();
 		void createBuffers();
-		void createPipeline();
+		void createLightGenerationPipeline();
+		void createKDPipeline();
 
 		Device* device;
-		RayTracingPipeline pipeline;
+		RayTracingPipeline lightGenerationPipeline;
+		RayTracingPipeline kdPipeline;
 
 		TopAccelerationStructureBuffer tlas;
 		std::vector<ImageBuffer> storageImages;
 		std::vector<DataBuffer> globalDataBuffers;
 		std::vector<DataBuffer> countBuffers;
+		std::vector<DataBuffer> lightPointBuffers;
+		std::vector<DataBuffer> kdBuffers;
 		std::vector<DataBuffer> rtDataBuffers;
 		std::vector<void*> rtDataPtrs;
 };

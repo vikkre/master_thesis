@@ -7,11 +7,6 @@
 
 #define GLOBAL_BINDING_SET_INDEX 0
 
-#define RGEN_SHADER "raygen.spv"
-#define RCHIT_SHADER "closesthit.spv"
-#define RMISS_SHADER "miss.spv"
-#define RSHADOW_SHADER "shadow.spv"
-
 
 std::vector<char> readFile(const std::string& filename) {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
@@ -118,6 +113,17 @@ void RayTracingPipeline::cmdExecutePipeline(size_t index, const VkCommandBuffer*
 		&hitShaderSbtEntry,
 		&callableShaderSbtEntry,
 		width, height, 1
+	);
+}
+
+void RayTracingPipeline::cmdRayTracingBarrier(const VkCommandBuffer* commandBuffer) {
+	vkCmdPipelineBarrier(
+		*commandBuffer,
+		VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+		0,
+		0, nullptr,
+		0, nullptr,
+		0, nullptr
 	);
 }
 

@@ -3,10 +3,10 @@
 
 #define GLOBAL_BINDING_SET_INDEX 0
 
-#define RGEN_SHADER "raygen.spv"
-#define RCHIT_SHADER "closesthit.spv"
-#define RMISS_SHADER "miss.spv"
-#define RSHADOW_SHADER "shadow.spv"
+#define RGEN_SHADER "prakt_raygen.spv"
+#define RCHIT_SHADER "prakt_closesthit.spv"
+#define RMISS_SHADER "prakt_miss.spv"
+#define RSHADOW_SHADER "prakt_shadow.spv"
 
 
 PraktikumsRenderer::PraktikumsRenderer(Device* device)

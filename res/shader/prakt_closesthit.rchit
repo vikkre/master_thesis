@@ -6,7 +6,7 @@
 #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
 
 #define M_PI 3.1415926535897932384626433832795
-#define MIN_LIGHT 0.3
+#define MIN_LIGHT 0.0
 
 
 struct ObjectProperties {

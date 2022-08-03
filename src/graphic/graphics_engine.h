@@ -22,8 +22,8 @@ class GraphicsEngine {
 
 		Device device;
 		Swapchain swapchain;
-		PraktikumsRenderer renderer;
-		// MonteCarloRenderer renderer;
+		// PraktikumsRenderer renderer;
+		MonteCarloRenderer renderer;
 
 		bool commandBuffersRecorded;
 };

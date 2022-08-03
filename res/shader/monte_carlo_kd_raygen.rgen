@@ -21,9 +21,9 @@ struct KDData {
 	int rightIndex;
 };
 
-layout(binding = 0, set = 0) buffer Count {uint c; } count;
-layout(binding = 1, set = 0, scalar) buffer XY { PointData d[]; } pointData;
-layout(binding = 2, set = 0, scalar) buffer YZ { KDData d[]; } kdData;
+layout(binding = 3, set = 0) buffer Count {uint c; } count;
+layout(binding = 4, set = 0, scalar) buffer XY { PointData d[]; } pointData;
+layout(binding = 5, set = 0, scalar) buffer YZ { KDData d[]; } kdData;
 
 
 KDData getNewKDData(PointData point, uint direction) {

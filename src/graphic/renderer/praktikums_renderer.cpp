@@ -1,8 +1,6 @@
 #include "praktikums_renderer.h"
 
 
-#define GLOBAL_BINDING_SET_INDEX 0
-
 #define RGEN_SHADER "prakt_raygen.spv"
 #define RCHIT_SHADER "prakt_closesthit.spv"
 #define RMISS_SHADER "prakt_miss.spv"
@@ -11,20 +9,24 @@
 
 PraktikumsRenderer::PraktikumsRenderer(Device* device)
 :objects(), globalData(),
-device(device), pipeline(device), tlas(device),
-storageImages(), globalDataBuffers(),
-rtDataBuffers(), rtDataPtrs() {}
+device(device), descriptorCollection(device),
+pipeline(device), rtDataPtrs(),
+tlas(device), storageImages(device),
+globalDataBuffers(device), rtDataBuffers(device) {}
 
 PraktikumsRenderer::~PraktikumsRenderer() {}
 
 void PraktikumsRenderer::init() {
 	createTLAS();
 	createBuffers();
+	createDescriptorCollection();
 	createPipeline();
 }
 
 void PraktikumsRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
-	pipeline.cmdExecutePipeline(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer);
+
+	pipeline.cmdExecutePipeline(commandBuffer);
 
 	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
@@ -44,7 +46,7 @@ void PraktikumsRenderer::updateUniforms(size_t index) {
 void PraktikumsRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {
 		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
-		tlas.blasInstances.push_back(info.instance);
+		tlas.bufferProperties.blasInstances.push_back(info.instance);
 		rtDataPtrs.push_back(info.dataPtr);
 	}
 
@@ -52,41 +54,37 @@ void PraktikumsRenderer::createTLAS() {
 }
 
 void PraktikumsRenderer::createBuffers() {
-	storageImages.reserve(device->renderInfo.swapchainImageCount);
-	globalDataBuffers.reserve(device->renderInfo.swapchainImageCount);
-	rtDataBuffers.reserve(device->renderInfo.swapchainImageCount);
+	storageImages.bufferProperties.width = device->renderInfo.swapchainExtend.width;
+	storageImages.bufferProperties.height = device->renderInfo.swapchainExtend.height;
+	storageImages.bufferProperties.format = device->renderInfo.swapchainImageFormat;
+	storageImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	storageImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	storageImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	storageImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	storageImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
+	storageImages.bufferProperties.createImageView = true;
+	storageImages.init();
 
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		storageImages.emplace_back(device);
+	globalDataBuffers.bufferProperties.bufferSize = sizeof(PraktikumsRenderer::GlobalData);
+	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	globalDataBuffers.init();
 
-		storageImages.at(i).width = device->renderInfo.swapchainExtend.width;
-		storageImages.at(i).height = device->renderInfo.swapchainExtend.height;
-		storageImages.at(i).format = device->renderInfo.swapchainImageFormat;
-		storageImages.at(i).tiling = VK_IMAGE_TILING_OPTIMAL;
-		storageImages.at(i).usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		storageImages.at(i).properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		storageImages.at(i).aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-		storageImages.at(i).layout = VK_IMAGE_LAYOUT_GENERAL;
-		storageImages.at(i).createImageView = true;
+	rtDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
+	rtDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	rtDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	rtDataBuffers.init();
+}
 
-		storageImages.at(i).init();
+void PraktikumsRenderer::createDescriptorCollection() {
+	descriptorCollection.bufferDescriptors.resize(4);
 
-		globalDataBuffers.emplace_back(device);
+	descriptorCollection.bufferDescriptors.at(0) = &tlas;
+	descriptorCollection.bufferDescriptors.at(1) = &storageImages;
+	descriptorCollection.bufferDescriptors.at(2) = &globalDataBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &rtDataBuffers;
 
-		globalDataBuffers.at(i).bufferSize = sizeof(PraktikumsRenderer::GlobalData);
-		globalDataBuffers.at(i).usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		globalDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		globalDataBuffers.at(i).init();
-
-		rtDataBuffers.emplace_back(device);
-
-		rtDataBuffers.at(i).bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
-		rtDataBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		rtDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		rtDataBuffers.at(i).init();
-	}
+	descriptorCollection.init();
 }
 
 void PraktikumsRenderer::createPipeline() {
@@ -95,10 +93,7 @@ void PraktikumsRenderer::createPipeline() {
 	pipeline.hitShaders.push_back(RCHIT_SHADER);
 	pipeline.missShaders.push_back(RSHADOW_SHADER);
 
-	pipeline.bufferDescriptors.push_back(new SingleBufferDescriptor(&tlas, 0, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
-	pipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(storageImages), 1, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
-	pipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(globalDataBuffers), 2, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR));
-	pipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(rtDataBuffers), 3, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
+	pipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
 	pipeline.width = device->renderInfo.swapchainExtend.width;
 	pipeline.height = device->renderInfo.swapchainExtend.height;

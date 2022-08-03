@@ -14,8 +14,8 @@ FrameBuffer::~FrameBuffer() {
 }
 
 void FrameBuffer::init(const VkImage& image) {
-	this->image.format = device->renderInfo.swapchainImageFormat;
-	this->image.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	this->image.properties.format = device->renderInfo.swapchainImageFormat;
+	this->image.properties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 	this->image.init(image, true);
 
 	createDepthResources();
@@ -56,14 +56,14 @@ void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer
 }
 
 void FrameBuffer::createDepthResources() {
-	depthImage.width = device->renderInfo.swapchainExtend.width;
-	depthImage.height = device->renderInfo.swapchainExtend.height;
-	depthImage.format = device->renderInfo.swapchainDepthFormat;
-	depthImage.tiling = VK_IMAGE_TILING_OPTIMAL;
-	depthImage.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-	depthImage.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	depthImage.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-	depthImage.createImageView = true;
+	depthImage.properties.width = device->renderInfo.swapchainExtend.width;
+	depthImage.properties.height = device->renderInfo.swapchainExtend.height;
+	depthImage.properties.format = device->renderInfo.swapchainDepthFormat;
+	depthImage.properties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	depthImage.properties.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	depthImage.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	depthImage.properties.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+	depthImage.properties.createImageView = true;
 
 	depthImage.init();
 }

@@ -6,8 +6,7 @@
 
 
 DataBuffer::DataBuffer(const Device* device)
-:Buffer(), bufferSize(0), usage(), properties(0),
-device(device),
+:Buffer(), properties(), device(device),
 useTransferBuffer(false), buffer(VK_NULL_HANDLE), memory(VK_NULL_HANDLE) {}
 
 DataBuffer::~DataBuffer() {
@@ -18,23 +17,23 @@ DataBuffer::~DataBuffer() {
 }
 
 void DataBuffer::init() {
-	useTransferBuffer = (properties & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
+	useTransferBuffer = (properties.properties & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
 
-	createBuffer(usage, properties, buffer, memory);
+	createBuffer(properties.usage, properties.properties, buffer, memory);
 
 	bufferInfo = {};
 	bufferInfo.buffer = buffer;
 	bufferInfo.offset = 0;
-	bufferInfo.range = bufferSize;
+	bufferInfo.range = properties.bufferSize;
 }
 
 void DataBuffer::passData(void* data) {
-	passData(data, 0, (size_t) bufferSize);
+	passData(data, 0, (size_t) properties.bufferSize);
 }
 
 void DataBuffer::passData(void* data, size_t start, size_t length) {
 	if (useTransferBuffer) {
-		if ((usage & VK_BUFFER_USAGE_TRANSFER_DST_BIT) == 0) {
+		if ((properties.usage & VK_BUFFER_USAGE_TRANSFER_DST_BIT) == 0) {
 			throw InitException("DataBuffer::passData", "Cannot pass data to buffer! Missing 'VK_BUFFER_USAGE_TRANSFER_DST_BIT'?");
 		}
 
@@ -74,12 +73,12 @@ void DataBuffer::passData(void* data, size_t start, size_t length) {
 }
 
 void DataBuffer::getData(void* data) {
-	getData(data, 0, (size_t) bufferSize);
+	getData(data, 0, (size_t) properties.bufferSize);
 }
 
 void DataBuffer::getData(void* data, size_t start, size_t length) {
 	if (useTransferBuffer) {
-		if ((usage & VK_BUFFER_USAGE_TRANSFER_SRC_BIT) == 0) {
+		if ((properties.usage & VK_BUFFER_USAGE_TRANSFER_SRC_BIT) == 0) {
 			throw InitException("DataBuffer::getData", "Cannot get data from buffer! Missing 'VK_BUFFER_USAGE_TRANSFER_SRC_BIT'?");
 		}
 
@@ -134,7 +133,7 @@ VkWriteDescriptorSet DataBuffer::getWriteDescriptorSet(VkDescriptorSet descripto
 
 VkDescriptorType DataBuffer::getDescriptorType() const {
 	VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	if ((usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) != 0) {
+	if ((properties.usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) != 0) {
 		type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	}
 	return type;
@@ -143,7 +142,7 @@ VkDescriptorType DataBuffer::getDescriptorType() const {
 void DataBuffer::createBuffer(VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& dstBuffer, VkDeviceMemory& dstMemory) {
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = bufferSize;
+	bufferInfo.size = this->properties.bufferSize;
 	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 

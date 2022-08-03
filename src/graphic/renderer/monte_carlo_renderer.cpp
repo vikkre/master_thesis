@@ -1,8 +1,6 @@
 #include "monte_carlo_renderer.h"
 
 
-#define GLOBAL_BINDING_SET_INDEX 0
-
 #define LIGHT_GEN_RGEN_SHADER  "monte_carlo_light_raygen.spv"
 #define LIGHT_GEN_RCHIT_SHADER "monte_carlo_light_closesthit.spv"
 #define LIGHT_GEN_RMISS_SHADER "monte_carlo_light_miss.spv"
@@ -29,25 +27,28 @@ struct KDData {
 
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
 :objects(), globalData(),
-device(device), lightGenerationPipeline(device), kdPipeline(device), tlas(device),
-storageImages(), globalDataBuffers(), countBuffers(), lightPointBuffers(), kdBuffers(),
-rtDataBuffers(), rtDataPtrs() {}
+device(device), descriptorCollection(device), lightGenerationPipeline(device), kdPipeline(device), rtDataPtrs(),
+tlas(device), storageImages(device), globalDataBuffers(device), countBuffers(device),
+lightPointBuffers(device), kdBuffers(device), rtDataBuffers(device) {}
 
 MonteCarloRenderer::~MonteCarloRenderer() {}
 
 void MonteCarloRenderer::init() {
 	createTLAS();
 	createBuffers();
+	createDescriptorCollection();
 	createLightGenerationPipeline();
 	createKDPipeline();
 }
 
 void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
-	lightGenerationPipeline.cmdExecutePipeline(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer);
+
+	lightGenerationPipeline.cmdExecutePipeline(commandBuffer);
 
 	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
 
-	kdPipeline.cmdExecutePipeline(index, commandBuffer);
+	kdPipeline.cmdExecutePipeline(commandBuffer);
 
 	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
@@ -84,7 +85,7 @@ void MonteCarloRenderer::updateUniforms(size_t index) {
 void MonteCarloRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {
 		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
-		tlas.blasInstances.push_back(info.instance);
+		tlas.bufferProperties.blasInstances.push_back(info.instance);
 		rtDataPtrs.push_back(info.dataPtr);
 	}
 
@@ -92,68 +93,55 @@ void MonteCarloRenderer::createTLAS() {
 }
 
 void MonteCarloRenderer::createBuffers() {
-	storageImages.reserve(device->renderInfo.swapchainImageCount);
-	globalDataBuffers.reserve(device->renderInfo.swapchainImageCount);
-	countBuffers.reserve(device->renderInfo.swapchainImageCount);
-	lightPointBuffers.reserve(device->renderInfo.swapchainImageCount);
-	kdBuffers.reserve(device->renderInfo.swapchainImageCount);
-	rtDataBuffers.reserve(device->renderInfo.swapchainImageCount);
+	storageImages.bufferProperties.width = device->renderInfo.swapchainExtend.width;
+	storageImages.bufferProperties.height = device->renderInfo.swapchainExtend.height;
+	storageImages.bufferProperties.format = device->renderInfo.swapchainImageFormat;
+	storageImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	storageImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	storageImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	storageImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	storageImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
+	storageImages.bufferProperties.createImageView = true;
+	storageImages.init();
 
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		storageImages.emplace_back(device);
+	globalDataBuffers.bufferProperties.bufferSize = sizeof(MonteCarloRenderer::GlobalData);
+	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	globalDataBuffers.init();
 
-		storageImages.at(i).width = device->renderInfo.swapchainExtend.width;
-		storageImages.at(i).height = device->renderInfo.swapchainExtend.height;
-		storageImages.at(i).format = device->renderInfo.swapchainImageFormat;
-		storageImages.at(i).tiling = VK_IMAGE_TILING_OPTIMAL;
-		storageImages.at(i).usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		storageImages.at(i).properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		storageImages.at(i).aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-		storageImages.at(i).layout = VK_IMAGE_LAYOUT_GENERAL;
-		storageImages.at(i).createImageView = true;
+	countBuffers.bufferProperties.bufferSize = sizeof(uint32_t);
+	countBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	countBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	countBuffers.init();
 
-		storageImages.at(i).init();
+	lightPointBuffers.bufferProperties.bufferSize = sizeof(LightPoint) * LIGHT_RAY_COUNT;
+	lightPointBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	lightPointBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	lightPointBuffers.init();
 
-		globalDataBuffers.emplace_back(device);
+	kdBuffers.bufferProperties.bufferSize = sizeof(KDData) * LIGHT_RAY_COUNT;
+	kdBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	kdBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	kdBuffers.init();
 
-		globalDataBuffers.at(i).bufferSize = sizeof(MonteCarloRenderer::GlobalData);
-		globalDataBuffers.at(i).usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		globalDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	rtDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
+	rtDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	rtDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	rtDataBuffers.init();
+}
 
-		globalDataBuffers.at(i).init();
+void MonteCarloRenderer::createDescriptorCollection() {
+	descriptorCollection.bufferDescriptors.resize(7);
 
-		countBuffers.emplace_back(device);
+	descriptorCollection.bufferDescriptors.at(0) = &tlas;
+	descriptorCollection.bufferDescriptors.at(1) = &rtDataBuffers;
+	descriptorCollection.bufferDescriptors.at(2) = &globalDataBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &countBuffers;
+	descriptorCollection.bufferDescriptors.at(4) = &lightPointBuffers;
+	descriptorCollection.bufferDescriptors.at(5) = &kdBuffers;
+	descriptorCollection.bufferDescriptors.at(6) = &storageImages;
 
-		countBuffers.at(i).bufferSize = sizeof(uint32_t);
-		countBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		countBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		countBuffers.at(i).init();
-
-		lightPointBuffers.emplace_back(device);
-
-		lightPointBuffers.at(i).bufferSize = sizeof(LightPoint) * LIGHT_RAY_COUNT;
-		lightPointBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		lightPointBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		lightPointBuffers.at(i).init();
-
-		kdBuffers.emplace_back(device);
-
-		kdBuffers.at(i).bufferSize = sizeof(KDData) * LIGHT_RAY_COUNT;
-		kdBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		kdBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		kdBuffers.at(i).init();
-
-		rtDataBuffers.emplace_back(device);
-
-		rtDataBuffers.at(i).bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
-		rtDataBuffers.at(i).usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-		rtDataBuffers.at(i).properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		rtDataBuffers.at(i).init();
-	}
+	descriptorCollection.init();
 }
 
 void MonteCarloRenderer::createLightGenerationPipeline() {
@@ -161,11 +149,7 @@ void MonteCarloRenderer::createLightGenerationPipeline() {
 	lightGenerationPipeline.missShaders.push_back(LIGHT_GEN_RMISS_SHADER);
 	lightGenerationPipeline.hitShaders.push_back(LIGHT_GEN_RCHIT_SHADER);
 
-	lightGenerationPipeline.bufferDescriptors.push_back(new SingleBufferDescriptor(&tlas, 0, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
-	lightGenerationPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(rtDataBuffers), 1, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR));
-	lightGenerationPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(globalDataBuffers), 2, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR));
-	lightGenerationPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(countBuffers), 3, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
-	lightGenerationPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(lightPointBuffers), 4, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
+	lightGenerationPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
 	lightGenerationPipeline.width = LIGHT_RAY_COUNT;
 
@@ -177,9 +161,7 @@ void MonteCarloRenderer::createKDPipeline() {
 	kdPipeline.missShaders.push_back(LIGHT_GEN_RMISS_SHADER);
 	kdPipeline.hitShaders.push_back(LIGHT_GEN_RCHIT_SHADER);
 
-	kdPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(countBuffers), 0, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
-	kdPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(lightPointBuffers), 1, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
-	kdPipeline.bufferDescriptors.push_back(new MultiBufferDescriptor(MultiBufferDescriptor::vectorToBufferPointer(kdBuffers), 2, VK_SHADER_STAGE_RAYGEN_BIT_KHR));
+	kdPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
 	kdPipeline.init();
 }

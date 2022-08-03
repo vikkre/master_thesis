@@ -42,9 +42,9 @@ void Mesh::addIndex(const Vector3u& index) {
 }
 
 void Mesh::createVertexBuffer() {
-	vertexBuffer.bufferSize = sizeof(vertices[0]) * vertices.size();
-	vertexBuffer.usage = BUFFER_USAGE | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	vertexBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	vertexBuffer.properties.bufferSize = sizeof(vertices[0]) * vertices.size();
+	vertexBuffer.properties.usage = BUFFER_USAGE | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	vertexBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexBuffer.init();
 	vertexBuffer.passData(vertices.data());
 
@@ -53,9 +53,9 @@ void Mesh::createVertexBuffer() {
 }
 
 void Mesh::createIndexBuffer() {
-	indexBuffer.bufferSize = sizeof(indices[0]) * indices.size();
-	indexBuffer.usage = BUFFER_USAGE | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-	indexBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	indexBuffer.properties.bufferSize = sizeof(indices[0]) * indices.size();
+	indexBuffer.properties.usage = BUFFER_USAGE | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+	indexBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	indexBuffer.init();
 	indexBuffer.passData(indices.data());
 }

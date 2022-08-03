@@ -24,9 +24,11 @@ class DataBuffer: public Buffer {
 		virtual VkWriteDescriptorSet getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const override;
 		virtual VkDescriptorType getDescriptorType() const override;
 
-		VkDeviceSize bufferSize;
-		VkBufferUsageFlags usage;
-		VkMemoryPropertyFlags properties;
+		struct Properties {
+			VkDeviceSize bufferSize;
+			VkBufferUsageFlags usage;
+			VkMemoryPropertyFlags properties;
+		} properties;
 
 	private:
 		void createBuffer(VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& dstBuffer, VkDeviceMemory& dstMemory);

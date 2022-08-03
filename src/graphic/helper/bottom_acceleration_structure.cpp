@@ -64,9 +64,9 @@ void BottomAccelerationStructure::getBuildSize() {
 }
 
 void BottomAccelerationStructure::createAccelerationStructure() {
-	acBuffer.bufferSize = buildSizeInfo.accelerationStructureSize;
-	acBuffer.usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	acBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	acBuffer.properties.bufferSize = buildSizeInfo.accelerationStructureSize;
+	acBuffer.properties.usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	acBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	acBuffer.init();
 
 	VkAccelerationStructureCreateInfoKHR accelerationStructureCreateInfo{};
@@ -81,9 +81,9 @@ void BottomAccelerationStructure::createAccelerationStructure() {
 }
 
 void BottomAccelerationStructure::createScratchBuffer() {
-	scratchBuffer.bufferSize = buildSizeInfo.buildScratchSize;
-	scratchBuffer.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	scratchBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	scratchBuffer.properties.bufferSize = buildSizeInfo.buildScratchSize;
+	scratchBuffer.properties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	scratchBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	scratchBuffer.init();
 }
 

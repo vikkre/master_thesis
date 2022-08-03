@@ -24,7 +24,9 @@ class TopAccelerationStructureBuffer: public Buffer {
 		virtual VkWriteDescriptorSet getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const override;
 		virtual VkDescriptorType getDescriptorType() const override;
 
-		std::vector<VkAccelerationStructureInstanceKHR> blasInstances;
+		struct Properties {
+			std::vector<VkAccelerationStructureInstanceKHR> blasInstances;
+		} properties;
 	private:
 		void createInstancesBuffer();
 		void getBuildSize();

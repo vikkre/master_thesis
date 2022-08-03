@@ -23,14 +23,16 @@ class ImageBuffer: public Buffer {
 		const VkDeviceMemory& getMemory() const;
 		const VkImageView& getImageView() const;
 
-		uint32_t width, height;
-		VkFormat format;
-		VkImageTiling tiling;
-		VkImageUsageFlags usage;
-		VkMemoryPropertyFlags properties;
-		VkImageAspectFlags aspectFlags;
-		VkImageLayout layout;
-		bool createImageView;
+		struct Properties {
+			uint32_t width, height;
+			VkFormat format;
+			VkImageTiling tiling;
+			VkImageUsageFlags usage;
+			VkMemoryPropertyFlags properties;
+			VkImageAspectFlags aspectFlags;
+			VkImageLayout layout;
+			bool createImageView;
+		} properties;
 
 	private:
 		void initImageView();

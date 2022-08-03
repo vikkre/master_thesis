@@ -13,6 +13,7 @@
 #include "../helper/single_buffer_descriptor.h"
 #include "../helper/multi_buffer_descriptor.h"
 #include "../helper/top_acceleration_structure_buffer.h"
+#include "../helper/descriptor_collection.h"
 
 #include "renderer.h"
 
@@ -39,14 +40,16 @@ class PraktikumsRenderer: public Renderer {
 	private:
 		void createTLAS();
 		void createBuffers();
+		void createDescriptorCollection();
 		void createPipeline();
 
 		Device* device;
+		DescriptorCollection descriptorCollection;
 		RayTracingPipeline pipeline;
-
-		TopAccelerationStructureBuffer tlas;
-		std::vector<ImageBuffer> storageImages;
-		std::vector<DataBuffer> globalDataBuffers;
-		std::vector<DataBuffer> rtDataBuffers;
 		std::vector<void*> rtDataPtrs;
+
+		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
+		MultiBufferDescriptor<ImageBuffer> storageImages;
+		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
+		MultiBufferDescriptor<DataBuffer> rtDataBuffers;
 };

@@ -2,10 +2,6 @@
 
 #include "helper/function_load.h"
 #include "device.h"
-#include "graphics_object.h"
-
-
-#define GLOBAL_BINDING_SET_INDEX 0
 
 
 std::vector<char> readFile(const std::string& filename) {
@@ -46,27 +42,18 @@ VkShaderModule createShaderModule(VkDevice device, const std::vector<char>& code
 
 RayTracingPipeline::RayTracingPipeline(Device* device)
 :raygenShaders(), missShaders(), hitShaders(),
-bufferDescriptors(),
-width(1), height(1),
+width(1), height(1), pipelineLayout(VK_NULL_HANDLE),
 device(device), rayTracingPipelineProperties(),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
-pipeline(VK_NULL_HANDLE), pipelineLayout(VK_NULL_HANDLE),
-descriptorPool(VK_NULL_HANDLE), descriptorSets(), descriptorSetLayout(VK_NULL_HANDLE) {}
+pipeline(VK_NULL_HANDLE) {}
 
 RayTracingPipeline::~RayTracingPipeline() {
-	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyPipeline(device->getDevice(), pipeline, nullptr);
-	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
-	vkDestroyDescriptorSetLayout(device->getDevice(), descriptorSetLayout, nullptr);
-	for (BufferDescriptor* bd: bufferDescriptors) delete bd;
 }
 
 void RayTracingPipeline::init() {
 	getProperties();
 
-	createDescriptorSetLayout();
-	createDescriptorPool();
-	createDescriptorSets();
 	createRayTracingPipeline();
 	createShaderBindingTable();
 }
@@ -79,14 +66,7 @@ void RayTracingPipeline::getProperties() {
 	vkGetPhysicalDeviceProperties2(device->getPhysicalDevice(), &deviceProperties2);
 }
 
-void RayTracingPipeline::cmdExecutePipeline(size_t index, const VkCommandBuffer* commandBuffer) {
-	vkCmdBindDescriptorSets(
-		*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
-		pipelineLayout,
-		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
-		0, nullptr
-	);
-
+void RayTracingPipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer) {
 	vkCmdBindPipeline(*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline);
 
 	const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
@@ -138,22 +118,20 @@ void RayTracingPipeline::createShaderBindingTable() {
 		throw InitException("vkGetRayTracingShaderGroupHandlesKHR", "could not get shader group handles");
 	};
 
-	const VkBufferUsageFlags bufferUsageFlags = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	const VkMemoryPropertyFlags memoryUsageFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	DataBuffer::Properties generalProperties;
+	generalProperties.usage = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	generalProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	
-	raygenShaderBindingTable.bufferSize = handleSize * raygenShaders.size();
-	raygenShaderBindingTable.usage      = bufferUsageFlags;
-	raygenShaderBindingTable.properties = memoryUsageFlags;
+	raygenShaderBindingTable.properties = generalProperties;
+	raygenShaderBindingTable.properties.bufferSize = handleSize * raygenShaders.size();
 	raygenShaderBindingTable.init();
 	
-	missShaderBindingTable.bufferSize = handleSize * missShaders.size();
-	missShaderBindingTable.usage      = bufferUsageFlags;
-	missShaderBindingTable.properties = memoryUsageFlags;
+	missShaderBindingTable.properties = generalProperties;
+	missShaderBindingTable.properties.bufferSize = handleSize * missShaders.size();
 	missShaderBindingTable.init();
 	
-	hitShaderBindingTable.bufferSize = handleSize * hitShaders.size();
-	hitShaderBindingTable.usage      = bufferUsageFlags;
-	hitShaderBindingTable.properties = memoryUsageFlags;
+	hitShaderBindingTable.properties = generalProperties;
+	hitShaderBindingTable.properties.bufferSize = handleSize * hitShaders.size();
 	hitShaderBindingTable.init();
 
 	unsigned int raygenTableOffset = 0;
@@ -165,68 +143,7 @@ void RayTracingPipeline::createShaderBindingTable() {
 	hitShaderBindingTable.passData   ((void*) &shaderHandleStorage[handleSizeAligned * hitTableOffset]);
 }
 
-void RayTracingPipeline::createDescriptorPool() {
-	std::vector<VkDescriptorPoolSize> poolSizes;
-
-	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
-		VkDescriptorPoolSize poolSize{};
-		poolSize.type = bufferDescriptor->getBuffer()->getDescriptorType();
-		poolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-		poolSizes.push_back(poolSize);
-	}
-
-	VkDescriptorPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = poolSizes.size();
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = device->renderInfo.swapchainImageCount;
-
-	if (vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-		throw InitException("vkCreateDescriptorPool", "failed to create descriptor pool!");
-	}
-}
-
-void RayTracingPipeline::createDescriptorSets() {
-	descriptorSets.resize(device->renderInfo.swapchainImageCount);
-
-	std::vector<VkDescriptorSetLayout> setLayouts;
-	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		setLayouts.push_back(descriptorSetLayout);
-	}
-
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = descriptorPool;
-	allocInfo.descriptorSetCount = setLayouts.size();
-	allocInfo.pSetLayouts = setLayouts.data();
-
-	if (vkAllocateDescriptorSets(device->getDevice(), &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
-		throw InitException("vkAllocateDescriptorSets", "failed to allocate rt pipeline descriptor sets!");
-	}
-
-	std::vector<VkWriteDescriptorSet> writeSets;
-
-	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
-		bufferDescriptor->getWriteDescriptorSets(writeSets, descriptorSets);
-	}
-
-	vkUpdateDescriptorSets(device->getDevice(), writeSets.size(), writeSets.data(), 0, VK_NULL_HANDLE);
-}
-
 void RayTracingPipeline::createRayTracingPipeline() {
-	std::vector<VkDescriptorSetLayout> setLayouts {
-		descriptorSetLayout,
-	};
-
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = setLayouts.size();
-	pipelineLayoutInfo.pSetLayouts = setLayouts.data();
-
-	if (vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-		throw InitException("vkCreatePipelineLayout", "failed to create pipeline layout!");
-	}
-
 	std::vector<VkShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStageInfos;
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> shaderGroups;
@@ -285,23 +202,6 @@ void RayTracingPipeline::createRayTracingPipeline() {
 
 	for (VkShaderModule& shaderModule: shaderModules) {
 		vkDestroyShaderModule(device->getDevice(), shaderModule, nullptr);
-	}
-}
-
-void RayTracingPipeline::createDescriptorSetLayout() {
-	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
-
-	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
-		layoutBindings.push_back(bufferDescriptor->getLayoutBinding());
-	}
-	
-	VkDescriptorSetLayoutCreateInfo layoutInfo{};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = (uint32_t) layoutBindings.size();
-	layoutInfo.pBindings = layoutBindings.data();
-
-	if (vkCreateDescriptorSetLayout(device->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-		throw InitException("vkCreateDescriptorSetLayout", "failed to create descriptor set layout!");
 	}
 }
 

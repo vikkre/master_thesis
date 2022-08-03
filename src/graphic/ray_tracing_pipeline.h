@@ -7,13 +7,11 @@
 #include <fstream>
 
 #include "helper/data_buffer.h"
-#include "helper/buffer_descriptor.h"
 
 #include "../init_exception.h"
 
 
 class Device;
-class GraphicsObject;
 
 
 class RayTracingPipeline {
@@ -22,21 +20,18 @@ class RayTracingPipeline {
 		~RayTracingPipeline();
 
 		void init();
-		void cmdExecutePipeline(size_t index, const VkCommandBuffer* commandBuffer);
+		void cmdExecutePipeline(const VkCommandBuffer* commandBuffer);
 
 		static void cmdRayTracingBarrier(const VkCommandBuffer* commandBuffer);
 
 		std::vector<std::string> raygenShaders, missShaders, hitShaders;
-		std::vector<BufferDescriptor*> bufferDescriptors;
 
 		uint32_t width, height;
+		VkPipelineLayout pipelineLayout;
 
 	private:
 		void getProperties();
-		void createDescriptorSetLayout();
 		void createShaderBindingTable();
-		void createDescriptorPool();
-		void createDescriptorSets();
 		void createRayTracingPipeline();
 
 		VkRayTracingShaderGroupCreateInfoKHR createShaderGroup();
@@ -52,8 +47,4 @@ class RayTracingPipeline {
 		DataBuffer hitShaderBindingTable;
 
 		VkPipeline pipeline;
-		VkPipelineLayout pipelineLayout;
-		VkDescriptorPool descriptorPool;
-		std::vector<VkDescriptorSet> descriptorSets;
-		VkDescriptorSetLayout descriptorSetLayout;
 };

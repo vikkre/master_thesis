@@ -6,7 +6,7 @@
 
 
 TopAccelerationStructureBuffer::TopAccelerationStructureBuffer(const Device* device)
-:Buffer(), blasInstances(), device(device),
+:Buffer(), properties(), device(device),
 structureGeometry(), buildSizeInfo(), accelerationStructure(VK_NULL_HANDLE),
 instancesBuffer(device), acBuffer(device), acDeviceAddress(0), scratchBuffer(device) {}
 
@@ -28,12 +28,12 @@ void TopAccelerationStructureBuffer::init() {
 }
 
 void TopAccelerationStructureBuffer::createInstancesBuffer() {
-	instancesBuffer.bufferSize = sizeof(VkAccelerationStructureInstanceKHR) * blasInstances.size();
-	instancesBuffer.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
-	instancesBuffer.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	instancesBuffer.properties.bufferSize = sizeof(VkAccelerationStructureInstanceKHR) * properties.blasInstances.size();
+	instancesBuffer.properties.usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+	instancesBuffer.properties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	instancesBuffer.init();
 
-	instancesBuffer.passData((void*) blasInstances.data());
+	instancesBuffer.passData((void*) properties.blasInstances.data());
 }
 
 void TopAccelerationStructureBuffer::getBuildSize() {
@@ -55,7 +55,7 @@ void TopAccelerationStructureBuffer::getBuildSize() {
 	buildSizeInfo = {};
 	buildSizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
 
-	uint32_t primitive_count = blasInstances.size();
+	uint32_t primitive_count = properties.blasInstances.size();
 	FuncLoad::vkGetAccelerationStructureBuildSizesKHR(
 		device->getDevice(), 
 		VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
@@ -66,16 +66,16 @@ void TopAccelerationStructureBuffer::getBuildSize() {
 }
 
 void TopAccelerationStructureBuffer::createScratchBuffer() {
-	scratchBuffer.bufferSize = buildSizeInfo.buildScratchSize;
-	scratchBuffer.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	scratchBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	scratchBuffer.properties.bufferSize = buildSizeInfo.buildScratchSize;
+	scratchBuffer.properties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	scratchBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	scratchBuffer.init();
 }
 
 void TopAccelerationStructureBuffer::createAccelerationStructureBuffer() {
-	acBuffer.bufferSize = buildSizeInfo.accelerationStructureSize;
-	acBuffer.usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	acBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	acBuffer.properties.bufferSize = buildSizeInfo.accelerationStructureSize;
+	acBuffer.properties.usage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	acBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	acBuffer.init();
 }
 
@@ -98,7 +98,7 @@ void TopAccelerationStructureBuffer::buildAccelerationStructure() {
 	accelerationBuildGeometryInfo.scratchData.deviceAddress = scratchBuffer.getAddress();
 
 	VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
-	accelerationStructureBuildRangeInfo.primitiveCount = blasInstances.size();
+	accelerationStructureBuildRangeInfo.primitiveCount = properties.blasInstances.size();
 	accelerationStructureBuildRangeInfo.primitiveOffset = 0;
 	accelerationStructureBuildRangeInfo.firstVertex = 0;
 	accelerationStructureBuildRangeInfo.transformOffset = 0;

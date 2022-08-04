@@ -37,7 +37,7 @@ float microsecondsToSeconds(int64_t microseconds) {
 	return float(microseconds) / (1000.0f * 1000.0f);
 }
 
-void rayTracingRoom(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
+void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float) {
 	ObjLoader blockLoader;
 	blockLoader.load("block.obj");
 	Mesh* block = blockLoader.get_mesh(&engine->device);
@@ -55,12 +55,22 @@ void rayTracingRoom(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vec
 	bottom->scale = Vector3f({5.0f, 0.1f, 5.0f});
 	objs.push_back(bottom);
 
-	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 5.0f}));
+	GraphicsObject* smallBox = new GraphicsObject(&engine->device, block, Vector3f({2.0f, -3.5f, -2.0f}));
+	smallBox->scale = Vector3f({1.5f, 1.5f, 1.5f});
+	smallBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), 1.0f);
+	objs.push_back(smallBox);
+
+	GraphicsObject* bigBox = new GraphicsObject(&engine->device, block, Vector3f({-2.0f, -2.0f, 2.0f}));
+	bigBox->scale = Vector3f({1.5f, 3.0f, 1.5f});
+	bigBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), -1.0f);
+	objs.push_back(bigBox);
+
+	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -5.0f}));
 	red->color = Vector3f({1.0f, 0.0f, 0.0f});
 	red->scale = Vector3f({5.0f, 5.0f, 0.1f});
 	objs.push_back(red);
 	
-	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -5.0f}));
+	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 5.0f}));
 	green->color = Vector3f({0.0f, 1.0f, 0.0f});
 	green->scale = Vector3f({5.0f, 5.0f, 0.1f});
 	objs.push_back(green);
@@ -139,7 +149,7 @@ int main() {
 	std::vector<Mesh*> meshes;
 	std::vector<GraphicsObject*> objs;
 
-	rayTracingRoom(engine, meshes, objs, 0.0f);
+	cornellBox(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 1.0f);
 	// teeth(engine, meshes, objs, 0.0f);
@@ -151,7 +161,7 @@ int main() {
 	engine->initTlas();
 
 	Input* input = new Input();
-	input->r = 15.0f;
+	input->r = 18.0f;
 	input->phi = M_PI_2;
 
 
@@ -160,7 +170,9 @@ int main() {
 	Uint32 currentTime = SDL_GetTicks(), lastTime = SDL_GetTicks();
 	// float lightAngle = 0.0f;
 
-	bool rendered = false;
+	const unsigned int RENDER_MAX = 3;
+	unsigned int rendered = 0;
+
 	while (run) {
 		currentTime = SDL_GetTicks();
     float deltaTime = float(currentTime - lastTime) / 1000.0f;
@@ -186,15 +198,18 @@ int main() {
 		// float lightY = engine->device.renderInfo.lightPosition[1];
 		// engine->device.renderInfo.lightPosition = Vector3f({cos(lightAngle) * 10.0f, lightY, sin(lightAngle) * 10.0f});
 
-		if (!rendered) {
-			engine->render();
-			rendered = true;
-		}
+		if (rendered < RENDER_MAX) {
+			int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
+				engine->render();
+			});
+			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
 
-		// int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
-		// 	engine->render();
-		// });
-		// SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
+			rendered++;
+		} else if (rendered == RENDER_MAX) {
+			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render finished!");
+
+			rendered++;
+		}
 
 		int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();
     SDL_LogVerbose(SDL_LOG_CATEGORY_SYSTEM, "Sleep time: %i", sleepTime);

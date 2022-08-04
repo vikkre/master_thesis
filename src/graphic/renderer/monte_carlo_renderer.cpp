@@ -9,7 +9,7 @@
 #define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
 #define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 
-#define LIGHT_RAY_COUNT 1000
+#define LIGHT_RAY_COUNT 2500
 #define VISION_RAY_COUNT_PER_PIXEL 1
 #define LIGHT_JUMP_COUNT 1
 #define VISION_JUMP_COUNT 2

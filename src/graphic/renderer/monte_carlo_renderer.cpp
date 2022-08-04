@@ -5,8 +5,12 @@
 #define LIGHT_GEN_RCHIT_SHADER "monte_carlo_light_closesthit.spv"
 #define LIGHT_GEN_RMISS_SHADER "monte_carlo_light_miss.spv"
 #define KD_RGEN_SHADER         "monte_carlo_kd_raygen.spv"
+#define VISION_RGEN_SHADER     "monte_carlo_vision_raygen.spv"
+#define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
+#define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 
-#define LIGHT_RAY_COUNT 10000
+#define LIGHT_RAY_COUNT 1000
+#define VISION_RAY_COUNT_PER_PIXEL 1
 #define LIGHT_JUMP_COUNT 1
 #define VISION_JUMP_COUNT 2
 
@@ -27,7 +31,9 @@ struct KDData {
 
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
 :objects(), globalData(),
-device(device), descriptorCollection(device), lightGenerationPipeline(device), kdPipeline(device), rtDataPtrs(),
+device(device), descriptorCollection(device),
+lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device),
+rtDataPtrs(),
 tlas(device), storageImages(device), globalDataBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device), rtDataBuffers(device) {}
 
@@ -39,6 +45,7 @@ void MonteCarloRenderer::init() {
 	createDescriptorCollection();
 	createLightGenerationPipeline();
 	createKDPipeline();
+	createVisionPipeline();
 }
 
 void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
@@ -49,6 +56,10 @@ void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandB
 	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
 
 	kdPipeline.cmdExecutePipeline(commandBuffer);
+
+	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+
+	visionPipeline.cmdExecutePipeline(commandBuffer);
 
 	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
@@ -63,14 +74,14 @@ void MonteCarloRenderer::updateUniforms(size_t index) {
 
 
 	uint32_t count = 0;
-	countBuffers.at(index).getData((void*) &count);
-	std::cout << "Count: " << count << std::endl;
+	// countBuffers.at(index).getData((void*) &count);
+	// std::cout << "Count: " << count << std::endl;
 
-	std::vector<LightPoint> lightPoints(LIGHT_RAY_COUNT);
-	lightPointBuffers.at(index).getData((void*) lightPoints.data());
+	// std::vector<LightPoint> lightPoints(LIGHT_RAY_COUNT);
+	// lightPointBuffers.at(index).getData((void*) lightPoints.data());
 
-	std::vector<KDData> kddata(LIGHT_RAY_COUNT);
-	kdBuffers.at(index).getData((void*) kddata.data());
+	// std::vector<KDData> kddata(LIGHT_RAY_COUNT);
+	// kdBuffers.at(index).getData((void*) kddata.data());
 
 	count = 0;
 	countBuffers.at(index).passData((void*) &count);
@@ -164,4 +175,18 @@ void MonteCarloRenderer::createKDPipeline() {
 	kdPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
 	kdPipeline.init();
+}
+
+void MonteCarloRenderer::createVisionPipeline() {
+	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
+	visionPipeline.missShaders.push_back(VISION_RMISS_SHADER);
+	visionPipeline.hitShaders.push_back(VISION_RCHIT_SHADER);
+
+	visionPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+
+	visionPipeline.width = device->renderInfo.swapchainExtend.width;
+	visionPipeline.height = device->renderInfo.swapchainExtend.height;
+	visionPipeline.depth = VISION_RAY_COUNT_PER_PIXEL;
+
+	visionPipeline.init();
 }

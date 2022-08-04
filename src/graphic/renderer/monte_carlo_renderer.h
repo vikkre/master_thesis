@@ -47,11 +47,13 @@ class MonteCarloRenderer: public Renderer {
 		void createDescriptorCollection();
 		void createLightGenerationPipeline();
 		void createKDPipeline();
+		void createVisionPipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline lightGenerationPipeline;
 		RayTracingPipeline kdPipeline;
+		RayTracingPipeline visionPipeline;
 		std::vector<void*> rtDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;

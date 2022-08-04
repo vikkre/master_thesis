@@ -37,6 +37,35 @@ float microsecondsToSeconds(int64_t microseconds) {
 	return float(microseconds) / (1000.0f * 1000.0f);
 }
 
+void rayTracingRoom(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
+	ObjLoader blockLoader;
+	blockLoader.load("block.obj");
+	Mesh* block = blockLoader.get_mesh(&engine->device);
+	meshes.push_back(block);
+
+	GraphicsObject* back = new GraphicsObject(&engine->device, block, Vector3f({-5.0f, 0.0f, 0.0f}));
+	back->scale = Vector3f({0.1f, 5.0f, 5.0f});
+	objs.push_back(back);
+
+	GraphicsObject* top = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 5.0f, 0.0f}));
+	top->scale = Vector3f({5.0f, 0.1f, 5.0f});
+	objs.push_back(top);
+
+	GraphicsObject* bottom = new GraphicsObject(&engine->device, block, Vector3f({0.0f, -5.0f, 0.0f}));
+	bottom->scale = Vector3f({5.0f, 0.1f, 5.0f});
+	objs.push_back(bottom);
+
+	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 5.0f}));
+	red->color = Vector3f({1.0f, 0.0f, 0.0f});
+	red->scale = Vector3f({5.0f, 5.0f, 0.1f});
+	objs.push_back(red);
+	
+	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -5.0f}));
+	green->color = Vector3f({0.0f, 1.0f, 0.0f});
+	green->scale = Vector3f({5.0f, 5.0f, 0.1f});
+	objs.push_back(green);
+}
+
 
 void blocksAndBall(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
 	ObjLoader blockLoader;
@@ -54,17 +83,17 @@ void blocksAndBall(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vect
 	objs.push_back(white);
 	white->rtData.reflect = reflect;
 	
-	GraphicsObject* cyan = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 3.0f}));
-	cyan->color = Vector3f({0.0f, 0.0f, 1.0f});
-	objs.push_back(cyan);
+	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 3.0f}));
+	red->color = Vector3f({1.0f, 0.0f, 0.0f});
+	objs.push_back(red);
 	
-	GraphicsObject* magenta = new GraphicsObject(&engine->device, block, Vector3f({-3.0f, 0.0f, 0.0f}));
-	magenta->color = Vector3f({1.0f, 0.0f, 0.0f});
-	objs.push_back(magenta);
+	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({-3.0f, 0.0f, 0.0f}));
+	green->color = Vector3f({0.0f, 1.0f, 0.0f});
+	objs.push_back(green);
 	
-	GraphicsObject* yellow = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -3.0f}));
-	yellow->color = Vector3f({0.0f, 1.0f, 0.0f});
-	objs.push_back(yellow);
+	GraphicsObject* blue = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -3.0f}));
+	blue->color = Vector3f({0.0f, 0.0f, 1.0f});
+	objs.push_back(blue);
 	
 	GraphicsObject* black = new GraphicsObject(&engine->device, block, Vector3f({3.0f, 0.0f, 0.0f}));
 	black->color = Vector3f({0.1f, 0.1f, 0.1f});
@@ -101,15 +130,17 @@ int main() {
 	GraphicsEngine* engine = new GraphicsEngine();
 	engine->init();
 
-	engine->device.renderInfo.backgroundColor = Vector3f({0.5f, 0.5f, 0.5f});
-	engine->device.renderInfo.camera.position = Vector3f({2.0f, 2.0f, 2.0f});
+	// engine->device.renderInfo.backgroundColor = Vector3f({0.5f, 0.5f, 0.5f});
+	engine->device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
+	engine->device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
 	engine->device.renderInfo.camera.lookAt   = Vector3f({0.0f, 0.0f, 0.0f});
-	engine->device.renderInfo.lightPosition   = Vector3f({0.0f, 3.0f, 0.0f});
+	engine->device.renderInfo.lightPosition   = Vector3f({0.0f, 4.9f, 0.0f});
 
 	std::vector<Mesh*> meshes;
 	std::vector<GraphicsObject*> objs;
 
-	blocksAndBall(engine, meshes, objs, 0.0f);
+	rayTracingRoom(engine, meshes, objs, 0.0f);
+	// blocksAndBall(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 1.0f);
 	// teeth(engine, meshes, objs, 0.0f);
 	// teeth(engine, meshes, objs, 1.0f);
@@ -121,13 +152,15 @@ int main() {
 
 	Input* input = new Input();
 	input->r = 15.0f;
+	input->phi = M_PI_2;
 
 
 	SDL_Event event;
 	bool run = true;
 	Uint32 currentTime = SDL_GetTicks(), lastTime = SDL_GetTicks();
-	float lightAngle = 0.0f;
+	// float lightAngle = 0.0f;
 
+	bool rendered = false;
 	while (run) {
 		currentTime = SDL_GetTicks();
     float deltaTime = float(currentTime - lastTime) / 1000.0f;
@@ -148,12 +181,15 @@ int main() {
 
 		engine->device.renderInfo.camera.position = input->getPosition();
 
-		lightAngle += M_PI_2 * deltaTime;
+		// lightAngle += M_PI_2 * deltaTime;
 		// lightAngle = 1.0;
-		float lightY = engine->device.renderInfo.lightPosition[1];
-		engine->device.renderInfo.lightPosition = Vector3f({cos(lightAngle) * 10.0f, lightY, sin(lightAngle) * 10.0f});
+		// float lightY = engine->device.renderInfo.lightPosition[1];
+		// engine->device.renderInfo.lightPosition = Vector3f({cos(lightAngle) * 10.0f, lightY, sin(lightAngle) * 10.0f});
 
-		engine->render();
+		if (!rendered) {
+			engine->render();
+			rendered = true;
+		}
 
 		// int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
 		// 	engine->render();

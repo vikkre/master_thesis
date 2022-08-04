@@ -26,7 +26,7 @@ class RayTracingPipeline {
 
 		std::vector<std::string> raygenShaders, missShaders, hitShaders;
 
-		uint32_t width, height;
+		uint32_t width, height, depth;
 		VkPipelineLayout pipelineLayout;
 
 	private:

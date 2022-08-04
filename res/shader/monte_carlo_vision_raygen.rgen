@@ -1,0 +1,130 @@
+#version 460
+#extension GL_EXT_ray_tracing : enable
+#extension GL_EXT_scalar_block_layout : enable
+
+
+#define DEPTH 4
+#define ITERATIONS 200
+#define DIFFUSE_PART 0.5
+#define MAX_DIST 0.5
+
+
+struct KDData {
+	vec3 pos;
+	vec3 color;
+	uint direction;
+	int leftIndex;
+	int rightIndex;
+};
+
+
+layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout(binding = 2, set = 0, scalar) uniform GlobalData {
+	mat4 viewInverse;
+	mat4 projInverse;
+	mat4 view;
+	mat4 proj;
+	vec3 backgroundColor;
+	vec3 lightPosition;
+	uint lightJumpCount;
+	uint visionJumpCount;
+} globalData;
+layout(binding = 3, set = 0) buffer Count {uint count;} c;
+layout(binding = 5, set = 0, scalar) buffer YZ { KDData d[]; } kdData;
+layout(binding = 6, set = 0, rgba8) uniform image2D image;
+
+struct RayPayload {
+	bool miss;
+	vec3 pos;
+	vec3 normal;
+	vec3 color;
+};
+layout(location = 0) rayPayloadEXT RayPayload rayPayload;
+
+vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
+	uint colorCount = 0;
+	vec3 color = vec3(0.0);
+
+	const int indexStackSize = 1000;
+	int indexStack[indexStackSize];
+	int currentStackIndex = 0;
+	indexStack[0] = 0;
+
+	for (int u = 0; u < c.count && currentStackIndex >= 0; u++) {
+		int	currentIndex = indexStack[currentStackIndex];
+		currentStackIndex--;
+		KDData entry = kdData.d[currentIndex];
+
+		float d = distance(refPoint, entry.pos);
+		if (maxDist >= d) {
+			colorCount++;
+			color += entry.color * (maxDist / d);
+		}
+
+		bool leftPrimeIndex = refPoint[entry.direction] < entry.pos[entry.direction];
+		int primeIndex = leftPrimeIndex ? entry.leftIndex : entry.rightIndex;
+
+		if (primeIndex != -1) {
+			if (currentIndex < indexStackSize) {
+				currentStackIndex++;
+				indexStack[currentStackIndex] = primeIndex;
+			}
+		}
+
+		if (maxDist >= abs(refPoint[entry.direction] - entry.pos[entry.direction])) {
+			int secondaryIndex = leftPrimeIndex ? entry.rightIndex : entry.leftIndex;
+
+			if (secondaryIndex != -1) {
+				if (currentIndex < indexStackSize) {
+					currentStackIndex++;
+					indexStack[currentStackIndex] = secondaryIndex;
+				}
+			}
+		}
+	}
+
+	return color / colorCount;
+}
+
+float rand(vec3 co, int i, int v){
+	return fract(sin(dot(co, vec3(12.9898, 78.233, 38.4965)) * (v + 1.0) + i) * 43758.5453);
+}
+
+void main() {
+	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+	const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+	vec2 d = inUV * 2.0 - 1.0;
+
+	vec3 origin = (globalData.viewInverse * vec4(vec3(0), 1)).xyz;
+	vec3 target = (globalData.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
+	vec3 direction = (globalData.viewInverse * vec4(normalize(target), 0)).xyz;
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	float tmax = 10000.0;
+
+	vec3 color = vec3(1.0);
+
+	for (int i = 0; i < globalData.visionJumpCount; i++) {
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+		color *= rayPayload.color;
+
+		if (rayPayload.miss) break;
+
+		origin = rayPayload.pos;
+		vec3 randomDirection = vec3(
+			rand(origin + gl_LaunchIDEXT, i, 0) * 2.0 - 1.0,
+			rand(origin + gl_LaunchIDEXT, i, 1) * 2.0 - 1.0,
+			rand(origin + gl_LaunchIDEXT, i, 2) * 2.0 - 1.0
+		);
+		direction = normalize((randomDirection + rayPayload.normal) * 0.5);
+	}
+
+	if (!rayPayload.miss) {
+		color *= getClosestNeighboursColor(rayPayload.pos, MAX_DIST);
+	}
+
+	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(color, 0.0));
+}

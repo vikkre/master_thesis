@@ -39,22 +39,6 @@ KDData getNewKDData(PointData point, uint direction) {
 	return data;
 }
 
-void append(inout KDData entry, int index, PointData point) {
-	if (point.pos[entry.direction] < entry.pos[entry.direction]) {
-		if (entry.leftIndex == -1) {
-			kdData.d[index] = getNewKDData(point, (entry.direction + 1) % 3);
-			entry.leftIndex = index;
-		}
-		// else append(kdData.d[entry.leftIndex], index, point);
-	} else {
-		if (entry.rightIndex == -1) {
-			kdData.d[index] = getNewKDData(point, (entry.direction + 1) % 3);
-			entry.rightIndex = index;
-		}
-		// else append(kdData.d[entry.rightIndex], index, point);
-	}
-}
-
 void main() {
 	kdData.d[0] = getNewKDData(pointData.d[0], 0);
 

@@ -9,7 +9,7 @@ GraphicsEngine::~GraphicsEngine() {}
 
 void GraphicsEngine::init() {
 	SDLWindow* sdlWindow = new SDLWindow();
-	sdlWindow->windowName = "Computer Graphik Praktikum";
+	sdlWindow->windowName = "Ray Tracing Test";
 	sdlWindow->windowSize = Vector2i({1600, 900});
 	sdlWindow->crateWindowFlags = SDLWindow::CREATE_WINDOW_FLAGS_DEFAULT;
 

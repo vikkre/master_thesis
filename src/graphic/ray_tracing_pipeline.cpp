@@ -42,7 +42,7 @@ VkShaderModule createShaderModule(VkDevice device, const std::vector<char>& code
 
 RayTracingPipeline::RayTracingPipeline(Device* device)
 :raygenShaders(), missShaders(), hitShaders(),
-width(1), height(1), pipelineLayout(VK_NULL_HANDLE),
+width(1), height(1), depth(1), pipelineLayout(VK_NULL_HANDLE),
 device(device), rayTracingPipelineProperties(),
 raygenShaderBindingTable(device), missShaderBindingTable(device), hitShaderBindingTable(device),
 pipeline(VK_NULL_HANDLE) {}
@@ -92,7 +92,7 @@ void RayTracingPipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer
 		&missShaderSbtEntry,
 		&hitShaderSbtEntry,
 		&callableShaderSbtEntry,
-		width, height, 1
+		width, height, depth
 	);
 }
 

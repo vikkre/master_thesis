@@ -67,7 +67,7 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	objs.push_back(green);
 }
 
-void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
+void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float) {
 	ObjLoader blockLoader;
 	blockLoader.load("block.obj");
 	Mesh* block = blockLoader.get_mesh(&engine->device);
@@ -204,7 +204,6 @@ int main() {
 		engine->device.renderInfo.camera.position = input->getPosition();
 
 		// lightAngle += M_PI_2 * deltaTime;
-		// lightAngle = 1.0;
 		// float lightY = engine->device.renderInfo.lightPosition[1];
 		// engine->device.renderInfo.lightPosition = Vector3f({cos(lightAngle) * 10.0f, lightY, sin(lightAngle) * 10.0f});
 

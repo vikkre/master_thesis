@@ -9,7 +9,7 @@
 #define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
 #define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 
-#define LIGHT_RAY_COUNT 2500
+#define LIGHT_RAY_COUNT 250
 #define VISION_RAY_COUNT_PER_PIXEL 1
 #define LIGHT_JUMP_COUNT 1
 #define VISION_JUMP_COUNT 2
@@ -62,6 +62,8 @@ void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandB
 	visionPipeline.cmdExecutePipeline(commandBuffer);
 
 	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
+
+	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
 }
 
 void MonteCarloRenderer::updateUniforms(size_t index) {
@@ -72,18 +74,7 @@ void MonteCarloRenderer::updateUniforms(size_t index) {
 
 	globalDataBuffers.at(index).passData((void*) &globalData);
 
-
 	uint32_t count = 0;
-	// countBuffers.at(index).getData((void*) &count);
-	// std::cout << "Count: " << count << std::endl;
-
-	// std::vector<LightPoint> lightPoints(LIGHT_RAY_COUNT);
-	// lightPointBuffers.at(index).getData((void*) lightPoints.data());
-
-	// std::vector<KDData> kddata(LIGHT_RAY_COUNT);
-	// kdBuffers.at(index).getData((void*) kddata.data());
-
-	count = 0;
 	countBuffers.at(index).passData((void*) &count);
 
 

@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <map>
+#include <algorithm>
 #include <chrono>
 #include <functional>
 
@@ -55,16 +56,6 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	bottom->scale = Vector3f({5.0f, 0.1f, 5.0f});
 	objs.push_back(bottom);
 
-	GraphicsObject* smallBox = new GraphicsObject(&engine->device, block, Vector3f({2.0f, -3.5f, -2.0f}));
-	smallBox->scale = Vector3f({1.5f, 1.5f, 1.5f});
-	smallBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), 1.0f);
-	objs.push_back(smallBox);
-
-	GraphicsObject* bigBox = new GraphicsObject(&engine->device, block, Vector3f({-2.0f, -2.0f, 2.0f}));
-	bigBox->scale = Vector3f({1.5f, 3.0f, 1.5f});
-	bigBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), -1.0f);
-	objs.push_back(bigBox);
-
 	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -5.0f}));
 	red->color = Vector3f({1.0f, 0.0f, 0.0f});
 	red->scale = Vector3f({5.0f, 5.0f, 0.1f});
@@ -74,6 +65,23 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	green->color = Vector3f({0.0f, 1.0f, 0.0f});
 	green->scale = Vector3f({5.0f, 5.0f, 0.1f});
 	objs.push_back(green);
+}
+
+void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
+	ObjLoader blockLoader;
+	blockLoader.load("block.obj");
+	Mesh* block = blockLoader.get_mesh(&engine->device);
+	meshes.push_back(block);
+
+	GraphicsObject* smallBox = new GraphicsObject(&engine->device, block, Vector3f({2.0f, -3.5f, -2.0f}));
+	smallBox->scale = Vector3f({1.5f, 1.5f, 1.5f});
+	smallBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), 1.0f);
+	objs.push_back(smallBox);
+
+	GraphicsObject* bigBox = new GraphicsObject(&engine->device, block, Vector3f({-2.0f, -2.0f, 2.0f}));
+	bigBox->scale = Vector3f({1.5f, 3.0f, 1.5f});
+	bigBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), -1.0f);
+	objs.push_back(bigBox);
 }
 
 
@@ -150,6 +158,8 @@ int main() {
 	std::vector<GraphicsObject*> objs;
 
 	cornellBox(engine, meshes, objs, 0.0f);
+	cornellBoxBlocks(engine, meshes, objs, 0.0f);
+
 	// blocksAndBall(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 1.0f);
 	// teeth(engine, meshes, objs, 0.0f);
@@ -170,7 +180,7 @@ int main() {
 	Uint32 currentTime = SDL_GetTicks(), lastTime = SDL_GetTicks();
 	// float lightAngle = 0.0f;
 
-	const unsigned int RENDER_MAX = 3;
+	const unsigned int RENDER_MAX = 100;
 	unsigned int rendered = 0;
 
 	while (run) {
@@ -212,6 +222,7 @@ int main() {
 		}
 
 		int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();
+		sleepTime = std::max(sleepTime, 100);
     SDL_LogVerbose(SDL_LOG_CATEGORY_SYSTEM, "Sleep time: %i", sleepTime);
 		if (sleepTime > 0) SDL_Delay(sleepTime);
 		lastTime = currentTime;

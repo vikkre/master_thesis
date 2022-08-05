@@ -115,6 +115,21 @@ void ImageBuffer::cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer
 	destination->cmdTransitionImageLayout(commandBuffer, oldDstLayout);
 }
 
+void ImageBuffer::cmdClear(const VkCommandBuffer* commandBuffer) {
+	VkClearColorValue clearColor;
+	for (unsigned int i = 0; i < 4; ++i)
+		clearColor.uint32[i] = 0;
+
+	VkImageSubresourceRange subresourceRange{};
+	subresourceRange.aspectMask = properties.aspectFlags;
+	subresourceRange.baseMipLevel = 0;
+	subresourceRange.levelCount = 1;
+	subresourceRange.baseArrayLayer = 0;
+	subresourceRange.layerCount = 1;
+
+	vkCmdClearColorImage(*commandBuffer, image, properties.layout, &clearColor, 1, &subresourceRange);
+}
+
 VkWriteDescriptorSet ImageBuffer::getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const {
 	VkWriteDescriptorSet writeSet{};
 

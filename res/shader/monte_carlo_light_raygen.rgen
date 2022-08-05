@@ -24,6 +24,8 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	vec3 lightPosition;
 	uint lightJumpCount;
 	uint visionJumpCount;
+	float collectionDistance;
+	uint rayPerPixelCount;
 } globalData;
 layout(binding = 3, set = 0) buffer Count {uint count;} c;
 layout(binding = 4, set = 0, scalar) buffer XYZ { PointData d[]; } pointData;

@@ -171,7 +171,7 @@ int main() {
 	engine->initTlas();
 
 	Input* input = new Input();
-	input->r = 18.0f;
+	input->r = 22.0f;
 	input->phi = M_PI_2;
 
 
@@ -180,7 +180,7 @@ int main() {
 	Uint32 currentTime = SDL_GetTicks(), lastTime = SDL_GetTicks();
 	// float lightAngle = 0.0f;
 
-	const unsigned int RENDER_MAX = 100;
+	const unsigned int RENDER_MAX = 25;
 	unsigned int rendered = 0;
 
 	while (run) {
@@ -211,7 +211,8 @@ int main() {
 			int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
 				engine->render();
 			});
-			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f", microsecondsToSeconds(renderTime));
+			float seconds = microsecondsToSeconds(renderTime);
+			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f (~%i FPS)", seconds, int(1.0f / seconds));
 
 			rendered++;
 		} else if (rendered == RENDER_MAX) {

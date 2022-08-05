@@ -39,6 +39,8 @@ class MonteCarloRenderer: public Renderer {
 			Vector3f lightPosition;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
+			float collectionDistance;
+			u_int32_t rayPerPixelCount;
 		} globalData;
 
 	private:
@@ -48,16 +50,21 @@ class MonteCarloRenderer: public Renderer {
 		void createLightGenerationPipeline();
 		void createKDPipeline();
 		void createVisionPipeline();
+		void createFinalPipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline lightGenerationPipeline;
 		RayTracingPipeline kdPipeline;
 		RayTracingPipeline visionPipeline;
+		RayTracingPipeline finalPipeline;
 		std::vector<void*> rtDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
-		MultiBufferDescriptor<ImageBuffer> storageImages;
+		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
+		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
+		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
+		MultiBufferDescriptor<ImageBuffer> finalImages;
 		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
 		MultiBufferDescriptor<DataBuffer> countBuffers;
 		MultiBufferDescriptor<DataBuffer> lightPointBuffers;

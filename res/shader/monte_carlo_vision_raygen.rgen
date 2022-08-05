@@ -3,12 +3,6 @@
 #extension GL_EXT_scalar_block_layout : enable
 
 
-#define DEPTH 4
-#define ITERATIONS 200
-#define DIFFUSE_PART 0.5
-#define MAX_DIST 0.5
-
-
 struct KDData {
 	vec3 pos;
 	vec3 color;
@@ -28,10 +22,14 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	vec3 lightPosition;
 	uint lightJumpCount;
 	uint visionJumpCount;
+	float collectionDistance;
+	uint rayPerPixelCount;
 } globalData;
 layout(binding = 3, set = 0) buffer Count {uint count;} c;
 layout(binding = 5, set = 0, scalar) buffer YZ { KDData d[]; } kdData;
-layout(binding = 6, set = 0, rgba8) uniform image2D image;
+layout(binding = 6, set = 0, r32ui) uniform uimage2D imageRed;
+layout(binding = 7, set = 0, r32ui) uniform uimage2D imageGreen;
+layout(binding = 8, set = 0, r32ui) uniform uimage2D imageBlue;
 
 struct RayPayload {
 	bool miss;
@@ -123,8 +121,11 @@ void main() {
 	}
 
 	if (!rayPayload.miss) {
-		color *= getClosestNeighboursColor(rayPayload.pos, MAX_DIST);
+		color *= getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance);
 	}
 
-	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(color, 0.0));
+	uvec3 intColor = uvec3(color * 255);
+	imageAtomicAdd(imageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
+	imageAtomicAdd(imageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);
+	imageAtomicAdd(imageBlue, ivec2(gl_LaunchIDEXT.xy), intColor.z);
 }

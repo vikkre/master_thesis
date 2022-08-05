@@ -12,6 +12,8 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	vec3 lightPosition;
 	uint lightJumpCount;
 	uint visionJumpCount;
+	float collectionDistance;
+	uint rayPerPixelCount;
 } globalData;
 
 struct RayPayload {

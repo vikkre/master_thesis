@@ -16,6 +16,7 @@ class ImageBuffer: public Buffer {
 		void init();
 		void init(VkImage image, bool createImageView=false);
 		void cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer* destination);
+		void cmdClear(const VkCommandBuffer* commandBuffer);
 		virtual VkWriteDescriptorSet getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const override;
 		virtual VkDescriptorType getDescriptorType() const override;
 

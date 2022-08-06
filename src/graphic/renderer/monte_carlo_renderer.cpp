@@ -10,9 +10,9 @@
 #define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 #define FINAL_RGEN_SHADER      "monte_carlo_final_raygen.spv"
 
-#define LIGHT_RAY_COUNT 1000
+#define LIGHT_RAY_COUNT 250
 #define VISION_RAY_COUNT_PER_PIXEL 20
-#define LIGHT_JUMP_COUNT 2
+#define LIGHT_JUMP_COUNT 1
 #define VISION_JUMP_COUNT 3
 #define LIGHT_COLLECTION_DISTANCE 1.0f
 

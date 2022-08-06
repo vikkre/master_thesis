@@ -40,7 +40,6 @@ struct RayPayload {
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
 
 vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
-	uint colorCount = 0;
 	vec3 color = vec3(0.0);
 
 	const int indexStackSize = 1000;
@@ -55,7 +54,6 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
 
 		float d = distance(refPoint, entry.pos);
 		if (maxDist >= d) {
-			colorCount++;
 			color += entry.color * (maxDist / d);
 		}
 
@@ -81,7 +79,7 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
 		}
 	}
 
-	return color / colorCount;
+	return color;
 }
 
 float rand(vec3 co, int i, int v){

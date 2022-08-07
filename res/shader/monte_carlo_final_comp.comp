@@ -1,5 +1,4 @@
 #version 460
-#extension GL_EXT_ray_tracing : enable
 #extension GL_EXT_scalar_block_layout : enable
 
 layout(binding = 2, set = 0, scalar) uniform GlobalData {
@@ -21,12 +20,12 @@ layout(binding = 9, set = 0, rgba8) uniform image2D finalImage;
 
 void main() {
 	uvec4 rawColor = uvec4(0);
-	rawColor.x = imageLoad(rawImageRed, ivec2(gl_LaunchIDEXT.xy)).x;
-	rawColor.y = imageLoad(rawImageGreen, ivec2(gl_LaunchIDEXT.xy)).x;
-	rawColor.z = imageLoad(rawImageBlue, ivec2(gl_LaunchIDEXT.xy)).x;
+	rawColor.x = imageLoad(rawImageRed, ivec2(gl_GlobalInvocationID.xy)).x;
+	rawColor.y = imageLoad(rawImageGreen, ivec2(gl_GlobalInvocationID.xy)).x;
+	rawColor.z = imageLoad(rawImageBlue, ivec2(gl_GlobalInvocationID.xy)).x;
 
 	vec4 color = vec4(rawColor);
 	color *= 1.0 / float(globalData.rayPerPixelCount * 255);
 
-	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), color);
+	imageStore(finalImage, ivec2(gl_GlobalInvocationID.xy), color);
 }

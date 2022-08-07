@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "../ray_tracing_pipeline.h"
+#include "../compute_pipeline.h"
 
 #include "../device.h"
 #include "../helper/data_buffer.h"
@@ -55,9 +56,9 @@ class MonteCarloRenderer: public Renderer {
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline lightGenerationPipeline;
-		RayTracingPipeline kdPipeline;
+		ComputePipeline kdPipeline;
 		RayTracingPipeline visionPipeline;
-		RayTracingPipeline finalPipeline;
+		ComputePipeline finalPipeline;
 		std::vector<void*> rtDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;

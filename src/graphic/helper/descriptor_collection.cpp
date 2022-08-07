@@ -11,8 +11,8 @@ descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorS
 }
 
 DescriptorCollection::~DescriptorCollection() {
-	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
+	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(device->getDevice(), descriptorSetLayout, nullptr);
 }
 
@@ -26,6 +26,13 @@ void DescriptorCollection::init() {
 void DescriptorCollection::cmdBind(size_t index, const VkCommandBuffer* commandBuffer) const {
 	vkCmdBindDescriptorSets(
 		*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+		pipelineLayout,
+		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
+		0, nullptr
+	);
+
+	vkCmdBindDescriptorSets(
+		*commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 		pipelineLayout,
 		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
 		0, nullptr

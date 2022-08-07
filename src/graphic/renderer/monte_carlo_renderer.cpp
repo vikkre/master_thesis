@@ -4,11 +4,11 @@
 #define LIGHT_GEN_RGEN_SHADER  "monte_carlo_light_raygen.spv"
 #define LIGHT_GEN_RCHIT_SHADER "monte_carlo_light_closesthit.spv"
 #define LIGHT_GEN_RMISS_SHADER "monte_carlo_light_miss.spv"
-#define KD_RGEN_SHADER         "monte_carlo_kd_raygen.spv"
+#define KD_COMP_SHADER         "monte_carlo_kd_comp.spv"
 #define VISION_RGEN_SHADER     "monte_carlo_vision_raygen.spv"
 #define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
 #define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
-#define FINAL_RGEN_SHADER      "monte_carlo_final_raygen.spv"
+#define FINAL_COMP_SHADER      "monte_carlo_final_comp.spv"
 
 #define LIGHT_RAY_COUNT 250
 #define VISION_RAY_COUNT_PER_PIXEL 20
@@ -192,12 +192,8 @@ void MonteCarloRenderer::createLightGenerationPipeline() {
 }
 
 void MonteCarloRenderer::createKDPipeline() {
-	kdPipeline.raygenShaders.push_back(KD_RGEN_SHADER);
-	kdPipeline.missShaders.push_back(LIGHT_GEN_RMISS_SHADER);
-	kdPipeline.hitShaders.push_back(LIGHT_GEN_RCHIT_SHADER);
-
+	kdPipeline.shaderPath = KD_COMP_SHADER;
 	kdPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
-
 	kdPipeline.init();
 }
 
@@ -216,14 +212,11 @@ void MonteCarloRenderer::createVisionPipeline() {
 }
 
 void MonteCarloRenderer::createFinalPipeline() {
-	finalPipeline.raygenShaders.push_back(FINAL_RGEN_SHADER);
-	finalPipeline.missShaders.push_back(VISION_RMISS_SHADER);
-	finalPipeline.hitShaders.push_back(VISION_RCHIT_SHADER);
-
+	finalPipeline.shaderPath = FINAL_COMP_SHADER;
 	finalPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
-	finalPipeline.width = device->renderInfo.swapchainExtend.width;
-	finalPipeline.height = device->renderInfo.swapchainExtend.height;
+	finalPipeline.x = device->renderInfo.swapchainExtend.width;
+	finalPipeline.y = device->renderInfo.swapchainExtend.height;
 
 	finalPipeline.init();
 }

@@ -9,11 +9,12 @@
 #define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
 #define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 #define FINAL_COMP_SHADER      "monte_carlo_final_comp.spv"
+#define DENOISE_COMP_SHADER    "monte_carlo_denoise_comp.spv"
 
-#define LIGHT_RAY_COUNT 250
-#define VISION_RAY_COUNT_PER_PIXEL 20
-#define LIGHT_JUMP_COUNT 1
-#define VISION_JUMP_COUNT 3
+#define LIGHT_RAY_COUNT 100
+#define VISION_RAY_COUNT_PER_PIXEL 10
+#define LIGHT_JUMP_COUNT 3
+#define VISION_JUMP_COUNT 5
 #define LIGHT_COLLECTION_DISTANCE 1.0f
 
 
@@ -34,9 +35,9 @@ struct KDData {
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
 :objects(), globalData(),
 device(device), descriptorCollection(device),
-lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalPipeline(device),
+lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device), denoisePipeline(device), 
 rtDataPtrs(),
-tlas(device), storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device), finalImages(device),
+tlas(device), storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),renderedImages(device), finalImages(device),
 globalDataBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device), rtDataBuffers(device) {}
 
@@ -49,7 +50,8 @@ void MonteCarloRenderer::init() {
 	createLightGenerationPipeline();
 	createKDPipeline();
 	createVisionPipeline();
-	createFinalPipeline();
+	createFinalRenderPipeline();
+	createDenoisePipeline();
 }
 
 void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
@@ -71,7 +73,11 @@ void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandB
 
 	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
 
-	finalPipeline.cmdExecutePipeline(commandBuffer);
+	finalRenderPipeline.cmdExecutePipeline(commandBuffer);
+
+	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+
+	denoisePipeline.cmdExecutePipeline(commandBuffer);
 
 	finalImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 
@@ -125,15 +131,18 @@ void MonteCarloRenderer::createBuffers() {
 	storageImagesBlue.bufferProperties = storageImagesRed.bufferProperties;
 	storageImagesBlue.init();
 
-	finalImages.bufferProperties.width = device->renderInfo.swapchainExtend.width;
-	finalImages.bufferProperties.height = device->renderInfo.swapchainExtend.height;
-	finalImages.bufferProperties.format = device->renderInfo.swapchainImageFormat;
-	finalImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
-	finalImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-	finalImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	finalImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	finalImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
-	finalImages.bufferProperties.createImageView = true;
+	renderedImages.bufferProperties.width = device->renderInfo.swapchainExtend.width;
+	renderedImages.bufferProperties.height = device->renderInfo.swapchainExtend.height;
+	renderedImages.bufferProperties.format = device->renderInfo.swapchainImageFormat;
+	renderedImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	renderedImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	renderedImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	renderedImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	renderedImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
+	renderedImages.bufferProperties.createImageView = true;
+	renderedImages.init();
+
+	finalImages.bufferProperties = renderedImages.bufferProperties;
 	finalImages.init();
 
 	globalDataBuffers.bufferProperties.bufferSize = sizeof(MonteCarloRenderer::GlobalData);
@@ -146,12 +155,12 @@ void MonteCarloRenderer::createBuffers() {
 	countBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	countBuffers.init();
 
-	lightPointBuffers.bufferProperties.bufferSize = sizeof(LightPoint) * LIGHT_RAY_COUNT;
+	lightPointBuffers.bufferProperties.bufferSize = sizeof(LightPoint) * LIGHT_RAY_COUNT * LIGHT_JUMP_COUNT;
 	lightPointBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	lightPointBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	lightPointBuffers.init();
 
-	kdBuffers.bufferProperties.bufferSize = sizeof(KDData) * LIGHT_RAY_COUNT;
+	kdBuffers.bufferProperties.bufferSize = sizeof(KDData) * LIGHT_RAY_COUNT * LIGHT_JUMP_COUNT;
 	kdBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	kdBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	kdBuffers.init();
@@ -163,7 +172,7 @@ void MonteCarloRenderer::createBuffers() {
 }
 
 void MonteCarloRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(10);
+	descriptorCollection.bufferDescriptors.resize(11);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
 	descriptorCollection.bufferDescriptors.at(1) = &rtDataBuffers;
@@ -174,7 +183,8 @@ void MonteCarloRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(6) = &storageImagesRed;
 	descriptorCollection.bufferDescriptors.at(7) = &storageImagesGreen;
 	descriptorCollection.bufferDescriptors.at(8) = &storageImagesBlue;
-	descriptorCollection.bufferDescriptors.at(9) = &finalImages;
+	descriptorCollection.bufferDescriptors.at(9) = &renderedImages;
+	descriptorCollection.bufferDescriptors.at(10) = &finalImages;
 
 	descriptorCollection.init();
 }
@@ -211,12 +221,22 @@ void MonteCarloRenderer::createVisionPipeline() {
 	visionPipeline.init();
 }
 
-void MonteCarloRenderer::createFinalPipeline() {
-	finalPipeline.shaderPath = FINAL_COMP_SHADER;
-	finalPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+void MonteCarloRenderer::createFinalRenderPipeline() {
+	finalRenderPipeline.shaderPath = FINAL_COMP_SHADER;
+	finalRenderPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
-	finalPipeline.x = device->renderInfo.swapchainExtend.width;
-	finalPipeline.y = device->renderInfo.swapchainExtend.height;
+	finalRenderPipeline.x = device->renderInfo.swapchainExtend.width;
+	finalRenderPipeline.y = device->renderInfo.swapchainExtend.height;
 
-	finalPipeline.init();
+	finalRenderPipeline.init();
+}
+
+void MonteCarloRenderer::createDenoisePipeline() {
+	denoisePipeline.shaderPath = DENOISE_COMP_SHADER;
+	denoisePipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+
+	denoisePipeline.x = device->renderInfo.swapchainExtend.width;
+	denoisePipeline.y = device->renderInfo.swapchainExtend.height;
+
+	denoisePipeline.init();
 }

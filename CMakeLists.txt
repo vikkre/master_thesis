@@ -43,6 +43,8 @@ add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_raygen.rgen
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_miss.rmiss       monte_carlo_vision_miss.spv       )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_closesthit.rchit monte_carlo_vision_closesthit.spv )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_final_comp.comp         monte_carlo_final_comp.spv        )
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_denoise_comp.comp       monte_carlo_denoise_comp.spv      )
+
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
 

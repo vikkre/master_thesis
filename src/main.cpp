@@ -38,7 +38,7 @@ float microsecondsToSeconds(int64_t microseconds) {
 	return float(microseconds) / (1000.0f * 1000.0f);
 }
 
-void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float) {
+void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs) {
 	ObjLoader blockLoader;
 	blockLoader.load("block.obj");
 	Mesh* block = blockLoader.get_mesh(&engine->device);
@@ -67,7 +67,7 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	objs.push_back(green);
 }
 
-void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float) {
+void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs) {
 	ObjLoader blockLoader;
 	blockLoader.load("block.obj");
 	Mesh* block = blockLoader.get_mesh(&engine->device);
@@ -157,8 +157,8 @@ int main() {
 	std::vector<Mesh*> meshes;
 	std::vector<GraphicsObject*> objs;
 
-	cornellBox(engine, meshes, objs, 0.0f);
-	cornellBoxBlocks(engine, meshes, objs, 0.0f);
+	cornellBox(engine, meshes, objs);
+	cornellBoxBlocks(engine, meshes, objs);
 
 	// blocksAndBall(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 1.0f);
@@ -214,7 +214,7 @@ int main() {
 			float seconds = microsecondsToSeconds(renderTime);
 			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f (~%i FPS)", seconds, int(1.0f / seconds));
 
-			rendered++;
+			// rendered++;
 		} else if (rendered == RENDER_MAX) {
 			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render finished!");
 

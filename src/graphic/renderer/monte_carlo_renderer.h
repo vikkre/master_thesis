@@ -51,20 +51,23 @@ class MonteCarloRenderer: public Renderer {
 		void createLightGenerationPipeline();
 		void createKDPipeline();
 		void createVisionPipeline();
-		void createFinalPipeline();
+		void createFinalRenderPipeline();
+		void createDenoisePipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline lightGenerationPipeline;
 		ComputePipeline kdPipeline;
 		RayTracingPipeline visionPipeline;
-		ComputePipeline finalPipeline;
+		ComputePipeline finalRenderPipeline;
+		ComputePipeline denoisePipeline;
 		std::vector<void*> rtDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
 		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
 		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
 		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
+		MultiBufferDescriptor<ImageBuffer> renderedImages;
 		MultiBufferDescriptor<ImageBuffer> finalImages;
 		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
 		MultiBufferDescriptor<DataBuffer> countBuffers;

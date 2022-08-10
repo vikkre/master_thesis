@@ -12,9 +12,12 @@
 struct ObjectProperties {
 	mat4 model;
 	vec3 color;
-	float reflect;
 	uint64_t vertexAddress;
 	uint64_t indexAddress;
+	float diffuseThreshold;
+	float reflectThreshold;
+	float specularThreshold;
+	float transparentThreshold;
 };
 
 struct Vertex {
@@ -67,7 +70,7 @@ void main() {
 
 	rayPayload.distance = gl_RayTmaxEXT;
 	rayPayload.normal = normal;
-	rayPayload.reflector = obj.reflect;
+	rayPayload.reflector = obj.reflectThreshold;
 
 	shadowed = true;
 	vec3 origin = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;

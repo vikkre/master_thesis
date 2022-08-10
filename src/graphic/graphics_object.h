@@ -17,9 +17,12 @@ class GraphicsObject {
 		struct RTData {
 			Matrix4f objectMatrix;
 			Vector3f color;
-			float reflect;
 			uint64_t vertexAddress;
 			uint64_t indexAddress;
+			float diffuseThreshold;
+			float reflectThreshold;
+			float specularThreshold;
+			float transparentThreshold;
 		};
 
 		struct ObjectInfo {
@@ -45,6 +48,11 @@ class GraphicsObject {
 
 		Vector3f color;
 		RTData rtData;
+
+		float diffuseWeight;
+		float reflectWeight;
+		float specularWeight;
+		float transparentWeight;
 	
 	private:
 		const Mesh* mesh;

@@ -8,9 +8,9 @@
 
 GraphicsObject::GraphicsObject(const Device* device, const Mesh* mesh, const Vector3f& position)
 :scale({1.0f, 1.0f, 1.0f}), rotation(), position(position),
-color(Vector3f({1.0f, 1.0f, 1.0f})), mesh(mesh), device(device) {
-	rtData.reflect = 0.0f;
-}
+color(Vector3f({1.0f, 1.0f, 1.0f})),
+diffuseWeight(1.0f), reflectWeight(0.0f), specularWeight(0.0f), transparentWeight(0.0f),
+mesh(mesh), device(device) {}
 
 GraphicsObject::~GraphicsObject() {
 	vkDeviceWaitIdle(device->getDevice());
@@ -19,8 +19,16 @@ GraphicsObject::~GraphicsObject() {
 void GraphicsObject::passBufferData(size_t /* index */) {
 	rtData.objectMatrix = getMatrix();
 	rtData.color = color;
+
 	rtData.vertexAddress = mesh->getVertexBuffer().getAddress();
 	rtData.indexAddress = mesh->getIndexBuffer().getAddress();
+
+	float totalWeight = diffuseWeight + reflectWeight + specularWeight + transparentWeight;
+
+	rtData.diffuseThreshold = diffuseWeight / totalWeight;
+	rtData.reflectThreshold = reflectWeight / totalWeight + rtData.diffuseThreshold;
+	rtData.specularThreshold = specularWeight / totalWeight + rtData.diffuseThreshold + rtData.reflectThreshold;
+	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.diffuseThreshold + rtData.reflectThreshold + rtData.specularThreshold;
 }
 
 GraphicsObject::ObjectInfo GraphicsObject::getObjectInfo() const {
@@ -56,52 +64,6 @@ Matrix4f GraphicsObject::getMatrix() const {
 
 	return objectMatrix;
 }
-
-// void GraphicsObject::createDescriptorPool() {
-// 	VkDescriptorPoolSize poolSize{};
-// 	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-// 	poolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-
-// 	VkDescriptorPoolCreateInfo poolInfo{};
-// 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-// 	poolInfo.poolSizeCount = 1;
-// 	poolInfo.pPoolSizes = &poolSize;
-// 	poolInfo.maxSets = device->renderInfo.swapchainImageCount;
-
-// 	if (vkCreateDescriptorPool(device->getDevice(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-// 		throw InitException("vkCreateDescriptorPool", "failed to create descriptor pool!");
-// 	}
-// }
-
-// void GraphicsObject::createDescriptors() {
-// 	descriptors.reserve(device->renderInfo.swapchainImageCount);
-
-// 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-// 		descriptors.emplace_back(device);
-
-// 		descriptors.at(i).bindingSetIndex = OBJECT_BINDING_SET_INDEX;
-// 		descriptors.at(i).bufferSize = sizeof(GraphicsObject::ObjectData);
-// 		descriptors.at(i).descriptorPool = descriptorPool;
-// 		descriptors.at(i).setLayout = device->renderInfo.objectDescriptorSetLayout;
-
-// 		descriptors.at(i).init();
-// 	}
-// }
-
-// std::vector<VkDescriptorSetLayoutBinding> GraphicsObject::getUniformBindings() {
-// 	std::vector<VkDescriptorSetLayoutBinding> bindings(1);
-
-// 	bindings.at(0).binding         = 0;
-// 	bindings.at(0).descriptorCount = 1;
-// 	bindings.at(0).descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-// 	bindings.at(0).stageFlags      = VK_SHADER_STAGE_VERTEX_BIT;
-
-// 	return bindings;
-// }
-
-// uint32_t GraphicsObject::getBindingSet() {
-// 	return OBJECT_BINDING_SET_INDEX;
-// }
 
 size_t GraphicsObject::getRTDataSize() {
 	return sizeof(GraphicsObject::RTData);

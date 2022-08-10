@@ -2,7 +2,7 @@
 #extension GL_EXT_scalar_block_layout : enable
 
 #define KSIZE 7
-#define SIGMA 10.8
+#define SIGMA 0.8
 
 layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	mat4 viewInverse;
@@ -50,24 +50,43 @@ void main() {
 	// 	}
 	// }
 
-	// vec4 color = vec4(0.0);
-	// float bright = 0.0;
 	// ivec2 size = imageSize(rawImage);
 	// int off = KSIZE / 2;
+
+	// vec4 colors[KSIZE * KSIZE];
+	// float csums[KSIZE * KSIZE];
+	// int count = 0;
 
 	// for (int x = -off; x <= off; x++) {
 	// 	for (int y = -off; y <= off; y++) {
 	// 		ivec2 p = pos + ivec2(x, y);
 	// 		if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
-	// 			vec4 tmp = imageLoad(rawImage, p);
-	// 			float b = tmp.x + tmp.y + tmp.z;
-	// 			if (b > bright) {
-	// 				color = tmp;
-	// 				bright = b;
-	// 			}
+	// 			vec4 color = imageLoad(rawImage, p);
+	// 			float csum = max(color.x, max(color.y, color.z));
+
+	// 			colors[count] = color;
+	// 			csums[count] = csum;
+	// 			count++;
 	// 		}
 	// 	}
 	// }
+
+	// for (uint n = KSIZE * KSIZE; n > 0; n--) {
+	// 	for (uint i = 0; i < n; i++) {
+	// 		if (csums[i] < csums[i+1]) {
+	// 			vec4 tmp_color = colors[i];
+	// 			float tmp_csum = csums[i];
+
+	// 			colors[i] = colors[i+1];
+	// 			csums[i] = csums[i+1];
+
+	// 			colors[i+1] = tmp_color;
+	// 			csums[i+1] = tmp_csum;
+	// 		}
+	// 	}
+	// }
+
+	// vec4 color = colors[count/2];
 
 	vec4 color = imageLoad(rawImage, pos);
 	imageStore(finalImage, pos, color);

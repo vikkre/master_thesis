@@ -76,11 +76,15 @@ void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::v
 	GraphicsObject* smallBox = new GraphicsObject(&engine->device, block, Vector3f({2.0f, -3.5f, -2.0f}));
 	smallBox->scale = Vector3f({1.5f, 1.5f, 1.5f});
 	smallBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), 1.0f);
+	smallBox->diffuseWeight = 0.0f;
+	smallBox->reflectWeight = 1.0f;
 	objs.push_back(smallBox);
 
 	GraphicsObject* bigBox = new GraphicsObject(&engine->device, block, Vector3f({-2.0f, -2.0f, 2.0f}));
 	bigBox->scale = Vector3f({1.5f, 3.0f, 1.5f});
 	bigBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), -1.0f);
+	bigBox->diffuseWeight = 0.0f;
+	bigBox->reflectWeight = 1.0f;
 	objs.push_back(bigBox);
 }
 
@@ -99,7 +103,8 @@ void blocksAndBall(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vect
 	GraphicsObject* white = new GraphicsObject(&engine->device, ball, Vector3f({0.0f, 0.0f, 0.0f}));
 	white->color = Vector3f({1.0f, 1.0f, 1.0f});
 	objs.push_back(white);
-	white->rtData.reflect = reflect;
+	white->diffuseWeight = 1.0f - reflect;
+	white->reflectWeight = reflect;
 	
 	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 3.0f}));
 	red->color = Vector3f({1.0f, 0.0f, 0.0f});
@@ -135,7 +140,8 @@ void teeth(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<Graph
 	GraphicsObject* lower = new GraphicsObject(&engine->device, lower_mesh, Vector3f({0.0f, 0.0f, 0.0f}));
 	lower->color = Vector3f({0.0f, 1.0f, 0.0f});
 	objs.push_back(lower);
-	lower->rtData.reflect = reflect;
+	lower->diffuseWeight = 1.0f - reflect;
+	lower->reflectWeight = reflect;
 }
 
 

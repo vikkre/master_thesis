@@ -9,9 +9,12 @@
 struct ObjectProperties {
 	mat4 model;
 	vec3 color;
-	float reflect;
 	uint64_t vertexAddress;
 	uint64_t indexAddress;
+	float diffuseThreshold;
+	float reflectThreshold;
+	float specularThreshold;
+	float transparentThreshold;
 };
 
 struct Vertex {
@@ -28,6 +31,10 @@ struct RayPayload {
 	vec3 pos;
 	vec3 normal;
 	vec3 color;
+	float diffuseThreshold;
+	float reflectThreshold;
+	float specularThreshold;
+	float transparentThreshold;
 };
 layout(location = 0) rayPayloadInEXT RayPayload rayPayload;
 hitAttributeEXT vec2 attribs;
@@ -47,8 +54,16 @@ void main() {
 	vec3 pos = v0.pos * barycentricCoords.x + v1.pos * barycentricCoords.y + v2.pos * barycentricCoords.z;
 	pos = (obj.model * vec4(pos, 1.0)).xyz;
 
+	vec3 normal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
+	normal = (obj.model * vec4(normal, 0.0)).xyz;
+
 	rayPayload.miss = false;
 	rayPayload.pos = pos;
-	rayPayload.normal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
+	rayPayload.normal = normal;
 	rayPayload.color = obj.color;
+
+	rayPayload.diffuseThreshold = obj.diffuseThreshold;
+	rayPayload.reflectThreshold = obj.reflectThreshold;
+	rayPayload.specularThreshold = obj.specularThreshold;
+	rayPayload.transparentThreshold = obj.transparentThreshold;
 }

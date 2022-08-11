@@ -23,16 +23,16 @@ void DescriptorCollection::init() {
 	createPipelineLayout();
 }
 
-void DescriptorCollection::cmdBind(size_t index, const VkCommandBuffer* commandBuffer) const {
+void DescriptorCollection::cmdBind(size_t index, VkCommandBuffer commandBuffer) const {
 	vkCmdBindDescriptorSets(
-		*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+		commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
 		pipelineLayout,
 		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
 		0, nullptr
 	);
 
 	vkCmdBindDescriptorSets(
-		*commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
+		commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 		pipelineLayout,
 		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
 		0, nullptr

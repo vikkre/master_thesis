@@ -23,7 +23,7 @@ void PraktikumsRenderer::init() {
 	createPipeline();
 }
 
-void PraktikumsRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
+void PraktikumsRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	pipeline.cmdExecutePipeline(commandBuffer);

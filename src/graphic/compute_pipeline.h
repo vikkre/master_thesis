@@ -15,7 +15,7 @@ class ComputePipeline {
 		~ComputePipeline();
 
 		void init();
-		void cmdExecutePipeline(const VkCommandBuffer* commandBuffer);
+		void cmdExecutePipeline(VkCommandBuffer commandBuffer);
 
 		std::string shaderPath;
 		VkPipelineLayout pipelineLayout;

@@ -69,7 +69,7 @@ void Swapchain::init() {
 	createSyncObjects();
 }
 
-void Swapchain::recordCommandBuffers(std::function<void(size_t, VkCommandBuffer*)> recordCommandBuffer) {
+void Swapchain::recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer) {
 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
 		frames.at(i).recordCommandBuffer(recordCommandBuffer, i);
 	}

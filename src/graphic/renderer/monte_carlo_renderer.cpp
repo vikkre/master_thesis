@@ -54,7 +54,7 @@ void MonteCarloRenderer::init() {
 	createDenoisePipeline();
 }
 
-void MonteCarloRenderer::cmdRender(size_t index, const VkCommandBuffer* commandBuffer) {
+void MonteCarloRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	storageImagesRed.at(index).cmdClear(commandBuffer);
 	storageImagesGreen.at(index).cmdClear(commandBuffer);
 	storageImagesBlue.at(index).cmdClear(commandBuffer);

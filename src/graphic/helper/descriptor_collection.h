@@ -14,7 +14,7 @@ class DescriptorCollection {
 		~DescriptorCollection();
 
 		void init();
-		void cmdBind(size_t index, const VkCommandBuffer* commandBuffer) const;
+		void cmdBind(size_t index, VkCommandBuffer commandBuffer) const;
 		VkPipelineLayout getPipelineLayout() const;
 
 		std::vector<BufferDescriptor*> bufferDescriptors;

@@ -58,7 +58,7 @@ void ImageBuffer::init() {
 
 		SingleUseCommandBuffer commandBuffer(device, &device->getQueues().getGraphicsQueue());
 		commandBuffer.start();
-		ImageBuffer::cmdTransitionImageLayout(&commandBuffer.getCommandBuffer(), wantedLayout);
+		ImageBuffer::cmdTransitionImageLayout(commandBuffer.getCommandBuffer(), wantedLayout);
 		commandBuffer.end();
 	}
 
@@ -79,7 +79,7 @@ void ImageBuffer::init(VkImage image, bool createImageView) {
 
 	SingleUseCommandBuffer commandBuffer(device, &device->getQueues().getGraphicsQueue());
 	commandBuffer.start();
-	ImageBuffer::cmdTransitionImageLayout(&commandBuffer.getCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	ImageBuffer::cmdTransitionImageLayout(commandBuffer.getCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	commandBuffer.end();
 
 	if (createImageView) {
@@ -91,7 +91,7 @@ void ImageBuffer::init(VkImage image, bool createImageView) {
 	}
 }
 
-void ImageBuffer::cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer* destination) {
+void ImageBuffer::cmdCopyImage(VkCommandBuffer commandBuffer, ImageBuffer* destination) {
 	VkImageLayout oldSrcLayout = (this->properties.layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : this->properties.layout);
 	VkImageLayout oldDstLayout = (destination->properties.layout == VK_IMAGE_LAYOUT_UNDEFINED ? VK_IMAGE_LAYOUT_GENERAL : destination->properties.layout);
 
@@ -105,7 +105,7 @@ void ImageBuffer::cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer
 	copyRegion.dstOffset = { 0, 0, 0 };
 	copyRegion.extent = { properties.width, properties.height, 1 };
 	vkCmdCopyImage(
-		*commandBuffer,
+		commandBuffer,
 		this->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		destination->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1, &copyRegion
@@ -115,7 +115,7 @@ void ImageBuffer::cmdCopyImage(const VkCommandBuffer* commandBuffer, ImageBuffer
 	destination->cmdTransitionImageLayout(commandBuffer, oldDstLayout);
 }
 
-void ImageBuffer::cmdClear(const VkCommandBuffer* commandBuffer) {
+void ImageBuffer::cmdClear(VkCommandBuffer commandBuffer) {
 	VkClearColorValue clearColor;
 	for (unsigned int i = 0; i < 4; ++i)
 		clearColor.uint32[i] = 0;
@@ -127,7 +127,7 @@ void ImageBuffer::cmdClear(const VkCommandBuffer* commandBuffer) {
 	subresourceRange.baseArrayLayer = 0;
 	subresourceRange.layerCount = 1;
 
-	vkCmdClearColorImage(*commandBuffer, image, properties.layout, &clearColor, 1, &subresourceRange);
+	vkCmdClearColorImage(commandBuffer, image, properties.layout, &clearColor, 1, &subresourceRange);
 }
 
 VkWriteDescriptorSet ImageBuffer::getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const {
@@ -169,7 +169,7 @@ void ImageBuffer::initImageView() {
 	}
 }
 
-void ImageBuffer::cmdTransitionImageLayout(const VkCommandBuffer* commandBuffer, VkImageLayout newLayout) {
+void ImageBuffer::cmdTransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout) {
 	VkImageMemoryBarrier barrier{};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	barrier.oldLayout = properties.layout;
@@ -186,7 +186,7 @@ void ImageBuffer::cmdTransitionImageLayout(const VkCommandBuffer* commandBuffer,
 	barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
 
 	vkCmdPipelineBarrier(
-		*commandBuffer,
+		commandBuffer,
 		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 		0,
 		0, nullptr,

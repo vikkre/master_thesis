@@ -18,7 +18,7 @@ class Swapchain {
 		~Swapchain();
 
 		void init();
-		void recordCommandBuffers(std::function<void(size_t, VkCommandBuffer*)> recordCommandBuffer);
+		void recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer);
 		void render(std::function<void(size_t)> updateUniform);
 
 		const FrameBuffer& getFrame(size_t index) const;

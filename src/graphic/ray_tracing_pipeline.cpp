@@ -66,8 +66,8 @@ void RayTracingPipeline::getProperties() {
 	vkGetPhysicalDeviceProperties2(device->getPhysicalDevice(), &deviceProperties2);
 }
 
-void RayTracingPipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer) {
-	vkCmdBindPipeline(*commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline);
+void RayTracingPipeline::cmdExecutePipeline(VkCommandBuffer commandBuffer) {
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, pipeline);
 
 	const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
 
@@ -87,7 +87,7 @@ void RayTracingPipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer
 	VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
 
 	FuncLoad::vkCmdTraceRaysKHR(
-		*commandBuffer,
+		commandBuffer,
 		&raygenShaderSbtEntry,
 		&missShaderSbtEntry,
 		&hitShaderSbtEntry,
@@ -96,9 +96,9 @@ void RayTracingPipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer
 	);
 }
 
-void RayTracingPipeline::cmdRayTracingBarrier(const VkCommandBuffer* commandBuffer) {
+void RayTracingPipeline::cmdRayTracingBarrier(VkCommandBuffer commandBuffer) {
 	vkCmdPipelineBarrier(
-		*commandBuffer,
+		commandBuffer,
 		// VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
 		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 		0,

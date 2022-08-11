@@ -13,9 +13,9 @@ void ComputePipeline::init() {
 	createPipeline();
 }
 
-void ComputePipeline::cmdExecutePipeline(const VkCommandBuffer* commandBuffer) {
-	vkCmdBindPipeline(*commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
-	vkCmdDispatch(*commandBuffer, x, y, z);
+void ComputePipeline::cmdExecutePipeline(VkCommandBuffer commandBuffer) {
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+	vkCmdDispatch(commandBuffer, x, y, z);
 }
 
 void ComputePipeline::createPipeline() {

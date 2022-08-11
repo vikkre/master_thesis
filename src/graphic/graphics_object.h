@@ -35,7 +35,7 @@ class GraphicsObject {
 
 		void init();
 		void passBufferData(size_t index);
-		void recordCommandBuffer(size_t index, const VkCommandBuffer* commandBuffer);
+		void recordCommandBuffer(size_t index, VkCommandBuffer commandBuffer);
 
 		ObjectInfo getObjectInfo() const;
 		Matrix4f getMatrix() const;

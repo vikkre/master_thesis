@@ -27,8 +27,8 @@ void GraphicsObject::passBufferData(size_t /* index */) {
 
 	rtData.diffuseThreshold = diffuseWeight / totalWeight;
 	rtData.reflectThreshold = reflectWeight / totalWeight + rtData.diffuseThreshold;
-	rtData.specularThreshold = specularWeight / totalWeight + rtData.diffuseThreshold + rtData.reflectThreshold;
-	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.diffuseThreshold + rtData.reflectThreshold + rtData.specularThreshold;
+	rtData.specularThreshold = specularWeight / totalWeight + rtData.reflectThreshold;
+	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.specularThreshold;
 }
 
 GraphicsObject::ObjectInfo GraphicsObject::getObjectInfo() const {

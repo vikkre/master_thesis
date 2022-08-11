@@ -24,7 +24,7 @@ class PraktikumsRenderer: public Renderer {
 		~PraktikumsRenderer();
 
 		void init();
-		void cmdRender(size_t index, const VkCommandBuffer* commandBuffer);
+		void cmdRender(size_t index, VkCommandBuffer commandBuffer);
 		void updateUniforms(size_t index);
 
 		std::vector<GraphicsObject*> objects;

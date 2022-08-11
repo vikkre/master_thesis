@@ -42,14 +42,14 @@ void GraphicsEngine::initTlas() {
 
 	renderer.init();
 
-	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer* commandBuffer) {
+	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer commandBuffer) {
 		this->renderer.cmdRender(index, commandBuffer);
 	});
 }
 
 void GraphicsEngine::render() {
 	// if (!commandBuffersRecorded) {
-	// 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer* commandBuffer) {
+	// 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer commandBuffer) {
 	// 		this->renderer.cmdRender(index, commandBuffer);
 	// 	});
 	// 	commandBuffersRecorded = true;

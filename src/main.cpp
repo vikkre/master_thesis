@@ -48,22 +48,26 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	back->scale = Vector3f({0.1f, 5.0f, 5.0f});
 	objs.push_back(back);
 
-	GraphicsObject* top = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 5.0f, 0.0f}));
-	top->scale = Vector3f({5.0f, 0.1f, 5.0f});
+	GraphicsObject* front = new GraphicsObject(&engine->device, block, Vector3f({25.0f, 0.0f, 0.0f}));
+	front->scale = Vector3f({0.1f, 5.0f, 5.0f});
+	objs.push_back(front);
+
+	GraphicsObject* top = new GraphicsObject(&engine->device, block, Vector3f({10.0f, 5.0f, 0.0f}));
+	top->scale = Vector3f({15.0f, 0.1f, 5.0f});
 	objs.push_back(top);
 
-	GraphicsObject* bottom = new GraphicsObject(&engine->device, block, Vector3f({0.0f, -5.0f, 0.0f}));
-	bottom->scale = Vector3f({5.0f, 0.1f, 5.0f});
+	GraphicsObject* bottom = new GraphicsObject(&engine->device, block, Vector3f({10.0f, -5.0f, 0.0f}));
+	bottom->scale = Vector3f({15.0f, 0.1f, 5.0f});
 	objs.push_back(bottom);
 
-	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, -5.0f}));
+	GraphicsObject* red = new GraphicsObject(&engine->device, block, Vector3f({10.0f, 0.0f, -5.0f}));
 	red->color = Vector3f({1.0f, 0.0f, 0.0f});
-	red->scale = Vector3f({5.0f, 5.0f, 0.1f});
+	red->scale = Vector3f({15.0f, 5.0f, 0.1f});
 	objs.push_back(red);
 	
-	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({0.0f, 0.0f, 5.0f}));
+	GraphicsObject* green = new GraphicsObject(&engine->device, block, Vector3f({10.0f, 0.0f, 5.0f}));
 	green->color = Vector3f({0.0f, 1.0f, 0.0f});
-	green->scale = Vector3f({5.0f, 5.0f, 0.1f});
+	green->scale = Vector3f({15.0f, 5.0f, 0.1f});
 	objs.push_back(green);
 }
 

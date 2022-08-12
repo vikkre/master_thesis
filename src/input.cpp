@@ -1,6 +1,6 @@
 #include "input.h"
 
-#define R_SPEED     10.0f
+#define R_SPEED      2.5f
 #define ANGLE_SPEED 0.01f
 
 #define PHI_MIN       0.01f

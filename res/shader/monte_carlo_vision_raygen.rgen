@@ -3,6 +3,9 @@
 #extension GL_EXT_scalar_block_layout : enable
 
 
+#define DISTANCE_NORMAL_MULTIPLICATOR 10
+
+
 struct KDData {
 	vec3 pos;
 	vec3 color;
@@ -43,8 +46,9 @@ struct RayPayload {
 };
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
 
-vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
+vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist, vec3 normal) {
 	vec3 color = vec3(0.0);
+	uint count = 0;
 
 	const int indexStackSize = 1000;
 	int indexStack[indexStackSize];
@@ -56,10 +60,12 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
 		currentStackIndex--;
 		KDData entry = kdData.d[currentIndex];
 
-		float d = distance(refPoint, entry.pos);
-		if (maxDist >= d) {
-			// color += entry.color * (1.0 - (d / maxDist));
+		vec3 diff = refPoint - entry.pos;
+		diff += diff * normal * DISTANCE_NORMAL_MULTIPLICATOR;
+		float d = length(diff);
+		if (d <= maxDist) {
 			color += entry.color;
+			count++;
 		}
 
 		bool leftPrimeIndex = refPoint[entry.direction] < entry.pos[entry.direction];
@@ -84,6 +90,7 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist) {
 		}
 	}
 
+	// return color * (1.0 / float(count));
 	return color;
 }
 
@@ -106,18 +113,17 @@ void main() {
 	float tmax = 10000.0;
 
 	vec3 color = vec3(1.0);
-	int count = 0;
 
 	for (int i = 0; i < globalData.visionJumpCount; i++) {
 		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
-
-		color *= rayPayload.color;
 
 		if (rayPayload.miss) break;
 
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+			color *= rayPayload.color;
+
 			origin = rayPayload.pos;
 			vec3 randomDirection = vec3(
 				rand(origin + gl_LaunchIDEXT, i, 1) * 2.0 - 1.0,
@@ -129,17 +135,24 @@ void main() {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);
 		} else if (rayHandlingValue <= rayPayload.specularThreshold) {
-
+			
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
-
+			
 		}
 	}
 
+	color *= rayPayload.color;
+
 	if (!rayPayload.miss) {
-		color *= getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance);
+		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, int(globalData.visionJumpCount), 0);
+
+		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+			color *= getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance, rayPayload.normal);
+		} else {
+			color = vec3(0.0);
+		}
 	}
 
-	color *= 1.0 / float(count);
 	uvec3 intColor = uvec3(color * 255);
 	imageAtomicAdd(imageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
 	imageAtomicAdd(imageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);

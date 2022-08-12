@@ -3,6 +3,8 @@
 #extension GL_EXT_scalar_block_layout : enable
 
 
+#define PI 3.1415926538
+
 #define DISTANCE_NORMAL_MULTIPLICATOR 10
 
 
@@ -98,6 +100,28 @@ float rand(vec3 co, int i, int v){
 	return fract(sin(dot(co, vec3(12.9898, 78.233, 38.4965)) * (v + 1.0) + i) * 43758.5453);
 }
 
+vec3 randomNormal(vec3 co, int i, int vStart) {
+	float theta = 2.0 * PI * rand(co, i, vStart);
+	float u = 2.0 * rand(co, i, vStart+1) - 1.0;
+	float suu = sqrt(1 - u*u);
+
+	return vec3(
+		suu * cos(theta),
+		suu * sin(theta),
+		u
+	);
+}
+
+vec3 randomNormalDirection(vec3 co, int i, int vStart, vec3 normal) {
+	vec3 randVec = randomNormal(co, i, vStart);
+
+	if (dot(randVec, normal) < 0.0) {
+		randVec *= -1;
+	}
+
+	return randVec;
+}
+
 void main() {
 	const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
 	const vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
@@ -125,12 +149,7 @@ void main() {
 			color *= rayPayload.color;
 
 			origin = rayPayload.pos;
-			vec3 randomDirection = vec3(
-				rand(origin + gl_LaunchIDEXT, i, 1) * 2.0 - 1.0,
-				rand(origin + gl_LaunchIDEXT, i, 2) * 2.0 - 1.0,
-				rand(origin + gl_LaunchIDEXT, i, 3) * 2.0 - 1.0
-			);
-			direction = normalize((randomDirection + rayPayload.normal) * 0.5);
+			direction = randomNormalDirection(origin + gl_LaunchIDEXT, i, 1, rayPayload.normal);
 		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);

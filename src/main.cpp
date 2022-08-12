@@ -71,7 +71,7 @@ void cornellBox(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<
 	objs.push_back(green);
 }
 
-void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs) {
+void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::vector<GraphicsObject*>& objs, float reflect) {
 	ObjLoader blockLoader;
 	blockLoader.load("block.obj");
 	Mesh* block = blockLoader.get_mesh(&engine->device);
@@ -80,15 +80,15 @@ void cornellBoxBlocks(GraphicsEngine* engine, std::vector<Mesh*>& meshes, std::v
 	GraphicsObject* smallBox = new GraphicsObject(&engine->device, block, Vector3f({2.0f, -3.5f, -2.0f}));
 	smallBox->scale = Vector3f({1.5f, 1.5f, 1.5f});
 	smallBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), 1.0f);
-	smallBox->diffuseWeight = 0.0f;
-	smallBox->reflectWeight = 1.0f;
+	smallBox->diffuseWeight = 1.0f - reflect;
+	smallBox->reflectWeight = reflect;
 	objs.push_back(smallBox);
 
 	GraphicsObject* bigBox = new GraphicsObject(&engine->device, block, Vector3f({-2.0f, -2.0f, 2.0f}));
 	bigBox->scale = Vector3f({1.5f, 3.0f, 1.5f});
 	bigBox->rotation.set(Vector3f({0.0f, 1.0f, 0.0f}), -1.0f);
-	bigBox->diffuseWeight = 0.0f;
-	bigBox->reflectWeight = 1.0f;
+	bigBox->diffuseWeight = 1.0f - reflect;
+	bigBox->reflectWeight = reflect;
 	objs.push_back(bigBox);
 }
 
@@ -168,7 +168,7 @@ int main() {
 	std::vector<GraphicsObject*> objs;
 
 	cornellBox(engine, meshes, objs);
-	cornellBoxBlocks(engine, meshes, objs);
+	cornellBoxBlocks(engine, meshes, objs, 0.0f);
 
 	// blocksAndBall(engine, meshes, objs, 0.0f);
 	// blocksAndBall(engine, meshes, objs, 1.0f);

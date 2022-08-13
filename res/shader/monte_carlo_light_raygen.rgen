@@ -39,7 +39,7 @@ struct RayPayload {
 	vec3 color;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float specularThreshold;
+	float glossyThreshold;
 	float transparentThreshold;
 };
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
@@ -88,19 +88,19 @@ void main() {
 
 		color *= rayPayload.color;
 
-		uint index = atomicAdd(c.count, 1);
-		pointData.d[index].pos = rayPayload.pos;
-		pointData.d[index].color = color;
-
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+			uint index = atomicAdd(c.count, 1);
+			pointData.d[index].pos = rayPayload.pos;
+			pointData.d[index].color = color;
+
 			origin = rayPayload.pos;
 			direction = randomNormalDirection(origin + gl_LaunchIDEXT, i, 1, rayPayload.normal);
 		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.specularThreshold) {
+		} else if (rayHandlingValue <= rayPayload.glossyThreshold) {
 			
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
 			

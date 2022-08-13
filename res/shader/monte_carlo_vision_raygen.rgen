@@ -5,7 +5,7 @@
 
 #define PI 3.1415926538
 
-#define DISTANCE_NORMAL_MULTIPLICATOR 10
+#define DISTANCE_NORMAL_MULTIPLICATOR 5.0
 
 
 struct KDData {
@@ -43,14 +43,13 @@ struct RayPayload {
 	vec3 color;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float specularThreshold;
+	float glossyThreshold;
 	float transparentThreshold;
 };
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
 
 vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist, vec3 normal) {
 	vec3 color = vec3(0.0);
-	uint count = 0;
 
 	const int indexStackSize = 1000;
 	int indexStack[indexStackSize];
@@ -62,12 +61,11 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist, vec3 normal) {
 		currentStackIndex--;
 		KDData entry = kdData.d[currentIndex];
 
-		vec3 diff = refPoint - entry.pos;
-		diff += diff * normal * DISTANCE_NORMAL_MULTIPLICATOR;
+		vec3 diff = entry.pos - refPoint;
+		diff += dot(normalize(diff), normal) * normal * DISTANCE_NORMAL_MULTIPLICATOR;
 		float d = length(diff);
 		if (d <= maxDist) {
-			color += entry.color;
-			count++;
+			color += entry.color * (1.0 - (d / maxDist));
 		}
 
 		bool leftPrimeIndex = refPoint[entry.direction] < entry.pos[entry.direction];
@@ -92,7 +90,6 @@ vec3 getClosestNeighboursColor(vec3 refPoint, float maxDist, vec3 normal) {
 		}
 	}
 
-	// return color * (1.0 / float(count));
 	return color;
 }
 
@@ -136,7 +133,8 @@ void main() {
 	float tmin = 0.001;
 	float tmax = 10000.0;
 
-	vec3 color = vec3(1.0);
+	vec3 rayColor = vec3(1.0);
+	vec3 outColor = vec3(0.0);
 
 	for (int i = 0; i < globalData.visionJumpCount; i++) {
 		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
@@ -146,33 +144,30 @@ void main() {
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			color *= rayPayload.color;
+			outColor += rayColor * getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance, rayPayload.normal);
+			rayColor *= rayPayload.color;
 
 			origin = rayPayload.pos;
 			direction = randomNormalDirection(origin + gl_LaunchIDEXT, i, 1, rayPayload.normal);
 		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.specularThreshold) {
+		} else if (rayHandlingValue <= rayPayload.glossyThreshold) {
 			
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
 			
 		}
 	}
 
-	color *= rayPayload.color;
-
 	if (!rayPayload.miss) {
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, int(globalData.visionJumpCount), 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			color *= getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance, rayPayload.normal);
-		} else {
-			color = vec3(0.0);
+			outColor += rayColor * getClosestNeighboursColor(rayPayload.pos, globalData.collectionDistance, rayPayload.normal);
 		}
 	}
 
-	uvec3 intColor = uvec3(color * 255);
+	uvec3 intColor = uvec3(outColor * 255);
 	imageAtomicAdd(imageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
 	imageAtomicAdd(imageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);
 	imageAtomicAdd(imageBlue, ivec2(gl_LaunchIDEXT.xy), intColor.z);

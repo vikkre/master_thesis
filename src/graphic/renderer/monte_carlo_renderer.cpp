@@ -12,7 +12,7 @@
 #define DENOISE_COMP_SHADER    "monte_carlo_denoise_comp.spv"
 
 #define LIGHT_RAY_COUNT 250
-#define VISION_RAY_COUNT_PER_PIXEL 15
+#define VISION_RAY_COUNT_PER_PIXEL 30
 #define LIGHT_JUMP_COUNT 5
 #define VISION_JUMP_COUNT 5
 #define LIGHT_COLLECTION_DISTANCE 0.1f

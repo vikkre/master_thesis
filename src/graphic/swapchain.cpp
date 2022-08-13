@@ -86,7 +86,6 @@ void Swapchain::render(std::function<void(size_t)> updateUniform) {
 	}
 	imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
-	// device->renderInfo.renderPipeline->updateUniforms(imageIndex);
 	updateUniform(imageIndex);
 
 	VkSubmitInfo submitInfo{};

@@ -16,7 +16,7 @@ struct ObjectProperties {
 	uint64_t indexAddress;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float specularThreshold;
+	float glossyThreshold;
 	float transparentThreshold;
 };
 

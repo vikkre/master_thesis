@@ -21,7 +21,7 @@ class GraphicsObject {
 			uint64_t indexAddress;
 			float diffuseThreshold;
 			float reflectThreshold;
-			float specularThreshold;
+			float glossyThreshold;
 			float transparentThreshold;
 		};
 
@@ -51,7 +51,7 @@ class GraphicsObject {
 
 		float diffuseWeight;
 		float reflectWeight;
-		float specularWeight;
+		float glossyWeight;
 		float transparentWeight;
 	
 	private:

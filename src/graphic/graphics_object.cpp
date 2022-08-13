@@ -9,7 +9,7 @@
 GraphicsObject::GraphicsObject(const Device* device, const Mesh* mesh, const Vector3f& position)
 :scale({1.0f, 1.0f, 1.0f}), rotation(), position(position),
 color(Vector3f({1.0f, 1.0f, 1.0f})),
-diffuseWeight(1.0f), reflectWeight(0.0f), specularWeight(0.0f), transparentWeight(0.0f),
+diffuseWeight(1.0f), reflectWeight(0.0f), glossyWeight(0.0f), transparentWeight(0.0f),
 mesh(mesh), device(device) {}
 
 GraphicsObject::~GraphicsObject() {
@@ -23,12 +23,12 @@ void GraphicsObject::passBufferData(size_t /* index */) {
 	rtData.vertexAddress = mesh->getVertexBuffer().getAddress();
 	rtData.indexAddress = mesh->getIndexBuffer().getAddress();
 
-	float totalWeight = diffuseWeight + reflectWeight + specularWeight + transparentWeight;
+	float totalWeight = diffuseWeight + reflectWeight + glossyWeight + transparentWeight;
 
 	rtData.diffuseThreshold = diffuseWeight / totalWeight;
 	rtData.reflectThreshold = reflectWeight / totalWeight + rtData.diffuseThreshold;
-	rtData.specularThreshold = specularWeight / totalWeight + rtData.reflectThreshold;
-	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.specularThreshold;
+	rtData.glossyThreshold = glossyWeight / totalWeight + rtData.reflectThreshold;
+	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.glossyThreshold;
 }
 
 GraphicsObject::ObjectInfo GraphicsObject::getObjectInfo() const {

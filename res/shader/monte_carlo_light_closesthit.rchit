@@ -13,7 +13,7 @@ struct ObjectProperties {
 	uint64_t indexAddress;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float specularThreshold;
+	float glossyThreshold;
 	float transparentThreshold;
 };
 
@@ -33,7 +33,7 @@ struct RayPayload {
 	vec3 color;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float specularThreshold;
+	float glossyThreshold;
 	float transparentThreshold;
 };
 layout(location = 0) rayPayloadInEXT RayPayload rayPayload;
@@ -55,7 +55,7 @@ void main() {
 	pos = (obj.model * vec4(pos, 1.0)).xyz;
 
 	vec3 normal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
-	normal = (obj.model * vec4(normal, 0.0)).xyz;
+	normal = normalize((obj.model * vec4(normal, 0.0)).xyz);
 
 	rayPayload.miss = false;
 	rayPayload.pos = pos;
@@ -64,6 +64,6 @@ void main() {
 
 	rayPayload.diffuseThreshold = obj.diffuseThreshold;
 	rayPayload.reflectThreshold = obj.reflectThreshold;
-	rayPayload.specularThreshold = obj.specularThreshold;
+	rayPayload.glossyThreshold = obj.glossyThreshold;
 	rayPayload.transparentThreshold = obj.transparentThreshold;
 }

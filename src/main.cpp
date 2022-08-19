@@ -162,7 +162,7 @@ int main() {
 	engine->device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
 	engine->device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
 	engine->device.renderInfo.camera.lookAt   = Vector3f({0.0f, 0.0f, 0.0f});
-	engine->device.renderInfo.lightPosition   = Vector3f({0.0f, 4.9f, 0.0f});
+	engine->device.renderInfo.lightPosition   = Vector3f({0.0f, 4.5f, 0.0f});
 
 	std::vector<Mesh*> meshes;
 	std::vector<GraphicsObject*> objs;

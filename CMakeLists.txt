@@ -35,13 +35,11 @@ add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/prakt_closesthit.rchit   prakt
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/prakt_miss.rmiss         prakt_miss.spv       )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/prakt_shadow.rmiss       prakt_shadow.spv     )
 
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_miss.rmiss              monte_carlo_miss.spv              )
+add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_closesthit.rchit        monte_carlo_closesthit.spv        )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_light_raygen.rgen       monte_carlo_light_raygen.spv      )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_light_miss.rmiss        monte_carlo_light_miss.spv        )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_light_closesthit.rchit  monte_carlo_light_closesthit.spv  )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_kd_comp.comp            monte_carlo_kd_comp.spv           )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_raygen.rgen      monte_carlo_vision_raygen.spv     )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_miss.rmiss       monte_carlo_vision_miss.spv       )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_vision_closesthit.rchit monte_carlo_vision_closesthit.spv )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_final_comp.comp         monte_carlo_final_comp.spv        )
 add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/monte_carlo_denoise_comp.comp       monte_carlo_denoise_comp.spv      )
 

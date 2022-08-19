@@ -3,7 +3,11 @@
 
 GraphicsEngine::GraphicsEngine()
 :device(), swapchain(&device), renderer(&device),
-commandBuffersRecorded(false) {}
+commandBuffersRecorded(false) {
+	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
+	device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
+	device.renderInfo.camera.lookAt   = Vector3f({0.0f, 0.0f, 0.0f});
+}
 
 GraphicsEngine::~GraphicsEngine() {}
 

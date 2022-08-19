@@ -1,23 +1,12 @@
 #version 460
-#extension GL_EXT_scalar_block_layout : enable
+
+#define COMPUTE_SHADER
+#include "monte_carlo.glsl"
+
 
 #define KSIZE 7
 #define SIGMA 0.8
 
-layout(binding = 2, set = 0, scalar) uniform GlobalData {
-	mat4 viewInverse;
-	mat4 projInverse;
-	mat4 view;
-	mat4 proj;
-	vec3 backgroundColor;
-	vec3 lightPosition;
-	uint lightJumpCount;
-	uint visionJumpCount;
-	float collectionDistance;
-	uint rayPerPixelCount;
-} globalData;
-layout(binding = 9, set = 0, rgba8) uniform image2D rawImage;
-layout(binding = 10, set = 0, rgba8) uniform image2D finalImage;
 
 void main() {
 	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
@@ -38,19 +27,19 @@ void main() {
 	// }
 
 	// vec4 color = vec4(0.0);
-	// ivec2 size = imageSize(rawImage);
+	// ivec2 size = imageSize(finalImage);
 	// int off = KSIZE / 2;
 
 	// for (int x = -off; x <= off; x++) {
 	// 	for (int y = -off; y <= off; y++) {
 	// 		ivec2 p = pos + ivec2(x, y);
 	// 		if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
-	// 			color += imageLoad(rawImage, p) * gauss[x + off] * gauss[y + off];
+	// 			color += imageLoad(finalImage, p) * gauss[x + off] * gauss[y + off];
 	// 		}
 	// 	}
 	// }
 
-	// ivec2 size = imageSize(rawImage);
+	// ivec2 size = imageSize(finalImage);
 	// int off = KSIZE / 2;
 
 	// vec4 colors[KSIZE * KSIZE];
@@ -61,7 +50,7 @@ void main() {
 	// 	for (int y = -off; y <= off; y++) {
 	// 		ivec2 p = pos + ivec2(x, y);
 	// 		if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
-	// 			vec4 color = imageLoad(rawImage, p);
+	// 			vec4 color = imageLoad(finalImage, p);
 	// 			float csum = max(color.x, max(color.y, color.z));
 
 	// 			colors[count] = color;
@@ -88,6 +77,6 @@ void main() {
 
 	// vec4 color = colors[count/2];
 
-	vec4 color = imageLoad(rawImage, pos);
-	imageStore(finalImage, pos, color);
+	vec4 color = imageLoad(finalImage, pos);
+	imageStore(denoisedImage, pos, color);
 }

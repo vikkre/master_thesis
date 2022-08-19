@@ -1,74 +1,8 @@
 #version 460
-#extension GL_EXT_ray_tracing : enable
-#extension GL_EXT_scalar_block_layout : enable
 
+#define RAYGEN_SHADER
+#include "monte_carlo.glsl"
 
-#define PI 3.1415926538
-
-#define DEPTH 4
-#define ITERATIONS 200
-#define DIFFUSE_PART 0.5
-
-
-struct PointData {
-	vec3 pos;
-	vec3 color;
-};
-
-
-layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
-layout(binding = 2, set = 0, scalar) uniform GlobalData {
-	mat4 viewInverse;
-	mat4 projInverse;
-	mat4 view;
-	mat4 proj;
-	vec3 backgroundColor;
-	vec3 lightPosition;
-	uint lightJumpCount;
-	uint visionJumpCount;
-	float collectionDistance;
-	uint rayPerPixelCount;
-} globalData;
-layout(binding = 3, set = 0) buffer Count {uint count;} c;
-layout(binding = 4, set = 0, scalar) buffer XYZ { PointData d[]; } pointData;
-
-struct RayPayload {
-	bool miss;
-	vec3 pos;
-	vec3 normal;
-	vec3 color;
-	float diffuseThreshold;
-	float reflectThreshold;
-	float glossyThreshold;
-	float transparentThreshold;
-};
-layout(location = 0) rayPayloadEXT RayPayload rayPayload;
-
-float rand(vec3 co, int i, int v){
-	return fract(sin(dot(co, vec3(12.9898, 78.233, 38.4965)) * (v + 1.0) + i) * 43758.5453);
-}
-
-vec3 randomNormal(vec3 co, int i, int vStart) {
-	float theta = 2.0 * PI * rand(co, i, vStart);
-	float u = 2.0 * rand(co, i, vStart+1) - 1.0;
-	float suu = sqrt(1 - u*u);
-
-	return vec3(
-		suu * cos(theta),
-		suu * sin(theta),
-		u
-	);
-}
-
-vec3 randomNormalDirection(vec3 co, int i, int vStart, vec3 normal) {
-	vec3 randVec = randomNormal(co, i, vStart);
-
-	if (dot(randVec, normal) < 0.0) {
-		randVec *= -1;
-	}
-
-	return randVec;
-}
 
 void main() {
 	vec3 origin = globalData.lightPosition;
@@ -91,7 +25,7 @@ void main() {
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			uint index = atomicAdd(c.count, 1);
+			uint index = atomicAdd(count.c, 1);
 			pointData.d[index].pos = rayPayload.pos;
 			pointData.d[index].color = color;
 
@@ -108,7 +42,7 @@ void main() {
 	}
 
 	// if (!rayPayload.miss) {
-	// 	uint index = atomicAdd(c.count, 1);
+	// 	uint index = atomicAdd(count.c, 1);
 	// 	pointData.d[index].pos = rayPayload.pos;
 	// 	pointData.d[index].color = color;
 	// }

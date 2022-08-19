@@ -1,13 +1,11 @@
 #include "monte_carlo_renderer.h"
 
 
+#define RCHIT_SHADER "monte_carlo_closesthit.spv"
+#define RMISS_SHADER "monte_carlo_miss.spv"
 #define LIGHT_GEN_RGEN_SHADER  "monte_carlo_light_raygen.spv"
-#define LIGHT_GEN_RCHIT_SHADER "monte_carlo_light_closesthit.spv"
-#define LIGHT_GEN_RMISS_SHADER "monte_carlo_light_miss.spv"
 #define KD_COMP_SHADER         "monte_carlo_kd_comp.spv"
 #define VISION_RGEN_SHADER     "monte_carlo_vision_raygen.spv"
-#define VISION_RCHIT_SHADER    "monte_carlo_vision_closesthit.spv"
-#define VISION_RMISS_SHADER    "monte_carlo_vision_miss.spv"
 #define FINAL_COMP_SHADER      "monte_carlo_final_comp.spv"
 #define DENOISE_COMP_SHADER    "monte_carlo_denoise_comp.spv"
 
@@ -191,8 +189,8 @@ void MonteCarloRenderer::createDescriptorCollection() {
 
 void MonteCarloRenderer::createLightGenerationPipeline() {
 	lightGenerationPipeline.raygenShaders.push_back(LIGHT_GEN_RGEN_SHADER);
-	lightGenerationPipeline.missShaders.push_back(LIGHT_GEN_RMISS_SHADER);
-	lightGenerationPipeline.hitShaders.push_back(LIGHT_GEN_RCHIT_SHADER);
+	lightGenerationPipeline.missShaders.push_back(RMISS_SHADER);
+	lightGenerationPipeline.hitShaders.push_back(RCHIT_SHADER);
 
 	lightGenerationPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 
@@ -209,8 +207,8 @@ void MonteCarloRenderer::createKDPipeline() {
 
 void MonteCarloRenderer::createVisionPipeline() {
 	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
-	visionPipeline.missShaders.push_back(VISION_RMISS_SHADER);
-	visionPipeline.hitShaders.push_back(VISION_RCHIT_SHADER);
+	visionPipeline.missShaders.push_back(RMISS_SHADER);
+	visionPipeline.hitShaders.push_back(RCHIT_SHADER);
 
 	visionPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
 

@@ -1,22 +1,8 @@
 #version 460
-#extension GL_EXT_scalar_block_layout : enable
 
-layout(binding = 2, set = 0, scalar) uniform GlobalData {
-	mat4 viewInverse;
-	mat4 projInverse;
-	mat4 view;
-	mat4 proj;
-	vec3 backgroundColor;
-	vec3 lightPosition;
-	uint lightJumpCount;
-	uint visionJumpCount;
-	float collectionDistance;
-	uint rayPerPixelCount;
-} globalData;
-layout(binding = 6, set = 0, r32ui) uniform uimage2D rawImageRed;
-layout(binding = 7, set = 0, r32ui) uniform uimage2D rawImageGreen;
-layout(binding = 8, set = 0, r32ui) uniform uimage2D rawImageBlue;
-layout(binding = 9, set = 0, rgba8) uniform image2D finalImage;
+#define COMPUTE_SHADER
+#include "monte_carlo.glsl"
+
 
 void main() {
 	uvec4 rawColor = uvec4(0);

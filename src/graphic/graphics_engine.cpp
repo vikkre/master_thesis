@@ -2,7 +2,7 @@
 
 
 GraphicsEngine::GraphicsEngine()
-:device(), swapchain(&device), renderer(&device),
+:device(), swapchain(&device), renderer(nullptr),
 commandBuffersRecorded(false) {
 	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
 	device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
@@ -28,50 +28,30 @@ void GraphicsEngine::init() {
 	FuncLoad::init(device.getDevice());
 
 	swapchain.init();
-
-	// rtpipeline.objects = pipeline.objects;
-
-	// pipeline.init();
-	// device.renderInfo.renderPipeline = &pipeline;
-
-	// rtpipeline.init();
-	// device.renderInfo.renderPipeline = &rtpipeline;
 }
 
 void GraphicsEngine::initTlas() {
-	// rtpipeline.initTlas();
+	renderer->setOutputImageBuffer(swapchain.getInputImageBuffer());
 
-	// rtpipeline.init();
-	// device.renderInfo.renderPipeline = &rtpipeline;
-
-	renderer.init();
+	renderer->init();
 
 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer commandBuffer) {
-		this->renderer.cmdRender(index, commandBuffer);
+		this->renderer->cmdRender(index, commandBuffer);
 	});
 }
 
 void GraphicsEngine::render() {
-	// if (!commandBuffersRecorded) {
-	// 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer commandBuffer) {
-	// 		this->renderer.cmdRender(index, commandBuffer);
-	// 	});
-	// 	commandBuffersRecorded = true;
-	// }
-
 	float aspect = device.renderInfo.swapchainExtend.width / (float) device.renderInfo.swapchainExtend.height;
-	// pipeline.globalData.projectionMatrix = device.renderInfo.camera.getProjectionMatrix(aspect);
-	// pipeline.globalData.viewMatrix = device.renderInfo.camera.getViewMatrix();
 
 	Matrix4f projectionMatrix = device.renderInfo.camera.getProjectionMatrix(aspect);
 	Matrix4f viewMatrix = device.renderInfo.camera.getViewMatrix();
 
-	renderer.globalData.projInverse = projectionMatrix.inverseMatrix();
-	renderer.globalData.viewInverse = viewMatrix.inverseMatrix();
-	renderer.globalData.proj = projectionMatrix;
-	renderer.globalData.view = viewMatrix;
+	renderer->globalData.projInverse = projectionMatrix.inverseMatrix();
+	renderer->globalData.viewInverse = viewMatrix.inverseMatrix();
+	renderer->globalData.proj = projectionMatrix;
+	renderer->globalData.view = viewMatrix;
 
 	swapchain.render([this](size_t index) {
-		this->renderer.updateUniforms(index);
+		this->renderer->updateUniforms(index);
 	});
 }

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "../device.h"
 #include "buffer.h"
 #include "buffer_descriptor.h"
 

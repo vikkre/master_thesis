@@ -11,7 +11,7 @@ void main() {
 	rawColor.z = imageLoad(rawImageBlue, ivec2(gl_GlobalInvocationID.xy)).x;
 
 	vec4 color = vec4(rawColor);
-	color *= 1.0 / float(globalData.rayPerPixelCount * 255);
+	color *= 1.0 / float(renderSettings.visionRayPerPixelCount * 255);
 
 	imageStore(finalImage, ivec2(gl_GlobalInvocationID.xy), color);
 }

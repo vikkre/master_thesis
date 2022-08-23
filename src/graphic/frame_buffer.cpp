@@ -25,7 +25,7 @@ void FrameBuffer::init(const VkImage& image) {
 	device->renderInfo.swapchainImages.push_back(&this->image);
 }
 
-void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer, size_t index) {
+void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer, size_t index, ImageBuffer& inputImage) {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -49,6 +49,8 @@ void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer
 	}
 
 	recordCommandBuffer(index, renderCommandBuffer);
+
+	inputImage.cmdCopyImage(renderCommandBuffer, &this->image);
 
 	if (vkEndCommandBuffer(renderCommandBuffer) != VK_SUCCESS) {
 		throw InitException("vkEndCommandBuffer", "failed to record render command buffer!");

@@ -10,9 +10,9 @@
 PraktikumsRenderer::PraktikumsRenderer(Device* device)
 :objects(), globalData(),
 device(device), descriptorCollection(device),
-pipeline(device), rtDataPtrs(),
-tlas(device), storageImages(device),
-globalDataBuffers(device), rtDataBuffers(device) {}
+pipeline(device), objDataPtrs(),
+tlas(device),
+globalDataBuffers(device), objDataBuffers(device) {}
 
 PraktikumsRenderer::~PraktikumsRenderer() {}
 
@@ -27,11 +27,13 @@ void PraktikumsRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) 
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	pipeline.cmdExecutePipeline(commandBuffer);
-
-	storageImages.at(index).cmdCopyImage(commandBuffer, device->renderInfo.swapchainImages.at(index));
 }
 
 void PraktikumsRenderer::updateUniforms(size_t index) {
+	globalData.viewInverse = Renderer::globalData.viewInverse;
+	globalData.projInverse = Renderer::globalData.projInverse;
+	globalData.view = Renderer::globalData.view;
+	globalData.proj = Renderer::globalData.proj;
 	globalData.backgroundColor = device->renderInfo.backgroundColor;
 	globalData.lightPosition = device->renderInfo.lightPosition;
 
@@ -39,7 +41,7 @@ void PraktikumsRenderer::updateUniforms(size_t index) {
 
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects.at(i)->passBufferData(index);
-		rtDataBuffers.at(index).passData(rtDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
+		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
 }
 
@@ -47,42 +49,31 @@ void PraktikumsRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {
 		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
 		tlas.bufferProperties.blasInstances.push_back(info.instance);
-		rtDataPtrs.push_back(info.dataPtr);
+		objDataPtrs.push_back(info.dataPtr);
 	}
 
 	tlas.init();
 }
 
 void PraktikumsRenderer::createBuffers() {
-	storageImages.bufferProperties.width = device->renderInfo.swapchainExtend.width;
-	storageImages.bufferProperties.height = device->renderInfo.swapchainExtend.height;
-	storageImages.bufferProperties.format = device->renderInfo.swapchainImageFormat;
-	storageImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
-	storageImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-	storageImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	storageImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	storageImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
-	storageImages.bufferProperties.createImageView = true;
-	storageImages.init();
-
 	globalDataBuffers.bufferProperties.bufferSize = sizeof(PraktikumsRenderer::GlobalData);
 	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	globalDataBuffers.init();
 
-	rtDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * rtDataPtrs.size();
-	rtDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	rtDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	rtDataBuffers.init();
+	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();
+	objDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	objDataBuffers.init();
 }
 
 void PraktikumsRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.resize(4);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
-	descriptorCollection.bufferDescriptors.at(1) = &storageImages;
+	descriptorCollection.bufferDescriptors.at(1) = outputImages;
 	descriptorCollection.bufferDescriptors.at(2) = &globalDataBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &rtDataBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &objDataBuffers;
 
 	descriptorCollection.init();
 }

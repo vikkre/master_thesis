@@ -26,23 +26,24 @@ class MonteCarloRenderer: public Renderer {
 		MonteCarloRenderer(Device* device);
 		~MonteCarloRenderer();
 
-		void init();
-		void cmdRender(size_t index, VkCommandBuffer commandBuffer);
-		void updateUniforms(size_t index);
+		virtual void init() override;
+		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
+		virtual void updateUniforms(size_t index) override;
 
 		std::vector<GraphicsObject*> objects;
-		struct GlobalData {
-			Matrix4f viewInverse;
-			Matrix4f projInverse;
-			Matrix4f view;
-			Matrix4f proj;
+
+		struct RenderSettings {
 			Vector3f backgroundColor;
 			Vector3f lightPosition;
+			u_int32_t lightRayCount;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
 			float collectionDistance;
-			u_int32_t rayPerPixelCount;
-		} globalData;
+			u_int32_t visionRayPerPixelCount;
+			float collectionDistanceShrinkFactor;
+			u_int32_t lightCollectionCount;
+			bool useCountLightCollecton;
+		} renderSettings;
 
 	private:
 		void createTLAS();
@@ -52,7 +53,6 @@ class MonteCarloRenderer: public Renderer {
 		void createKDPipeline();
 		void createVisionPipeline();
 		void createFinalRenderPipeline();
-		void createDenoisePipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
@@ -60,18 +60,16 @@ class MonteCarloRenderer: public Renderer {
 		ComputePipeline kdPipeline;
 		RayTracingPipeline visionPipeline;
 		ComputePipeline finalRenderPipeline;
-		ComputePipeline denoisePipeline;
-		std::vector<void*> rtDataPtrs;
+		std::vector<void*> objDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
 		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
 		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
 		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
-		MultiBufferDescriptor<ImageBuffer> renderedImages;
-		MultiBufferDescriptor<ImageBuffer> finalImages;
 		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
+		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
 		MultiBufferDescriptor<DataBuffer> countBuffers;
 		MultiBufferDescriptor<DataBuffer> lightPointBuffers;
 		MultiBufferDescriptor<DataBuffer> kdBuffers;
-		MultiBufferDescriptor<DataBuffer> rtDataBuffers;
+		MultiBufferDescriptor<DataBuffer> objDataBuffers;
 };

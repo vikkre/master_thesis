@@ -6,6 +6,8 @@
 #include <functional>
 
 #include "frame_buffer.h"
+#include "helper/image_buffer.h"
+#include "helper/multi_buffer_descriptor.h"
 
 #include "../init_exception.h"
 
@@ -20,6 +22,7 @@ class Swapchain {
 		void init();
 		void recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer);
 		void render(std::function<void(size_t)> updateUniform);
+		MultiBufferDescriptor<ImageBuffer>* getInputImageBuffer();
 
 		const FrameBuffer& getFrame(size_t index) const;
 
@@ -33,11 +36,15 @@ class Swapchain {
 		void createImageViews();
 		void createRenderPass();
 		void createSyncObjects();
+		void createInputImages();
 
 		Device* device;
 
+		VkExtent2D swapchainExtend;
+		VkFormat swapchainImageFormat;
 		VkSwapchainKHR swapchain;
 
+		MultiBufferDescriptor<ImageBuffer> inputImages;
 		std::vector<FrameBuffer> frames;
 
 		std::vector<VkSemaphore> imageAvailableSemaphores;

@@ -1,0 +1,43 @@
+#version 460
+
+layout(binding = 0, set = 0, rgba8) uniform image2D rawImage;
+layout(binding = 1, set = 0, rgba8) uniform image2D resultImage;
+
+
+#define KSIZE 7
+#define SIGMA 0.8
+
+
+void main() {
+	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+
+	float gauss[KSIZE];
+	float sum = 0.0;
+	for (uint i = 0; i < KSIZE; i++) {
+		float a = (float(i) - (float(KSIZE) - 1.0));
+		a = a*a;
+		float b = (2.0 * SIGMA * SIGMA);
+		float r = exp(-a/b);
+		gauss[i] = r;
+		sum += r;
+	}
+	sum = 1.0/sum;
+	for (uint i = 0; i < KSIZE; i++) {
+		gauss[i] *= sum;
+	}
+
+	vec4 color = vec4(0.0);
+	ivec2 size = imageSize(rawImage);
+	int off = KSIZE / 2;
+
+	for (int x = -off; x <= off; x++) {
+		for (int y = -off; y <= off; y++) {
+			ivec2 p = pos + ivec2(x, y);
+			if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
+				color += imageLoad(rawImage, p) * gauss[x + off] * gauss[y + off];
+			}
+		}
+	}
+
+	imageStore(resultImage, pos, color);
+}

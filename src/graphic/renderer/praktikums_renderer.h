@@ -46,10 +46,9 @@ class PraktikumsRenderer: public Renderer {
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline pipeline;
-		std::vector<void*> rtDataPtrs;
+		std::vector<void*> objDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
-		MultiBufferDescriptor<ImageBuffer> storageImages;
 		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
-		MultiBufferDescriptor<DataBuffer> rtDataBuffers;
+		MultiBufferDescriptor<DataBuffer> objDataBuffers;
 };

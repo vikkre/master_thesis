@@ -7,6 +7,7 @@
 #include "window/sdl_window.h"
 #include "camera.h"
 #include "helper/function_load.h"
+#include "renderer/renderer.h"
 #include "renderer/praktikums_renderer.h"
 #include "renderer/monte_carlo_renderer.h"
 
@@ -22,8 +23,7 @@ class GraphicsEngine {
 
 		Device device;
 		Swapchain swapchain;
-		// PraktikumsRenderer renderer;
-		MonteCarloRenderer renderer;
+		Renderer* renderer;
 
 		bool commandBuffersRecorded;
 };

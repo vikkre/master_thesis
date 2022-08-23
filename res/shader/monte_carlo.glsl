@@ -9,10 +9,6 @@
 
 #define LIGHT_COLLECTION_INDEX_STACK_SIZE 1000
 #define LIGHT_COLLECTION_DATA_ARRAY_SIZE 100
-#define DISTANCE_NORMAL_MULTIPLICATOR 5.0
-#define LIGHT_COLLECTION_COUNT 10
-
-const bool use_count_light_collecton = false;
 
 
 struct PointData {
@@ -52,21 +48,26 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 	mat4 projInverse;
 	mat4 view;
 	mat4 proj;
+} globalData;
+layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	vec3 backgroundColor;
 	vec3 lightPosition;
+	uint lightRayCount;
 	uint lightJumpCount;
 	uint visionJumpCount;
 	float collectionDistance;
-	uint rayPerPixelCount;
-} globalData;
-layout(binding = 3, set = 0) buffer Count {uint c;} count;
-layout(binding = 4, set = 0, scalar) buffer PD { PointData d[]; } pointData;
-layout(binding = 5, set = 0, scalar) buffer KDD { KDData d[]; } kdData;
-layout(binding = 6, set = 0, r32ui) uniform uimage2D rawImageRed;
-layout(binding = 7, set = 0, r32ui) uniform uimage2D rawImageGreen;
-layout(binding = 8, set = 0, r32ui) uniform uimage2D rawImageBlue;
-layout(binding = 9, set = 0, rgba8) uniform image2D finalImage;
-layout(binding = 10, set = 0, rgba8) uniform image2D denoisedImage;
+	uint visionRayPerPixelCount;
+	float collectionDistanceShrinkFactor;
+	uint lightCollectionCount;
+	bool useCountLightCollecton;
+} renderSettings;
+layout(binding = 4, set = 0) buffer Count {uint c;} count;
+layout(binding = 5, set = 0, scalar) buffer PD { PointData d[]; } pointData;
+layout(binding = 6, set = 0, scalar) buffer KDD { KDData d[]; } kdData;
+layout(binding = 7, set = 0, r32ui) uniform uimage2D rawImageRed;
+layout(binding = 8, set = 0, r32ui) uniform uimage2D rawImageGreen;
+layout(binding = 9, set = 0, r32ui) uniform uimage2D rawImageBlue;
+layout(binding = 10, set = 0, rgba8) uniform image2D finalImage;
 
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };

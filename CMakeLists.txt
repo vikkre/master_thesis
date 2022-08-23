@@ -45,7 +45,9 @@ add_shader(monte_carlo_light_raygen.spv  monte_carlo_light_raygen.rgen  monte_ca
 add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       monte_carlo.glsl )
 add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen monte_carlo.glsl )
 add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    monte_carlo.glsl )
-add_shader(monte_carlo_denoise_comp.spv  monte_carlo_denoise_comp.comp  monte_carlo.glsl )
+
+add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
+add_shader(denoise_median_comp.spv denoise_median_comp.comp )
 
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})

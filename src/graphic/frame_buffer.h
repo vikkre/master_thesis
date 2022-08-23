@@ -17,7 +17,7 @@ class FrameBuffer {
 		~FrameBuffer();
 
 		void init(const VkImage& image);
-		void recordCommandBuffer(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer, size_t index);
+		void recordCommandBuffer(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer, size_t index, ImageBuffer& inputImage);
 
 		const ImageBuffer& getImage() const;
 		const VkFramebuffer& getFrameBuffer() const;

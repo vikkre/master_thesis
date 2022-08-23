@@ -5,5 +5,5 @@
 
 void main() {
 	rayPayload.miss = true;
-	rayPayload.color = globalData.backgroundColor;
+	rayPayload.color = renderSettings.backgroundColor;
 }

@@ -10,7 +10,7 @@ void main() {
 	Indices indices      = Indices(obj.indexAddress);
 	Vertices vertices    = Vertices(obj.vertexAddress);
 
-	const vec3 barycentricCoords = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
+	vec3 barycentricCoords = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
 
 	ivec3 ind = indices.i[gl_PrimitiveID];
 	Vertex v0 = vertices.v[ind.x];

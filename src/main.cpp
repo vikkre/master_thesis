@@ -10,6 +10,8 @@
 #include "graphic/mesh.h"
 #include "graphic/graphics_object.h"
 #include "graphic/helper/top_acceleration_structure_buffer.h"
+#include "graphic/renderer/monte_carlo_renderer.h"
+#include "graphic/renderer/praktikums_renderer.h"
 
 #include "init_exception.h"
 #include "mesh_manager.h"
@@ -51,7 +53,23 @@ int main() {
 	meshManager->createCornellBox();
 	meshManager->createCornellBoxBlocks(0.0f);
 
-	engine->renderer.objects = meshManager->getCreatedObjects();
+	MonteCarloRenderer* monteCarloRenderer = new MonteCarloRenderer(&engine->device);
+
+	monteCarloRenderer->renderSettings.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
+	monteCarloRenderer->renderSettings.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
+	monteCarloRenderer->renderSettings.lightRayCount = 250;
+	monteCarloRenderer->renderSettings.lightJumpCount = 5;
+	monteCarloRenderer->renderSettings.visionJumpCount = 5;
+	monteCarloRenderer->renderSettings.collectionDistance = 0.4f;
+	monteCarloRenderer->renderSettings.visionRayPerPixelCount = 30;
+
+	monteCarloRenderer->renderSettings.collectionDistanceShrinkFactor = 5.0f;
+	monteCarloRenderer->renderSettings.lightCollectionCount = 10;
+	monteCarloRenderer->renderSettings.useCountLightCollecton = false;
+
+	monteCarloRenderer->objects = meshManager->getCreatedObjects();
+
+	engine->renderer = monteCarloRenderer;
 	engine->initTlas();
 
 
@@ -85,6 +103,7 @@ int main() {
 		SDL_Delay(100);
 	}
 
+	delete monteCarloRenderer;
 	delete meshManager;
 	delete engine;
 

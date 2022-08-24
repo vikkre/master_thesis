@@ -9,7 +9,10 @@ commandBuffersRecorded(false) {
 	device.renderInfo.camera.lookAt   = Vector3f({0.0f, 0.0f, 0.0f});
 }
 
-GraphicsEngine::~GraphicsEngine() {}
+GraphicsEngine::~GraphicsEngine() {
+	for (Denoiser* denoiser: denoisers) delete denoiser;
+	delete renderer;
+}
 
 void GraphicsEngine::init() {
 	SDLWindow* sdlWindow = new SDLWindow();

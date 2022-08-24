@@ -26,6 +26,10 @@ void MedianDenoiser::updateUniforms(size_t index) {
 	settingsBuffers.at(index).passData((void*) &settings);
 }
 
+void MedianDenoiser::parseInput(const InputEntry& inputEntry) {
+	settings.kernelSize = inputEntry.getInt("kernelSize");
+}
+
 void MedianDenoiser::createBuffers() {
 	settingsBuffers.bufferProperties.bufferSize = sizeof(MedianDenoiser::Settings);
 	settingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;

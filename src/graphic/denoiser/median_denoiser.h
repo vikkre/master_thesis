@@ -20,6 +20,8 @@ class MedianDenoiser: public Denoiser {
 		virtual void initDenoiser() override;
 		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
 		virtual void updateUniforms(size_t index) override;
+		virtual void parseInput(const InputEntry& inputEntry) override;
+		
 	private:
 		void createBuffers();
 		void createDescriptorCollection();

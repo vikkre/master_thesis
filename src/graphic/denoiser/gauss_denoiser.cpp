@@ -26,6 +26,11 @@ void GaussDenoiser::updateUniforms(size_t index) {
 	settingsBuffers.at(index).passData((void*) &settings);
 }
 
+void GaussDenoiser::parseInput(const InputEntry& inputEntry) {
+	settings.kernelSize = inputEntry.getInt("kernelSize");
+	settings.sigma = inputEntry.getFloat("sigma");
+}
+
 void GaussDenoiser::createBuffers() {
 	settingsBuffers.bufferProperties.bufferSize = sizeof(GaussDenoiser::Settings);
 	settingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;

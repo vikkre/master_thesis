@@ -24,10 +24,9 @@ struct KDData {
 
 
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
-:objects(),
-device(device), descriptorCollection(device),
+:device(device), descriptorCollection(device),
 lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device),
-objDataPtrs(),
+objects(), objDataPtrs(),
 tlas(device), storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
 globalDataBuffers(device), renderSettingsBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device), objDataBuffers(device) {}
@@ -77,6 +76,23 @@ void MonteCarloRenderer::updateUniforms(size_t index) {
 		objects.at(i)->passBufferData(index);
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
+}
+
+void MonteCarloRenderer::passObjects(const std::vector<GraphicsObject*>& objects) {
+	this->objects = objects;
+}
+
+void MonteCarloRenderer::parseInput(const InputEntry& inputEntry) {
+	renderSettings.backgroundColor = inputEntry.getVector3f("backgroundColor");
+	renderSettings.lightPosition = inputEntry.getVector3f("lightPosition");
+	renderSettings.lightRayCount = inputEntry.getInt("lightRayCount");
+	renderSettings.lightJumpCount = inputEntry.getInt("lightJumpCount");
+	renderSettings.visionJumpCount = inputEntry.getInt("visionJumpCount");
+	renderSettings.collectionDistance = inputEntry.getFloat("collectionDistance");
+	renderSettings.visionRayPerPixelCount = inputEntry.getInt("visionRayPerPixelCount");
+	renderSettings.collectionDistanceShrinkFactor = inputEntry.getFloat("collectionDistanceShrinkFactor");
+	renderSettings.lightCollectionCount = inputEntry.getInt("lightCollectionCount");
+	renderSettings.useCountLightCollecton = inputEntry.getInt("useCountLightCollecton");
 }
 
 void MonteCarloRenderer::createTLAS() {

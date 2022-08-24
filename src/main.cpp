@@ -17,6 +17,7 @@
 
 #include "init_exception.h"
 #include "mesh_manager.h"
+#include "input_parser.h"
 
 #include "math/vector.h"
 #include "math/matrix.h"
@@ -34,6 +35,17 @@ int64_t measureExecTimeMicroseconds(std::function<void()> exec) {
 
 float microsecondsToSeconds(int64_t microseconds) {
 	return float(microseconds) / (1000.0f * 1000.0f);
+}
+
+Renderer* getRenderer(const std::string& name, Device* device) {
+	if (name == "MonteCarloRenderer") return new MonteCarloRenderer(device);
+	else return nullptr;
+}
+
+Denoiser* getDenoiser(const std::string& name, Device* device) {
+	if      (name == "GaussDenoiser")  return new GaussDenoiser(device);
+	else if (name == "MedianDenoiser") return new MedianDenoiser(device);
+	else return nullptr;
 }
 
 
@@ -55,33 +67,51 @@ int main() {
 	meshManager->createCornellBox();
 	meshManager->createCornellBoxBlocks(0.0f);
 
-	MonteCarloRenderer* monteCarloRenderer = new MonteCarloRenderer(&engine->device);
+	InputParser parser("../res/renderer/full_monte_carlo.renderer");
+	parser.parse();
 
-	monteCarloRenderer->renderSettings.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
-	monteCarloRenderer->renderSettings.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
-	monteCarloRenderer->renderSettings.lightRayCount = 250;
-	monteCarloRenderer->renderSettings.lightJumpCount = 5;
-	monteCarloRenderer->renderSettings.visionJumpCount = 5;
-	monteCarloRenderer->renderSettings.collectionDistance = 0.4f;
-	monteCarloRenderer->renderSettings.visionRayPerPixelCount = 30;
+	engine->renderer = getRenderer(parser.getInputEntry(0).name, &engine->device);
+	engine->renderer->parseInput(parser.getInputEntry(0));
+	engine->renderer->passObjects(meshManager->getCreatedObjects());
 
-	monteCarloRenderer->renderSettings.collectionDistanceShrinkFactor = 5.0f;
-	monteCarloRenderer->renderSettings.lightCollectionCount = 10;
-	monteCarloRenderer->renderSettings.useCountLightCollecton = false;
+	for (unsigned int i = 1; i < parser.size(); ++i) {
+		const InputEntry& inputEntry = parser.getInputEntry(i);
+		Denoiser* denoiser = getDenoiser(inputEntry.name, &engine->device);
+		denoiser->parseInput(inputEntry);
+		engine->denoisers.push_back(denoiser);
+	}
 
-	monteCarloRenderer->objects = meshManager->getCreatedObjects();
-
-	GaussDenoiser* gaussDenoiser = new GaussDenoiser(&engine->device);
-	gaussDenoiser->settings.kernelSize = 7;
-	gaussDenoiser->settings.sigma = 0.8f;
-
-	MedianDenoiser* medianDenoiser = new MedianDenoiser(&engine->device);
-	medianDenoiser->settings.kernelSize = 7;
-
-	engine->renderer = monteCarloRenderer;
-	engine->denoisers.push_back(gaussDenoiser);
-	engine->denoisers.push_back(medianDenoiser);
+	// engine->renderer->objects = meshManager->getCreatedObjects();
+	// engine->denoisers.push_back(gaussDenoiser);
+	// engine->denoisers.push_back(medianDenoiser);
 	engine->initTlas();
+
+	// MonteCarloRenderer* monteCarloRenderer = new MonteCarloRenderer(&engine->device);
+
+	// monteCarloRenderer->renderSettings.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
+	// monteCarloRenderer->renderSettings.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
+	// monteCarloRenderer->renderSettings.lightRayCount = 250;
+	// monteCarloRenderer->renderSettings.lightJumpCount = 5;
+	// monteCarloRenderer->renderSettings.visionJumpCount = 5;
+	// monteCarloRenderer->renderSettings.collectionDistance = 0.4f;
+	// monteCarloRenderer->renderSettings.visionRayPerPixelCount = 30;
+	// monteCarloRenderer->renderSettings.collectionDistanceShrinkFactor = 5.0f;
+	// monteCarloRenderer->renderSettings.lightCollectionCount = 10;
+	// monteCarloRenderer->renderSettings.useCountLightCollecton = false;
+
+	// monteCarloRenderer->objects = meshManager->getCreatedObjects();
+
+	// GaussDenoiser* gaussDenoiser = new GaussDenoiser(&engine->device);
+	// gaussDenoiser->settings.kernelSize = 7;
+	// gaussDenoiser->settings.sigma = 0.8f;
+
+	// MedianDenoiser* medianDenoiser = new MedianDenoiser(&engine->device);
+	// medianDenoiser->settings.kernelSize = 7;
+
+	// engine->renderer = monteCarloRenderer;
+	// engine->denoisers.push_back(gaussDenoiser);
+	// engine->denoisers.push_back(medianDenoiser);
+	// engine->initTlas();
 
 
 	SDL_Event event;
@@ -114,9 +144,9 @@ int main() {
 		SDL_Delay(100);
 	}
 
-	delete medianDenoiser;
-	delete gaussDenoiser;
-	delete monteCarloRenderer;
+	// delete medianDenoiser;
+	// delete gaussDenoiser;
+	// delete monteCarloRenderer;
 	delete meshManager;
 	delete engine;
 

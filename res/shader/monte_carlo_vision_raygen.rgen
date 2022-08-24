@@ -149,7 +149,7 @@ void main() {
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			if (renderSettings.useCountLightCollecton) {
+			if (renderSettings.useCountLightCollecton == 1) {
 				outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
 				break;
 			} else {
@@ -174,7 +174,7 @@ void main() {
 		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, int(renderSettings.visionJumpCount), 0);
 
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			if (renderSettings.useCountLightCollecton) {
+			if (renderSettings.useCountLightCollecton == 1) {
 				// outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
 			} else {
 				outColor += rayColor * getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);

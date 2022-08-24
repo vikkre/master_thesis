@@ -23,11 +23,12 @@ class PraktikumsRenderer: public Renderer {
 		PraktikumsRenderer(Device* device);
 		~PraktikumsRenderer();
 
-		void init();
-		void cmdRender(size_t index, VkCommandBuffer commandBuffer);
-		void updateUniforms(size_t index);
+		virtual void init() override;
+		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
+		virtual void updateUniforms(size_t index) override;
+		virtual void passObjects(const std::vector<GraphicsObject*>& objects) override;
+		virtual void parseInput(const InputEntry& inputEntry) override;
 
-		std::vector<GraphicsObject*> objects;
 		struct GlobalData {
 			Matrix4f viewInverse;
 			Matrix4f projInverse;
@@ -46,6 +47,8 @@ class PraktikumsRenderer: public Renderer {
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline pipeline;
+
+		std::vector<GraphicsObject*> objects;
 		std::vector<void*> objDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;

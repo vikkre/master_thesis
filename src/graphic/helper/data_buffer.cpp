@@ -164,7 +164,7 @@ void DataBuffer::createBuffer(VkBufferUsageFlags usage, VkMemoryPropertyFlags pr
 	allocInfo.memoryTypeIndex = device->findMemoryType(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device->getDevice(), &allocInfo, nullptr, &dstMemory) != VK_SUCCESS) {
-		throw InitException("vkAllocateMemory", "");
+		throw InitException("vkAllocateMemory", "could not allocate buffer memory");
 	}
 
 	vkBindBufferMemory(device->getDevice(), dstBuffer, dstMemory, 0);

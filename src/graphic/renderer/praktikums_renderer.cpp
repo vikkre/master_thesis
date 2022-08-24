@@ -8,9 +8,9 @@
 
 
 PraktikumsRenderer::PraktikumsRenderer(Device* device)
-:objects(), globalData(),
+:globalData(),
 device(device), descriptorCollection(device),
-pipeline(device), objDataPtrs(),
+pipeline(device), objects(), objDataPtrs(),
 tlas(device),
 globalDataBuffers(device), objDataBuffers(device) {}
 
@@ -44,6 +44,12 @@ void PraktikumsRenderer::updateUniforms(size_t index) {
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
 }
+
+void PraktikumsRenderer::passObjects(const std::vector<GraphicsObject*>& objects) {
+	this->objects = objects;
+}
+
+void PraktikumsRenderer::parseInput(const InputEntry& inputEntry) {}
 
 void PraktikumsRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {

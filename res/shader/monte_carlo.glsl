@@ -59,7 +59,7 @@ layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	uint visionRayPerPixelCount;
 	float collectionDistanceShrinkFactor;
 	uint lightCollectionCount;
-	bool useCountLightCollecton;
+	uint useCountLightCollecton;
 } renderSettings;
 layout(binding = 4, set = 0) buffer Count {uint c;} count;
 layout(binding = 5, set = 0, scalar) buffer PD { PointData d[]; } pointData;

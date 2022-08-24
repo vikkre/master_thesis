@@ -8,8 +8,9 @@
 #include "camera.h"
 #include "helper/function_load.h"
 #include "renderer/renderer.h"
-#include "renderer/praktikums_renderer.h"
-#include "renderer/monte_carlo_renderer.h"
+#include "denoiser/denoiser.h"
+// #include "renderer/praktikums_renderer.h"
+// #include "renderer/monte_carlo_renderer.h"
 
 
 class GraphicsEngine {
@@ -24,6 +25,7 @@ class GraphicsEngine {
 		Device device;
 		Swapchain swapchain;
 		Renderer* renderer;
+		std::vector<Denoiser*> denoisers;
 
 		bool commandBuffersRecorded;
 };

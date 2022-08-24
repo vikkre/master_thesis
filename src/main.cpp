@@ -12,6 +12,8 @@
 #include "graphic/helper/top_acceleration_structure_buffer.h"
 #include "graphic/renderer/monte_carlo_renderer.h"
 #include "graphic/renderer/praktikums_renderer.h"
+#include "graphic/denoiser/gauss_denoiser.h"
+#include "graphic/denoiser/median_denoiser.h"
 
 #include "init_exception.h"
 #include "mesh_manager.h"
@@ -69,7 +71,16 @@ int main() {
 
 	monteCarloRenderer->objects = meshManager->getCreatedObjects();
 
+	GaussDenoiser* gaussDenoiser = new GaussDenoiser(&engine->device);
+	gaussDenoiser->settings.kernelSize = 7;
+	gaussDenoiser->settings.sigma = 0.8f;
+
+	MedianDenoiser* medianDenoiser = new MedianDenoiser(&engine->device);
+	medianDenoiser->settings.kernelSize = 7;
+
 	engine->renderer = monteCarloRenderer;
+	engine->denoisers.push_back(gaussDenoiser);
+	engine->denoisers.push_back(medianDenoiser);
 	engine->initTlas();
 
 
@@ -103,6 +114,8 @@ int main() {
 		SDL_Delay(100);
 	}
 
+	delete medianDenoiser;
+	delete gaussDenoiser;
 	delete monteCarloRenderer;
 	delete meshManager;
 	delete engine;

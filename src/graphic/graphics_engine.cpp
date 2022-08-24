@@ -2,7 +2,7 @@
 
 
 GraphicsEngine::GraphicsEngine()
-:device(), swapchain(&device), renderer(nullptr),
+:device(), swapchain(&device), renderer(nullptr), denoisers(),
 commandBuffersRecorded(false) {
 	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
 	device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
@@ -31,12 +31,23 @@ void GraphicsEngine::init() {
 }
 
 void GraphicsEngine::initTlas() {
-	renderer->setOutputImageBuffer(swapchain.getInputImageBuffer());
+	MultiBufferDescriptor<ImageBuffer>* currentImageBuffer = swapchain.getInputImageBuffer();
+	for (int i = denoisers.size() - 1; i >= 0; --i) {
+		Denoiser* denoiser = denoisers[i];
+
+		denoiser->setOutputImageBuffer(currentImageBuffer);
+		denoiser->init();
+		currentImageBuffer = denoiser->getInputImageBuffer();
+	}
+	renderer->setOutputImageBuffer(currentImageBuffer);
 
 	renderer->init();
 
 	swapchain.recordCommandBuffers([this](size_t index, VkCommandBuffer commandBuffer) {
 		this->renderer->cmdRender(index, commandBuffer);
+		for (Denoiser* denoiser: denoisers) {
+			denoiser->cmdRender(index, commandBuffer);
+		}
 	});
 }
 
@@ -53,5 +64,8 @@ void GraphicsEngine::render() {
 
 	swapchain.render([this](size_t index) {
 		this->renderer->updateUniforms(index);
+		for (Denoiser* denoiser: denoisers) {
+			denoiser->updateUniforms(index);
+		}
 	});
 }

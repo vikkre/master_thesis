@@ -1,34 +1,39 @@
 #version 460
 
+#extension GL_EXT_scalar_block_layout: enable
+
 layout(binding = 0, set = 0, rgba8) uniform image2D rawImage;
 layout(binding = 1, set = 0, rgba8) uniform image2D resultImage;
+layout(binding = 2, set = 0, scalar) uniform Settings {
+	uint kernelSize;
+	float sigma;
+} settings;
 
 
-#define KSIZE 7
-#define SIGMA 0.8
+#define GAUSS_ARRAY_MAX_SIZE 20
 
 
 void main() {
 	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
 
-	float gauss[KSIZE];
+	float gauss[GAUSS_ARRAY_MAX_SIZE];
 	float sum = 0.0;
-	for (uint i = 0; i < KSIZE; i++) {
-		float a = (float(i) - (float(KSIZE) - 1.0));
+	for (uint i = 0; i < settings.kernelSize; i++) {
+		float a = (float(i) - (float(settings.kernelSize) - 1.0));
 		a = a*a;
-		float b = (2.0 * SIGMA * SIGMA);
+		float b = (2.0 * settings.sigma * settings.sigma);
 		float r = exp(-a/b);
 		gauss[i] = r;
 		sum += r;
 	}
 	sum = 1.0/sum;
-	for (uint i = 0; i < KSIZE; i++) {
+	for (uint i = 0; i < settings.kernelSize; i++) {
 		gauss[i] *= sum;
 	}
 
 	vec4 color = vec4(0.0);
 	ivec2 size = imageSize(rawImage);
-	int off = KSIZE / 2;
+	int off = int(settings.kernelSize / 2.0);
 
 	for (int x = -off; x <= off; x++) {
 		for (int y = -off; y <= off; y++) {

@@ -7,6 +7,7 @@
 
 #include "init_exception.h"
 #include "math/vector.h"
+#include "math/rotation.h"
 
 #define RawInputEntry std::pair<std::string, std::vector<std::string>>
 
@@ -16,10 +17,12 @@ class InputEntry {
 		~InputEntry();
 
 		void insert(const RawInputEntry& rawInputEntry);
+		bool keyExists(const std::string& key) const;
 		
 		int getInt(const std::string& key) const;
 		float getFloat(const std::string& key) const;
 		Vector3f getVector3f(const std::string& key) const;
+		Rotation getRotation(const std::string& key) const;
 
 		std::string name;
 	private:

@@ -10,9 +10,9 @@ MonteCarloRenderer
 	lightCollectionCount(10)
 	useCountLightCollecton(0)
 
-GaussDenoiser
-	kernelSize(7)
-	sigma(0.8)
+#GaussDenoiser
+#	kernelSize(7)
+#	sigma(0.8)
 
-MedianDenoiser
-	kernelSize(7)
+#MedianDenoiser
+#	kernelSize(7)

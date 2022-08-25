@@ -67,10 +67,9 @@ int main(int /* argc */, char* argv[]) {
 	engine->device.renderInfo.camera.position = Vector3f({22.0f, 0.0f, 0.0f});
 
 	MeshManager* meshManager = new MeshManager(&engine->device, basepath);
-	meshManager->init();
 
-	meshManager->createCornellBox();
-	meshManager->createCornellBoxBlocks(0.0f);
+	// meshManager->createObjectsFromFile("../res/scene/cornell_box.scene");
+	meshManager->createObjectsFromFile("../res/scene/cornell_box_with_blocks.scene");
 
 	InputParser parser(basepath + "../res/renderer/full_monte_carlo.renderer");
 	parser.parse();

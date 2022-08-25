@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "graphic/device.h"
 #include "graphic/mesh.h"
 #include "graphic/graphics_object.h"
 
+#include "input_parser.h"
 #include "stl_loader.h"
 #include "obj_loader.h"
 
@@ -23,6 +25,8 @@ class MeshManager {
 
 		void init();
 		void initTeethMesh();
+		Mesh* getMesh(const std::string& name);
+		void createObjectsFromFile(const std::string filename);
 
 		std::vector<GraphicsObject*> getCreatedObjects() const { return createdObjects; }
 
@@ -33,18 +37,6 @@ class MeshManager {
 		Device* device;
 		std::string basepath;
 
-		std::vector<Mesh*> loadedMeshes;
+		std::unordered_map<std::string, Mesh*> meshes;
 		std::vector<GraphicsObject*> createdObjects;
-
-		Mesh* block;
-		Mesh* ball;
-		Mesh* upperTeeth;
-		Mesh* lowerTeeth;
-
-	public:
-		void createBlocksAndBall(float reflect);
-		void createTeeth(float reflect);
-
-		void createCornellBox();
-		void createCornellBoxBlocks(float reflect);
 };

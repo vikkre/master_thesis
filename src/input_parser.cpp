@@ -13,6 +13,10 @@ void InputEntry::insert(const RawInputEntry& rawInputEntry) {
 	data.insert(rawInputEntry);
 }
 
+bool InputEntry::keyExists(const std::string& key) const {
+	return data.count(key) > 0;
+}
+
 int InputEntry::getInt(const std::string& key) const {
 	return std::stoi(data.at(key).at(0));
 }
@@ -27,6 +31,14 @@ Vector3f InputEntry::getVector3f(const std::string& key) const {
 		std::stof(data.at(key).at(1)),
 		std::stof(data.at(key).at(2))
 	});
+}
+
+Rotation InputEntry::getRotation(const std::string& key) const {
+	return Rotation(Vector3f({
+		std::stof(data.at(key).at(0)),
+		std::stof(data.at(key).at(1)),
+		std::stof(data.at(key).at(2))
+	}), std::stof(data.at(key).at(3)));
 }
 
 

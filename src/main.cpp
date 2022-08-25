@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
+#include <stdio.h>
+#include <unistd.h>
 
 #include "graphic/device.h"
 #include "graphic/graphics_engine.h"
@@ -49,25 +51,28 @@ Denoiser* getDenoiser(const std::string& name, Device* device) {
 }
 
 
-int main() {
+int main(int /* argc */, char* argv[]) {
+	const std::string execpath = argv[0];
+	const std::string basepath = execpath.substr(0, execpath.size() - sizeof("RayTrace") + 1);
+
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		InitException("SDL_Init", SDL_GetError());
 	}
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 
-	GraphicsEngine* engine = new GraphicsEngine();
+	GraphicsEngine* engine = new GraphicsEngine(basepath);
 	engine->init();
 
 	engine->device.renderInfo.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
 	engine->device.renderInfo.camera.position = Vector3f({22.0f, 0.0f, 0.0f});
 
-	MeshManager* meshManager = new MeshManager(&engine->device);
+	MeshManager* meshManager = new MeshManager(&engine->device, basepath);
 	meshManager->init();
 
 	meshManager->createCornellBox();
 	meshManager->createCornellBoxBlocks(0.0f);
 
-	InputParser parser("../res/renderer/full_monte_carlo.renderer");
+	InputParser parser(basepath + "../res/renderer/full_monte_carlo.renderer");
 	parser.parse();
 
 	engine->renderer = getRenderer(parser.getInputEntry(0).name, &engine->device);

@@ -36,9 +36,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL validationLayerCallback(VkDebugUtilsMessageSeveri
 }
 
 
-Device::Device()
+Device::Device(const std::string& basepath)
 :enableValidationLayers(false),
-validationLayers(), severityFlags(), extensions(),
+validationLayers(), severityFlags(), extensions(), deviceExtensions(),
+window(nullptr), renderInfo(), basepath(basepath),
 vkCreateDebugUtilsMessengerEXT(VK_NULL_HANDLE), vkDestroyDebugUtilsMessengerEXT(VK_NULL_HANDLE),
 instance(VK_NULL_HANDLE), debugMessenger(VK_NULL_HANDLE), queues(this) {}
 

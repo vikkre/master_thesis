@@ -4,42 +4,6 @@
 #include "device.h"
 
 
-std::vector<char> readFile(const std::string& filename) {
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-	if (!file.is_open()) {
-		std::string text = "failed to open file \"";
-		text += filename;
-		text += "\"!";
-		throw InitException("Pipeline readFile", text);
-	}
-
-	size_t fileSize = (size_t) file.tellg();
-	std::vector<char> buffer(fileSize);
-
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
-
-	file.close();
-
-	return buffer;
-}
-
-VkShaderModule createShaderModule(VkDevice device, const std::vector<char>& code) {
-	VkShaderModuleCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-		throw InitException("vkCreateShaderModule", "failed to create shader module!");
-	}
-
-	return shaderModule;
-}
-
-
 RayTracingPipeline::RayTracingPipeline(Device* device)
 :raygenShaders(), missShaders(), hitShaders(),
 width(1), height(1), depth(1), pipelineLayout(VK_NULL_HANDLE),
@@ -160,7 +124,7 @@ void RayTracingPipeline::createRayTracingPipeline() {
 	for (const std::string& shaderCode: hitShaders)    shaderStages.push_back({readFile(shaderCode), VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
 
 	for (const ShaderStage& shaderStage: shaderStages) {
-		VkShaderModule shaderModule = createShaderModule(device->getDevice(), shaderStage.shaderCode);
+		VkShaderModule shaderModule = createShaderModule(shaderStage.shaderCode);
 		shaderModules.push_back(shaderModule);
 
 		VkPipelineShaderStageCreateInfo shaderStageInfo{};
@@ -208,4 +172,39 @@ void RayTracingPipeline::createRayTracingPipeline() {
 
 uint32_t RayTracingPipeline::alignedSize(uint32_t size, uint32_t alignment) {
 	return (size + alignment - 1) & ~(alignment - 1);
+}
+
+std::vector<char> RayTracingPipeline::readFile(const std::string& filename) {
+	std::ifstream file(device->basepath + filename, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open()) {
+		std::string text = "failed to open file \"";
+		text += filename;
+		text += "\"!";
+		throw InitException("Pipeline readFile", text);
+	}
+
+	size_t fileSize = (size_t) file.tellg();
+	std::vector<char> buffer(fileSize);
+
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+
+	file.close();
+
+	return buffer;
+}
+
+VkShaderModule RayTracingPipeline::createShaderModule(const std::vector<char>& code) {
+	VkShaderModuleCreateInfo createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.codeSize = code.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+	VkShaderModule shaderModule;
+	if (vkCreateShaderModule(device->getDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+		throw InitException("vkCreateShaderModule", "failed to create shader module!");
+	}
+
+	return shaderModule;
 }

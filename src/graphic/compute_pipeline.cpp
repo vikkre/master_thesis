@@ -19,7 +19,7 @@ void ComputePipeline::cmdExecutePipeline(VkCommandBuffer commandBuffer) {
 }
 
 void ComputePipeline::createPipeline() {
-	std::ifstream file(shaderPath, std::ios::ate | std::ios::binary);
+	std::ifstream file(device->basepath + shaderPath, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open()) {
 		std::string text = "failed to open file \"";

@@ -18,7 +18,7 @@
 
 class MeshManager {
 	public:
-		MeshManager(Device* device);
+		MeshManager(Device* device, const std::string& basepath);
 		~MeshManager();
 
 		void init();
@@ -31,6 +31,7 @@ class MeshManager {
 		Mesh* loadStl(const std::string& filename);
 
 		Device* device;
+		std::string basepath;
 
 		std::vector<Mesh*> loadedMeshes;
 		std::vector<GraphicsObject*> createdObjects;

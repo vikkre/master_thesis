@@ -1,8 +1,8 @@
 #include "mesh_manager.h"
 
 
-MeshManager::MeshManager(Device* device)
-:device(device), loadedMeshes(), createdObjects(),
+MeshManager::MeshManager(Device* device, const std::string& basepath)
+:device(device), basepath(basepath), loadedMeshes(), createdObjects(),
 block(nullptr), ball(nullptr), upperTeeth(nullptr), lowerTeeth(nullptr) {}
 
 MeshManager::~MeshManager() {
@@ -16,12 +16,12 @@ void MeshManager::init() {
 }
 
 void MeshManager::initTeethMesh() {
-	lowerTeeth = loadStl("../res/stl/Lower.stl");
-	upperTeeth = loadStl("../res/stl/Upper.stl");
+	lowerTeeth = loadStl("Lower.stl");
+	upperTeeth = loadStl("Upper.stl");
 }
 
 Mesh* MeshManager::loadObj(const std::string& filename) {
-	ObjLoader blockLoader;
+	ObjLoader blockLoader(basepath);
 	blockLoader.load(filename);
 	Mesh* mesh = blockLoader.get_mesh(device);
 	loadedMeshes.push_back(mesh);
@@ -29,7 +29,7 @@ Mesh* MeshManager::loadObj(const std::string& filename) {
 }
 
 Mesh* MeshManager::loadStl(const std::string& filename) {
-	STLLoader loader;
+	STLLoader loader(basepath);
 	loader.load(filename);
 	Mesh* mesh = loader.get_mesh(device);
 	loadedMeshes.push_back(mesh);

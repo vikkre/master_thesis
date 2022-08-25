@@ -1,8 +1,8 @@
 #include "graphics_engine.h"
 
 
-GraphicsEngine::GraphicsEngine()
-:device(), swapchain(&device), renderer(nullptr), denoisers(),
+GraphicsEngine::GraphicsEngine(const std::string& basepath)
+:device(basepath), swapchain(&device), renderer(nullptr), denoisers(),
 commandBuffersRecorded(false) {
 	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
 	device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});

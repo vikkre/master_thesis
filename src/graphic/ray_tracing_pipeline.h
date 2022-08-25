@@ -35,6 +35,8 @@ class RayTracingPipeline {
 		void createRayTracingPipeline();
 
 		VkRayTracingShaderGroupCreateInfoKHR createShaderGroup();
+		std::vector<char> readFile(const std::string& filename);
+		VkShaderModule createShaderModule(const std::vector<char>& code);
 
 		uint32_t alignedSize(uint32_t value, uint32_t alignment);
 

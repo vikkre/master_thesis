@@ -9,13 +9,11 @@
 #include "helper/function_load.h"
 #include "renderer/renderer.h"
 #include "denoiser/denoiser.h"
-// #include "renderer/praktikums_renderer.h"
-// #include "renderer/monte_carlo_renderer.h"
 
 
 class GraphicsEngine {
 	public:
-		GraphicsEngine();
+		GraphicsEngine(const std::string& basepath);
 		~GraphicsEngine();
 
 		void init();

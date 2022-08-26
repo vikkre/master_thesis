@@ -2,7 +2,11 @@
 
 #include <vulkan/vulkan.h>
 
+#include <string>
+#include <fstream>
+
 #include "buffer.h"
+#include "data_buffer.h"
 #include "../../init_exception.h"
 
 
@@ -23,6 +27,8 @@ class ImageBuffer: public Buffer {
 		const VkImage& getImage() const;
 		const VkDeviceMemory& getMemory() const;
 		const VkImageView& getImageView() const;
+
+		void saveImageAsNetpbm(const std::string& filename);
 
 		struct Properties {
 			uint32_t width, height;

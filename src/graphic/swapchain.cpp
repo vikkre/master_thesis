@@ -134,6 +134,8 @@ void Swapchain::render(std::function<void(size_t)> updateUniform) {
 		vkWaitForFences(device->getDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 	}
 
+	inputImages.at(currentFrame).saveImageAsNetpbm("example.ppm");
+
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 

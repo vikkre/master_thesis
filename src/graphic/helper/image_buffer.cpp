@@ -209,3 +209,49 @@ const VkDeviceMemory& ImageBuffer::getMemory() const {
 const VkImageView& ImageBuffer::getImageView() const {
 	return imageView;
 }
+
+void ImageBuffer::saveImageAsNetpbm(const std::string& filename) {
+	const size_t imageSize = properties.width * properties.height * 4;
+
+	DataBuffer tmpBuffer(device);
+	tmpBuffer.properties.bufferSize = imageSize;
+	tmpBuffer.properties.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	tmpBuffer.properties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	tmpBuffer.init();
+
+	VkBufferImageCopy region{};
+	region.bufferOffset = 0;
+	region.bufferRowLength = 0;
+	region.bufferImageHeight = 0;
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = 0;
+	region.imageSubresource.layerCount = 1;
+	region.imageOffset = {0, 0, 0};
+	region.imageExtent = {
+			properties.width,
+			properties.height,
+			1
+	};
+
+	SingleUseCommandBuffer cmd(device, &device->getQueues().getGraphicsQueue());
+	cmd.start();
+	this->cmdTransitionImageLayout(cmd.getCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	vkCmdCopyImageToBuffer(cmd.getCommandBuffer(), image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, tmpBuffer.getBuffer(), 1, &region);
+	this->cmdTransitionImageLayout(cmd.getCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	cmd.end();
+
+	std::vector<char> data(imageSize);
+	tmpBuffer.getData(data.data());
+
+	std::ofstream file(filename, std::ios::out | std::ios::binary);
+	file << "P6\n" << properties.width << "\n" << properties.height << "\n" << 255 << "\n";
+
+	for (size_t i = 0; i < properties.width * properties.height; ++i) {
+		file.write(&data[i * 4 + 2], 1);
+		file.write(&data[i * 4 + 1], 1);
+		file.write(&data[i * 4 + 0], 1);
+	}
+
+	file.close();
+}

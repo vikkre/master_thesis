@@ -34,10 +34,9 @@ void main() {
 		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.glossyThreshold) {
-			
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
-			
+			origin = rayPayload.pos;
+			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
 		}
 	}
 

@@ -29,8 +29,16 @@ block.obj
 	position(2, -3.5, -2)
 	scale(1.5, 1.5, 1.5)
 	rotation(0, 1, 0, 1)
+	diffuse(0)
+	reflect(0)
+	transparent(1)
+	refractionIndex(1.5)
 
 block.obj
 	position(-2, -2, 2)
 	scale(1.5, 3, 1.5)
 	rotation(0, 1, 0, -1)
+	diffuse(0)
+	reflect(0)
+	transparent(1)
+	refractionIndex(1.5)

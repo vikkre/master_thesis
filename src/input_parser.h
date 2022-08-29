@@ -44,3 +44,4 @@ class InputParser {
 		std::string path;
 		std::vector<InputEntry> inputEntries;
 };
+

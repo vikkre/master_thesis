@@ -31,8 +31,8 @@ struct ObjectProperties {
 	uint64_t indexAddress;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float glossyThreshold;
 	float transparentThreshold;
+	float refractionIndex;
 };
 
 struct Vertex {
@@ -80,8 +80,8 @@ struct RayPayload {
 	vec3 color;
 	float diffuseThreshold;
 	float reflectThreshold;
-	float glossyThreshold;
 	float transparentThreshold;
+	float refractionIndex;
 };
 
 #ifdef RAYGEN_SHADER
@@ -116,4 +116,20 @@ vec3 randomNormalDirection(vec3 co, int i, int vStart, vec3 normal) {
 	}
 
 	return randVec;
+}
+
+vec3 customRefract(vec3 direction, vec3 normal, float rIndex) {
+	float ndotd = dot(normal, direction);
+	if (ndotd > 0.0) rIndex = 1.0 / rIndex;
+
+	vec3 nParallel = ndotd * normal;
+	vec3 nOrthogonal = direction - nParallel;
+	float nOrthogonalLength2 = dot(nOrthogonal, nOrthogonal);
+	float rIndex2 = rIndex*rIndex;
+
+	if (rIndex2 > nOrthogonalLength2) {
+		return normalize(nOrthogonal + (sqrt(rIndex2 - nOrthogonalLength2) / length(nParallel)) * nParallel);
+	} else {
+		return reflect(direction, normal);
+	}
 }

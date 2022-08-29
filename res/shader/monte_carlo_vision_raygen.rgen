@@ -131,7 +131,7 @@ void main() {
 
 	vec3 origin = (globalData.viewInverse * vec4(vec3(0), 1)).xyz;
 	vec3 target = (globalData.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
-	vec3 direction = (globalData.viewInverse * vec4(normalize(target), 0)).xyz;
+	vec3 direction = normalize((globalData.viewInverse * vec4(normalize(target), 0)).xyz);
 
 	uint rayFlags = gl_RayFlagsOpaqueEXT;
 	uint cullMask = 0xFF;
@@ -163,10 +163,9 @@ void main() {
 		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 			origin = rayPayload.pos;
 			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.glossyThreshold) {
-			
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
-			
+			origin = rayPayload.pos;
+			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
 		}
 	}
 

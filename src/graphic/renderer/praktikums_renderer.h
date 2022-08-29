@@ -27,7 +27,7 @@ class PraktikumsRenderer: public Renderer {
 		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
 		virtual void updateUniforms(size_t index) override;
 		virtual void passObjects(const std::vector<GraphicsObject*>& objects) override;
-		virtual void parseInput(const InputEntry& inputEntry) override;
+		virtual void parseInput(const InputEntry& /* inputEntry */) override;
 
 		struct GlobalData {
 			Matrix4f viewInverse;

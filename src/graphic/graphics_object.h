@@ -21,8 +21,8 @@ class GraphicsObject {
 			uint64_t indexAddress;
 			float diffuseThreshold;
 			float reflectThreshold;
-			float glossyThreshold;
 			float transparentThreshold;
+			float refractionIndex;
 		};
 
 		struct ObjectInfo {
@@ -51,7 +51,6 @@ class GraphicsObject {
 
 		float diffuseWeight;
 		float reflectWeight;
-		float glossyWeight;
 		float transparentWeight;
 	
 	private:

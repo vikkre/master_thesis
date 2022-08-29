@@ -70,6 +70,7 @@ int main(int /* argc */, char* argv[]) {
 
 	// meshManager->createObjectsFromFile("../res/scene/cornell_box.scene");
 	meshManager->createObjectsFromFile("../res/scene/cornell_box_with_blocks.scene");
+	// meshManager->createObjectsFromFile("../res/scene/cornell_box_with_ball.scene");
 
 	InputParser parser(basepath + "../res/renderer/full_monte_carlo.renderer");
 	parser.parse();

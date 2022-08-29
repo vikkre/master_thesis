@@ -30,6 +30,6 @@ void main() {
 
 	rayPayload.diffuseThreshold = obj.diffuseThreshold;
 	rayPayload.reflectThreshold = obj.reflectThreshold;
-	rayPayload.glossyThreshold = obj.glossyThreshold;
 	rayPayload.transparentThreshold = obj.transparentThreshold;
+	rayPayload.refractionIndex = obj.refractionIndex;
 }

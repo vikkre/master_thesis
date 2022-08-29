@@ -49,7 +49,7 @@ void PraktikumsRenderer::passObjects(const std::vector<GraphicsObject*>& objects
 	this->objects = objects;
 }
 
-void PraktikumsRenderer::parseInput(const InputEntry& inputEntry) {}
+void PraktikumsRenderer::parseInput(const InputEntry& /* inputEntry */) {}
 
 void PraktikumsRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {

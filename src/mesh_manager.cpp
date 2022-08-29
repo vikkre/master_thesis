@@ -37,9 +37,14 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 		Vector3f pos = entry.getVector3f("position");
 		GraphicsObject* obj = new GraphicsObject(device, mesh, pos);
 
-		if (entry.keyExists("color")) obj->color = entry.getVector3f("color");
-		if (entry.keyExists("scale")) obj->scale = entry.getVector3f("scale");
+		if (entry.keyExists("color"))    obj->color    = entry.getVector3f("color");
+		if (entry.keyExists("scale"))    obj->scale    = entry.getVector3f("scale");
 		if (entry.keyExists("rotation")) obj->rotation = entry.getRotation("rotation");
+
+		if (entry.keyExists("diffuse"))         obj->diffuseWeight          = entry.getFloat("diffuse");
+		if (entry.keyExists("reflect"))         obj->reflectWeight          = entry.getFloat("reflect");
+		if (entry.keyExists("transparent"))     obj->transparentWeight      = entry.getFloat("transparent");
+		if (entry.keyExists("refractionIndex")) obj->rtData.refractionIndex = entry.getFloat("refractionIndex");
 
 		createdObjects.push_back(obj);
 	}

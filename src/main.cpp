@@ -51,9 +51,28 @@ Denoiser* getDenoiser(const std::string& name, Device* device) {
 }
 
 
-int main(int /* argc */, char* argv[]) {
+int main(int argc, char* argv[]) {
+	if (argc != 5 && argc != 7) {
+		std::cout << "Error: wrong paramter count!" << std::endl;
+		std::cout << "Usage: RayTrace renderer scene image_width image_height [resultimage renderrounds]" << std::endl;
+		return -1;
+	}
+
 	const std::string execpath = argv[0];
 	const std::string basepath = execpath.substr(0, execpath.size() - sizeof("RayTrace") + 1);
+
+	std::string rendererPath = argv[1];
+	std::string scenePath = argv[2];
+	Vector2i windowSize = Vector2i({std::atoi(argv[3]), std::atoi(argv[4])});
+	std::string resultImagePath;
+	unsigned int maxRenderCount;
+
+	bool renderLimit = argc == 7;
+	if (renderLimit) {
+		resultImagePath = argv[5];
+		maxRenderCount = std::atoi(argv[6]);
+	}
+
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		InitException("SDL_Init", SDL_GetError());
@@ -61,6 +80,7 @@ int main(int /* argc */, char* argv[]) {
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 
 	GraphicsEngine* engine = new GraphicsEngine(basepath);
+	engine->windowSize = windowSize;
 	engine->init();
 
 	engine->device.renderInfo.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
@@ -68,61 +88,27 @@ int main(int /* argc */, char* argv[]) {
 
 	MeshManager* meshManager = new MeshManager(&engine->device, basepath);
 
-	// meshManager->createObjectsFromFile("../res/scene/cornell_box.scene");
-	meshManager->createObjectsFromFile("../res/scene/cornell_box_with_blocks.scene");
-	// meshManager->createObjectsFromFile("../res/scene/cornell_box_with_ball.scene");
+	meshManager->createObjectsFromFile(scenePath);
 
-	InputParser parser(basepath + "../res/renderer/full_monte_carlo.renderer");
-	parser.parse();
+	InputParser rendererParser(rendererPath);
+	rendererParser.parse();
 
-	engine->renderer = getRenderer(parser.getInputEntry(0).name, &engine->device);
-	engine->renderer->parseInput(parser.getInputEntry(0));
+	engine->renderer = getRenderer(rendererParser.getInputEntry(0).name, &engine->device);
+	engine->renderer->parseInput(rendererParser.getInputEntry(0));
 	engine->renderer->passObjects(meshManager->getCreatedObjects());
 
-	for (unsigned int i = 1; i < parser.size(); ++i) {
-		const InputEntry& inputEntry = parser.getInputEntry(i);
+	for (unsigned int i = 1; i < rendererParser.size(); ++i) {
+		const InputEntry& inputEntry = rendererParser.getInputEntry(i);
 		Denoiser* denoiser = getDenoiser(inputEntry.name, &engine->device);
 		denoiser->parseInput(inputEntry);
 		engine->denoisers.push_back(denoiser);
 	}
 
-	// engine->renderer->objects = meshManager->getCreatedObjects();
-	// engine->denoisers.push_back(gaussDenoiser);
-	// engine->denoisers.push_back(medianDenoiser);
 	engine->initTlas();
-
-	// MonteCarloRenderer* monteCarloRenderer = new MonteCarloRenderer(&engine->device);
-
-	// monteCarloRenderer->renderSettings.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
-	// monteCarloRenderer->renderSettings.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
-	// monteCarloRenderer->renderSettings.lightRayCount = 250;
-	// monteCarloRenderer->renderSettings.lightJumpCount = 5;
-	// monteCarloRenderer->renderSettings.visionJumpCount = 5;
-	// monteCarloRenderer->renderSettings.collectionDistance = 0.4f;
-	// monteCarloRenderer->renderSettings.visionRayPerPixelCount = 30;
-	// monteCarloRenderer->renderSettings.collectionDistanceShrinkFactor = 5.0f;
-	// monteCarloRenderer->renderSettings.lightCollectionCount = 10;
-	// monteCarloRenderer->renderSettings.useCountLightCollecton = false;
-
-	// monteCarloRenderer->objects = meshManager->getCreatedObjects();
-
-	// GaussDenoiser* gaussDenoiser = new GaussDenoiser(&engine->device);
-	// gaussDenoiser->settings.kernelSize = 7;
-	// gaussDenoiser->settings.sigma = 0.8f;
-
-	// MedianDenoiser* medianDenoiser = new MedianDenoiser(&engine->device);
-	// medianDenoiser->settings.kernelSize = 7;
-
-	// engine->renderer = monteCarloRenderer;
-	// engine->denoisers.push_back(gaussDenoiser);
-	// engine->denoisers.push_back(medianDenoiser);
-	// engine->initTlas();
 
 
 	SDL_Event event;
 	bool run = true;
-
-	const unsigned int RENDER_MAX = 1;
 	unsigned int rendered = 0;
 
 	while (run) {
@@ -132,7 +118,7 @@ int main(int /* argc */, char* argv[]) {
 			if (sdl_quit || window_quit) run = false;
 		}
 
-		if (rendered < RENDER_MAX) {
+		if (!renderLimit || rendered < maxRenderCount) {
 			int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
 				engine->render();
 			});
@@ -140,18 +126,15 @@ int main(int /* argc */, char* argv[]) {
 			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render Time: %f (~%i FPS)", seconds, int(1.0f / seconds));
 
 			rendered++;
-		} else if (rendered == RENDER_MAX) {
+		} else if (rendered == maxRenderCount) {
 			SDL_LogInfo(SDL_LOG_CATEGORY_SYSTEM, "Render finished!");
-
-			rendered++;
+			engine->saveLatestImage(resultImagePath);
+			break;
 		}
 
 		SDL_Delay(100);
 	}
 
-	// delete medianDenoiser;
-	// delete gaussDenoiser;
-	// delete monteCarloRenderer;
 	delete meshManager;
 	delete engine;
 

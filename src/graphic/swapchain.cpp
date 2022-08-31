@@ -134,9 +134,12 @@ void Swapchain::render(std::function<void(size_t)> updateUniform) {
 		vkWaitForFences(device->getDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 	}
 
-	inputImages.at(currentFrame).saveImageAsNetpbm("example.ppm");
-
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+void Swapchain::saveLatestImage(const std::string path) {
+	size_t lastFrame = (currentFrame + MAX_FRAMES_IN_FLIGHT - 1) % MAX_FRAMES_IN_FLIGHT;
+	inputImages.at(lastFrame).saveImageAsNetpbm(path);
 }
 
 MultiBufferDescriptor<ImageBuffer>* Swapchain::getInputImageBuffer() {

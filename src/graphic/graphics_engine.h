@@ -19,11 +19,13 @@ class GraphicsEngine {
 		void init();
 		void initTlas();
 		void render();
+		void saveLatestImage(const std::string path);
 
 		Device device;
 		Swapchain swapchain;
 		Renderer* renderer;
 		std::vector<Denoiser*> denoisers;
+		Vector2i windowSize;
 
 		bool commandBuffersRecorded;
 };

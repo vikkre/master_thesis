@@ -22,6 +22,7 @@ class Swapchain {
 		void init();
 		void recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer);
 		void render(std::function<void(size_t)> updateUniform);
+		void saveLatestImage(const std::string path);
 		MultiBufferDescriptor<ImageBuffer>* getInputImageBuffer();
 
 		const FrameBuffer& getFrame(size_t index) const;

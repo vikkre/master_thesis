@@ -17,7 +17,7 @@ GraphicsEngine::~GraphicsEngine() {
 void GraphicsEngine::init() {
 	SDLWindow* sdlWindow = new SDLWindow();
 	sdlWindow->windowName = "Ray Tracing Test";
-	sdlWindow->windowSize = Vector2i({1600, 900});
+	sdlWindow->windowSize = windowSize;
 	sdlWindow->crateWindowFlags = SDLWindow::CREATE_WINDOW_FLAGS_DEFAULT;
 
 	device.window = sdlWindow;
@@ -71,4 +71,8 @@ void GraphicsEngine::render() {
 			denoiser->updateUniforms(index);
 		}
 	});
+}
+
+void GraphicsEngine::saveLatestImage(const std::string path) {
+	swapchain.saveLatestImage(path);
 }

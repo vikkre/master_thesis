@@ -27,7 +27,7 @@ Mesh* MeshManager::getMesh(const std::string& name) {
 }
 
 void MeshManager::createObjectsFromFile(const std::string filename) {
-	InputParser parser(basepath + filename);
+	InputParser parser(filename);
 	parser.parse();
 
 	for (unsigned int i = 0; i < parser.size(); ++i) {

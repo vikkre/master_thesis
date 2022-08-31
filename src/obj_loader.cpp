@@ -5,9 +5,9 @@
 #define OBJ_PATH std::string("../res/obj/")
 #define MTL_PATH std::string("../res/obj/")
 
-ObjLoader::ObjLoader()
+ObjLoader::ObjLoader(const std::string& basepath)
 :points(), texcoords(), normals(), faces(),
-materials(), usedMaterial(nullptr) {
+materials(), usedMaterial(nullptr), basepath(basepath) {
 	std::pair<std::string, ObjLoader::Material> new_insert("none", ObjLoader::Material());
 	materials.insert(new_insert);
 }
@@ -17,7 +17,7 @@ ObjLoader::~ObjLoader() {
 }
 
 void ObjLoader::load(const std::string& name) {
-	std::ifstream file(OBJ_PATH + name);
+	std::ifstream file(basepath + OBJ_PATH + name);
 	if (!file.is_open()) {
 		SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Could not load OBJ file %s", name.c_str());
 		return;
@@ -124,7 +124,7 @@ ObjLoader::Vertex ObjLoader::loadVertex(std::istringstream& line_stream) {
 }
 
 void ObjLoader::loadMtl(const std::string& name) {
-	std::ifstream file(MTL_PATH + name);
+	std::ifstream file(basepath + MTL_PATH + name);
 	if (!file.is_open()) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "Could not load MTL file %s", name.c_str());
 		return;

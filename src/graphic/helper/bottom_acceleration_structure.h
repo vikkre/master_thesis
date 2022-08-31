@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "buffer.h"
+#include "data_buffer.h"
 #include "../../init_exception.h"
 
 
@@ -39,7 +39,7 @@ class BottomAccelerationStructure {
 		VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo;
 		VkAccelerationStructureKHR accelerationStructure;
 
-		Buffer acBuffer;
+		DataBuffer acBuffer;
 		VkDeviceAddress acDeviceAddress;
-		Buffer scratchBuffer;
+		DataBuffer scratchBuffer;
 };

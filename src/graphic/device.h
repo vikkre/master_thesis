@@ -13,7 +13,7 @@
 
 class Device {
 	public:
-		Device();
+		Device(const std::string& basepath);
 		~Device();
 
 		void init();
@@ -42,6 +42,7 @@ class Device {
 
 		WindowBase* window;
 		RenderInfo renderInfo;
+		const std::string basepath;
 	
 	private:
 		void createInstance();

@@ -1,0 +1,57 @@
+#version 460
+
+#extension GL_EXT_scalar_block_layout: enable
+
+layout(binding = 0, set = 0, rgba8) uniform image2D rawImage;
+layout(binding = 1, set = 0, rgba8) uniform image2D resultImage;
+layout(binding = 2, set = 0, scalar) uniform Settings {
+	uint kernelSize;
+} settings;
+
+
+#define MAX_ARRAY_SIZE 15*15
+// #define settings.kernelSize 7
+
+
+void main() {
+	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 size = imageSize(rawImage);
+	int off = int(settings.kernelSize / 2.0);
+
+	vec4 colors[MAX_ARRAY_SIZE];
+	float csums[MAX_ARRAY_SIZE];
+	int count = 0;
+
+	for (int x = -off; x <= off; x++) {
+		for (int y = -off; y <= off; y++) {
+			ivec2 p = pos + ivec2(x, y);
+			if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
+				vec4 color = imageLoad(rawImage, p);
+				float csum = max(color.x, max(color.y, color.z));
+
+				colors[count] = color;
+				csums[count] = csum;
+				count++;
+			}
+		}
+	}
+
+	for (uint n = settings.kernelSize * settings.kernelSize; n > 0; n--) {
+		for (uint i = 0; i < n; i++) {
+			if (csums[i] < csums[i+1]) {
+				vec4 tmp_color = colors[i];
+				float tmp_csum = csums[i];
+
+				colors[i] = colors[i+1];
+				csums[i] = csums[i+1];
+
+				colors[i+1] = tmp_color;
+				csums[i+1] = tmp_csum;
+			}
+		}
+	}
+
+	vec4 color = colors[count/2];
+
+	imageStore(resultImage, pos, color);
+}

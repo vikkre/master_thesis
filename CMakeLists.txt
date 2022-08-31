@@ -21,24 +21,34 @@ string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 string(STRIP "${Vulkan_LIBRARIES}" Vulkan_LIBRARIES)
 
 set(GLSLC_FLAGS --target-spv=spv1.5 --target-env=vulkan1.2)
-macro(add_shader input_shader output_shader)
+macro(add_shader output_shader)
+	set (input_files ${ARGN})
+	list(TRANSFORM input_files PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/res/shader/)
+	list(GET input_files 0 input_shader)
+
 	add_custom_command(
 		OUTPUT ${output_shader}
 		COMMAND glslc ${GLSLC_FLAGS} ${input_shader} -o ${output_shader}
-		DEPENDS ${input_shader}
+		DEPENDS ${input_files}
 	)
 	list(APPEND SHADER ${output_shader})
 endmacro()
 
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.vert object_shader_vert.spv)
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/object_shader.frag object_shader_frag.spv)
+add_shader(prakt_raygen.spv     prakt_raygen.rgen      )
+add_shader(prakt_closesthit.spv prakt_closesthit.rchit )
+add_shader(prakt_miss.spv       prakt_miss.rmiss       )
+add_shader(prakt_shadow.spv     prakt_shadow.rmiss     )
 
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/closesthit.rchit   closesthit.spv        )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/miss.rmiss         miss.spv              )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/shadow.rmiss       shadow.spv            )
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/raygen.rgen        raygen.spv            )
+add_shader(monte_carlo_miss.spv          monte_carlo_miss.rmiss         monte_carlo.glsl )
+add_shader(monte_carlo_closesthit.spv    monte_carlo_closesthit.rchit   monte_carlo.glsl )
+add_shader(monte_carlo_light_raygen.spv  monte_carlo_light_raygen.rgen  monte_carlo.glsl )
+add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       monte_carlo.glsl )
+add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen monte_carlo.glsl )
+add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    monte_carlo.glsl )
 
-add_shader(${CMAKE_CURRENT_SOURCE_DIR}/res/shader/raygen_points.rgen raygen_points.spv     )
+add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
+add_shader(denoise_median_comp.spv denoise_median_comp.comp )
+
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
 

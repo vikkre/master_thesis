@@ -26,13 +26,6 @@ void Mesh::init() {
 	createBlas();
 }
 
-void Mesh::recordCommandBuffer(const VkCommandBuffer* commandBuffer) const {
-	vkCmdBindVertexBuffers(*commandBuffer, 0, vertexBuffers.size(), vertexBuffers.data(), vertexBufferOffsets.data());
-	vkCmdBindIndexBuffer(*commandBuffer, indexBuffer.getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
-	vkCmdDrawIndexed(*commandBuffer, indices.size(), 1, 0, 0, 0);
-}
-
 void Mesh::addPoint(const Vector3f& point, const Vector3f& normal) {
 	Mesh::Vertex vertex{};
 
@@ -49,9 +42,9 @@ void Mesh::addIndex(const Vector3u& index) {
 }
 
 void Mesh::createVertexBuffer() {
-	vertexBuffer.bufferSize = sizeof(vertices[0]) * vertices.size();
-	vertexBuffer.usage = BUFFER_USAGE | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	vertexBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	vertexBuffer.properties.bufferSize = sizeof(vertices[0]) * vertices.size();
+	vertexBuffer.properties.usage = BUFFER_USAGE | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	vertexBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	vertexBuffer.init();
 	vertexBuffer.passData(vertices.data());
 
@@ -60,9 +53,9 @@ void Mesh::createVertexBuffer() {
 }
 
 void Mesh::createIndexBuffer() {
-	indexBuffer.bufferSize = sizeof(indices[0]) * indices.size();
-	indexBuffer.usage = BUFFER_USAGE | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-	indexBuffer.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	indexBuffer.properties.bufferSize = sizeof(indices[0]) * indices.size();
+	indexBuffer.properties.usage = BUFFER_USAGE | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+	indexBuffer.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	indexBuffer.init();
 	indexBuffer.passData(indices.data());
 }
@@ -79,43 +72,14 @@ void Mesh::createBlas() {
 	blas.init();
 }
 
-const Buffer& Mesh::getVertexBuffer() const {
+const DataBuffer& Mesh::getVertexBuffer() const {
 	return vertexBuffer;
 }
 
-const Buffer& Mesh::getIndexBuffer() const {
+const DataBuffer& Mesh::getIndexBuffer() const {
 	return indexBuffer;
 }
 
 const BottomAccelerationStructure& Mesh::getBlas() const {
 	return blas;
-}
-
-VkVertexInputBindingDescription Mesh::getBindingDescription() {
-	VkVertexInputBindingDescription bindingDescription{};
-	bindingDescription.binding = 0;
-	bindingDescription.stride = sizeof(Mesh::Vertex);
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-	return bindingDescription;
-}
-
-std::vector<VkVertexInputAttributeDescription> Mesh::getAttributeDescriptions() {
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-	VkVertexInputAttributeDescription positionAttribute{};
-	positionAttribute.binding = 0;
-	positionAttribute.location = 0;
-	positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
-	positionAttribute.offset = offsetof(Mesh::Vertex, point);
-	attributeDescriptions.push_back(positionAttribute);
-
-	VkVertexInputAttributeDescription normalAttribute{};
-	normalAttribute.binding = 0;
-	normalAttribute.location = 1;
-	normalAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
-	normalAttribute.offset = offsetof(Mesh::Vertex, normal);
-	attributeDescriptions.push_back(normalAttribute);
-
-	return attributeDescriptions;
 }

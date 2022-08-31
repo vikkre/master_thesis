@@ -36,9 +36,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL validationLayerCallback(VkDebugUtilsMessageSeveri
 }
 
 
-Device::Device()
+Device::Device(const std::string& basepath)
 :enableValidationLayers(false),
-validationLayers(), severityFlags(), extensions(),
+validationLayers(), severityFlags(), extensions(), deviceExtensions(),
+window(nullptr), renderInfo(), basepath(basepath),
 vkCreateDebugUtilsMessengerEXT(VK_NULL_HANDLE), vkDestroyDebugUtilsMessengerEXT(VK_NULL_HANDLE),
 instance(VK_NULL_HANDLE), debugMessenger(VK_NULL_HANDLE), queues(this) {}
 
@@ -85,7 +86,7 @@ void Device::createInstance() {
 
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Computer Graphik Praktikum";
+	appInfo.pApplicationName = "Ray Tracing Test";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 2, 0);
 	appInfo.pEngineName = "No Engine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 2, 0);

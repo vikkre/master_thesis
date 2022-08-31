@@ -11,21 +11,18 @@
 
 class Mesh;
 class Device;
-class Descriptor;
 
 class GraphicsObject {
 	public:
-		struct ObjectData {
-			Matrix4f objectMatrix;
-			Vector3f color;
-		};
-
 		struct RTData {
 			Matrix4f objectMatrix;
 			Vector3f color;
-			float reflect;
 			uint64_t vertexAddress;
 			uint64_t indexAddress;
+			float diffuseThreshold;
+			float reflectThreshold;
+			float transparentThreshold;
+			float refractionIndex;
 		};
 
 		struct ObjectInfo {
@@ -38,29 +35,25 @@ class GraphicsObject {
 
 		void init();
 		void passBufferData(size_t index);
-		void recordCommandBuffer(size_t index, const VkCommandBuffer* commandBuffer);
+		void recordCommandBuffer(size_t index, VkCommandBuffer commandBuffer);
 
 		ObjectInfo getObjectInfo() const;
 		Matrix4f getMatrix() const;
 
-		static std::vector<VkDescriptorSetLayoutBinding> getUniformBindings();
-		static uint32_t getBindingSet();
 		static size_t getRTDataSize();
 
 		Vector3f scale;
 		Rotation rotation;
 		Vector3f position;
 
-		ObjectData objectData;
+		Vector3f color;
 		RTData rtData;
+
+		float diffuseWeight;
+		float reflectWeight;
+		float transparentWeight;
 	
 	private:
-		void createDescriptorPool();
-		void createDescriptors();
-
 		const Mesh* mesh;
 		const Device* device;
-
-		VkDescriptorPool descriptorPool;
-		std::vector<Descriptor> descriptors;
 };

@@ -11,6 +11,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 RayTrace
+build/*.ppm
+out/*.ppm
+out/*.png
 
 # Prerequisites
 *.d

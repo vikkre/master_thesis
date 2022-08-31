@@ -17,6 +17,9 @@
 
 class STLLoader {
 	public:
+		STLLoader(const std::string& basepath);
+		~STLLoader();
+
 		void load(const std::string& path);
 		Mesh* get_mesh(const Device* device) const;
 
@@ -47,4 +50,5 @@ class STLLoader {
 		uint8_t header[80];
 		uint32_t triangle_count;
 		std::vector<Triangle> triangles;
+		std::string basepath;
 };

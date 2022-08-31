@@ -1,7 +1,6 @@
 #include "frame_buffer.h"
 
 #include "device.h"
-#include "pipeline/pipeline.h"
 
 
 FrameBuffer::FrameBuffer(Device* device)
@@ -15,10 +14,9 @@ FrameBuffer::~FrameBuffer() {
 }
 
 void FrameBuffer::init(const VkImage& image) {
-	this->image.init(image);
-	this->image.format = device->renderInfo.swapchainImageFormat;
-	this->image.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	this->image.createImageView();
+	this->image.properties.format = device->renderInfo.swapchainImageFormat;
+	this->image.properties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	this->image.init(image, true);
 
 	createDepthResources();
 	createFramebuffer();
@@ -27,7 +25,7 @@ void FrameBuffer::init(const VkImage& image) {
 	device->renderInfo.swapchainImages.push_back(&this->image);
 }
 
-void FrameBuffer::recordCommandBuffer(size_t index) {
+void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer, size_t index, ImageBuffer& inputImage) {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -50,13 +48,9 @@ void FrameBuffer::recordCommandBuffer(size_t index) {
 		throw InitException("vkBeginCommandBuffer", "failed to begin recording render command buffer!");
 	}
 
-	device->renderInfo.renderPipeline->recordPreRenderCommandBuffer(index, &renderCommandBuffer);
+	recordCommandBuffer(index, renderCommandBuffer);
 
-	// vkCmdBeginRenderPass(renderCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-	// device->renderInfo.renderPipeline->recordRenderCommandBuffer(index, &renderCommandBuffer);
-	// vkCmdEndRenderPass(renderCommandBuffer);
-
-	device->renderInfo.renderPipeline->recordPostRenderCommandBuffer(index, &renderCommandBuffer);
+	inputImage.cmdCopyImage(renderCommandBuffer, &this->image);
 
 	if (vkEndCommandBuffer(renderCommandBuffer) != VK_SUCCESS) {
 		throw InitException("vkEndCommandBuffer", "failed to record render command buffer!");
@@ -64,16 +58,16 @@ void FrameBuffer::recordCommandBuffer(size_t index) {
 }
 
 void FrameBuffer::createDepthResources() {
-	depthImage.width = device->renderInfo.swapchainExtend.width;
-	depthImage.height = device->renderInfo.swapchainExtend.height;
-	depthImage.format = device->renderInfo.swapchainDepthFormat;
-	depthImage.tiling = VK_IMAGE_TILING_OPTIMAL;
-	depthImage.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-	depthImage.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	depthImage.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+	depthImage.properties.width = device->renderInfo.swapchainExtend.width;
+	depthImage.properties.height = device->renderInfo.swapchainExtend.height;
+	depthImage.properties.format = device->renderInfo.swapchainDepthFormat;
+	depthImage.properties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	depthImage.properties.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	depthImage.properties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	depthImage.properties.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+	depthImage.properties.createImageView = true;
 
 	depthImage.init();
-	depthImage.createImageView();
 }
 
 void FrameBuffer::createFramebuffer() {
@@ -108,7 +102,7 @@ void FrameBuffer::createCommandBuffer() {
 	}
 }
 
-const Image& FrameBuffer::getImage() const {
+const ImageBuffer& FrameBuffer::getImage() const {
 	return image;
 }
 

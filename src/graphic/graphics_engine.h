@@ -6,26 +6,26 @@
 #include "swapchain.h"
 #include "window/sdl_window.h"
 #include "camera.h"
-#include "pipeline/graphics_pipeline.h"
-#include "pipeline/ray_tracing_pipeline.h"
-#include "pipeline/ray_tracing_pipeline_points.h"
 #include "helper/function_load.h"
+#include "renderer/renderer.h"
+#include "denoiser/denoiser.h"
 
 
 class GraphicsEngine {
 	public:
-		GraphicsEngine();
+		GraphicsEngine(const std::string& basepath);
 		~GraphicsEngine();
 
 		void init();
 		void initTlas();
 		void render();
+		void saveLatestImage(const std::string path);
 
 		Device device;
 		Swapchain swapchain;
-		// GraphicsPipeline pipeline;
-		// RayTracingPipeline rtpipeline;
-		RayTracingPipelinePoints rtpipeline;
+		Renderer* renderer;
+		std::vector<Denoiser*> denoisers;
+		Vector2i windowSize;
 
 		bool commandBuffersRecorded;
 };

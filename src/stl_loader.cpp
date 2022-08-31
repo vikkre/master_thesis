@@ -2,6 +2,13 @@
 
 #define ANGLE_THREASHOLD 1.0/3.0 * M_PI
 
+#define STL_PATH std::string("../res/stl/")
+
+
+STLLoader::STLLoader(const std::string& basepath)
+:header(), triangle_count(), triangles(), basepath(basepath) {}
+
+STLLoader::~STLLoader() {}
 
 bool fits(Vector3f n1, Vector3f n2) {
 	float angle = n1.angle(n2);
@@ -11,7 +18,7 @@ bool fits(Vector3f n1, Vector3f n2) {
 void STLLoader::load(const std::string& path) {
 	triangles.clear();
 
-	std::ifstream file(path, std::ifstream::in | std::ifstream::binary);
+	std::ifstream file(STL_PATH + path, std::ifstream::in | std::ifstream::binary);
 
 	file.read((char*) header, 80);
 	file.read((char*) &triangle_count, 4);

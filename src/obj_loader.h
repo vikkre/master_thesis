@@ -38,7 +38,7 @@ class ObjLoader {
 			std::string imageName;
 		};
 
-		ObjLoader();
+		ObjLoader(const std::string& basepath);
 		~ObjLoader();
 
 		void load(const std::string& name);
@@ -58,6 +58,8 @@ class ObjLoader {
 		Vertex loadVertex(std::istringstream& line_stream);
 
 		void loadMtl(const std::string& name);
+
+		std::string basepath;
 };
 
 #endif

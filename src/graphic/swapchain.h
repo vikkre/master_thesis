@@ -3,8 +3,11 @@
 #include <vulkan/vulkan.h>
 
 #include <algorithm>
+#include <functional>
 
 #include "frame_buffer.h"
+#include "helper/image_buffer.h"
+#include "helper/multi_buffer_descriptor.h"
 
 #include "../init_exception.h"
 
@@ -17,8 +20,10 @@ class Swapchain {
 		~Swapchain();
 
 		void init();
-		void recordCommandBuffers();
-		void render();
+		void recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer);
+		void render(std::function<void(size_t)> updateUniform);
+		void saveLatestImage(const std::string path);
+		MultiBufferDescriptor<ImageBuffer>* getInputImageBuffer();
 
 		const FrameBuffer& getFrame(size_t index) const;
 
@@ -32,11 +37,15 @@ class Swapchain {
 		void createImageViews();
 		void createRenderPass();
 		void createSyncObjects();
+		void createInputImages();
 
 		Device* device;
 
+		VkExtent2D swapchainExtend;
+		VkFormat swapchainImageFormat;
 		VkSwapchainKHR swapchain;
 
+		MultiBufferDescriptor<ImageBuffer> inputImages;
 		std::vector<FrameBuffer> frames;
 
 		std::vector<VkSemaphore> imageAvailableSemaphores;

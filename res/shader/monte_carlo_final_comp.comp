@@ -1,0 +1,17 @@
+#version 460
+
+#define COMPUTE_SHADER
+#include "monte_carlo.glsl"
+
+
+void main() {
+	uvec4 rawColor = uvec4(0);
+	rawColor.x = imageLoad(rawImageRed, ivec2(gl_GlobalInvocationID.xy)).x;
+	rawColor.y = imageLoad(rawImageGreen, ivec2(gl_GlobalInvocationID.xy)).x;
+	rawColor.z = imageLoad(rawImageBlue, ivec2(gl_GlobalInvocationID.xy)).x;
+
+	vec4 color = vec4(rawColor);
+	color *= 1.0 / float(renderSettings.visionRayPerPixelCount * 255);
+
+	imageStore(finalImage, ivec2(gl_GlobalInvocationID.xy), color);
+}

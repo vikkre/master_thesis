@@ -1,0 +1,50 @@
+#version 460
+
+#define COMPUTE_SHADER
+#include "monte_carlo.glsl"
+
+
+KDData getNewKDData(PointData point, uint direction) {
+	KDData data;
+
+	data.pos = point.pos;
+	data.color = point.color;
+	data.direction = direction;
+
+	data.leftIndex = -1;
+	data.rightIndex = -1;
+
+	return data;
+}
+
+void main() {
+	kdData.d[0] = getNewKDData(pointData.d[0], 0);
+
+	for (int i = 1; i < count.c; i++) {
+		bool inserting = true;
+		int	currentIndex = 0;
+
+		for (int u = 0; u < count.c; u++) {
+			KDData entry = kdData.d[currentIndex];
+			PointData point = pointData.d[i];
+			
+			if (point.pos[entry.direction] < entry.pos[entry.direction]) {
+				if (entry.leftIndex == -1) {
+					kdData.d[currentIndex].leftIndex = i;
+					kdData.d[i] = getNewKDData(point, (entry.direction + 1) % 3);
+					inserting = false;
+				} else {
+					currentIndex = entry.leftIndex;
+				}
+			} else {
+				if (entry.rightIndex == -1) {
+					kdData.d[currentIndex].rightIndex = i;
+					kdData.d[i] = getNewKDData(point, (entry.direction + 1) % 3);
+					inserting = false;
+				} else {
+					currentIndex = entry.rightIndex;
+				}
+			}
+		}
+	}
+}

@@ -1,7 +1,6 @@
 #include "swapchain.h"
 
 #include "device.h"
-#include "pipeline/pipeline.h"
 
 
 #define MAX_FRAMES_IN_FLIGHT 2
@@ -48,7 +47,7 @@ VkExtent2D special_chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities
 // Swapchain
 Swapchain::Swapchain(Device* device)
 :device(device),
-swapchain(VK_NULL_HANDLE),
+swapchainExtend(), swapchainImageFormat(), swapchain(VK_NULL_HANDLE), inputImages(device),
 frames(), currentFrame(0) {}
 
 Swapchain::~Swapchain() {
@@ -68,30 +67,27 @@ void Swapchain::init() {
 	createRenderPass();
 	createImageViews();
 	createSyncObjects();
+	createInputImages();
 }
 
-void Swapchain::recordCommandBuffers() {
+void Swapchain::recordCommandBuffers(std::function<void(size_t, VkCommandBuffer)> recordCommandBuffer) {
 	for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
-		frames.at(i).recordCommandBuffer(i);
+		frames.at(i).recordCommandBuffer(recordCommandBuffer, i, inputImages.at(i));
 	}
 }
 
-void Swapchain::render() {
+void Swapchain::render(std::function<void(size_t)> updateUniform) {
 	vkWaitForFences(device->getDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(device->getDevice(), swapchain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-	// VkResult acquireResult = vkAcquireNextImageKHR(device->getDevice(), swapchain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-	// if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR) {
-	// 	throw std::runtime_error("failed to acquire swap chain image!");
-	// }
 
 	if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
 		vkWaitForFences(device->getDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 	}
 	imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
-	device->renderInfo.renderPipeline->updateUniforms(imageIndex);
+	updateUniform(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -128,21 +124,33 @@ void Swapchain::render() {
 
 	VkResult queuePresentResult = vkQueuePresentKHR(device->getQueues().getPresentQueue().queue, &presentInfo);
 
-	// if (queuePresentResult == VK_ERROR_OUT_OF_DATE_KHR || queuePresentResult == VK_SUBOPTIMAL_KHR || framebufferResized) {
-	// 	framebufferResized = false;
-	// 	recreateSwapChain();
-	// } else
 	if (queuePresentResult != VK_SUCCESS) {
 		throw std::runtime_error("failed to present swap chain image!");
+	}
+
+	vkWaitForFences(device->getDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+	if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+		vkWaitForFences(device->getDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void Swapchain::saveLatestImage(const std::string path) {
+	size_t lastFrame = (currentFrame + MAX_FRAMES_IN_FLIGHT - 1) % MAX_FRAMES_IN_FLIGHT;
+	inputImages.at(lastFrame).saveImageAsNetpbm(path);
+}
+
+MultiBufferDescriptor<ImageBuffer>* Swapchain::getInputImageBuffer() {
+	return &inputImages;
+}
+
 void Swapchain::createSwapChain() {
 	VkSurfaceFormatKHR surfaceFormat = special_chooseSwapSurfaceFormat(device->renderInfo.surfaceFormats);
 	VkPresentModeKHR presentMode = special_chooseSwapPresentMode(device->renderInfo.presentModes);
-	device->renderInfo.swapchainExtend  = special_chooseSwapExtent(device->renderInfo.surfaceCapabilities, device->window->getWindowExtend());
+	swapchainExtend = special_chooseSwapExtent(device->renderInfo.surfaceCapabilities, device->window->getWindowExtend());
+	device->renderInfo.swapchainExtend = swapchainExtend;
 
 	uint32_t imageCount = device->renderInfo.surfaceCapabilities.minImageCount + 1;
 
@@ -153,7 +161,7 @@ void Swapchain::createSwapChain() {
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	createInfo.imageExtent = device->renderInfo.swapchainExtend;
+	createInfo.imageExtent = swapchainExtend;
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
@@ -182,7 +190,8 @@ void Swapchain::createSwapChain() {
 		throw InitException("vkCreateSwapchainKHR", "failed to create swap chain!");
 	}
 
-	device->renderInfo.swapchainImageFormat = surfaceFormat.format;
+	swapchainImageFormat = surfaceFormat.format;
+	device->renderInfo.swapchainImageFormat = swapchainImageFormat;
 	device->renderInfo.swapchainDepthFormat = findDepthFormat();
 }
 
@@ -203,7 +212,7 @@ void Swapchain::createImageViews() {
 
 void Swapchain::createRenderPass() {
 	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = device->renderInfo.swapchainImageFormat;
+	colorAttachment.format = swapchainImageFormat;
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -280,6 +289,19 @@ void Swapchain::createSyncObjects() {
 			throw InitException("createSyncObjects", "failed to create synchronization objects for a frame!");
 		}
 	}
+}
+
+void Swapchain::createInputImages() {
+	inputImages.bufferProperties.width = swapchainExtend.width;
+	inputImages.bufferProperties.height = swapchainExtend.height;
+	inputImages.bufferProperties.format = swapchainImageFormat;
+	inputImages.bufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
+	inputImages.bufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	inputImages.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	inputImages.bufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+	inputImages.bufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
+	inputImages.bufferProperties.createImageView = true;
+	inputImages.init();
 }
 
 

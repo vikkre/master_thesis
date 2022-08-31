@@ -5,10 +5,9 @@
 #include <vector>
 
 #include "../camera.h"
-#include "../pipeline/pipeline.h"
 
 
-class Image;
+class ImageBuffer;
 
 struct RenderInfo {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
@@ -20,11 +19,7 @@ struct RenderInfo {
 	VkExtent2D swapchainExtend;
 	VkFormat swapchainImageFormat;
 	VkFormat swapchainDepthFormat;
-	std::vector<Image*> swapchainImages;
-
-	Pipeline* renderPipeline;
-	VkDescriptorSetLayout globalDescriptorSetLayout;
-	VkDescriptorSetLayout objectDescriptorSetLayout;
+	std::vector<ImageBuffer*> swapchainImages;
 
 	Camera camera;
 	Vector3f backgroundColor;

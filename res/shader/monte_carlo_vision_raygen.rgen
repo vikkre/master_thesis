@@ -10,6 +10,7 @@ vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {
 	vec3 colors[LIGHT_COLLECTION_DATA_ARRAY_SIZE];
 	vec3 points[LIGHT_COLLECTION_DATA_ARRAY_SIZE];
 	float distances[LIGHT_COLLECTION_DATA_ARRAY_SIZE];
+	float rDistances[LIGHT_COLLECTION_DATA_ARRAY_SIZE];
 
 	int indexStack[LIGHT_COLLECTION_INDEX_STACK_SIZE];
 	int currentStackIndex = 0;
@@ -21,12 +22,14 @@ vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {
 		KDData entry = kdData.d[currentIndex];
 
 		vec3 diff = entry.pos - refPoint;
+		float rd = length(diff);
 		diff += dot(normalize(diff), normal) * normal * renderSettings.collectionDistanceShrinkFactor;
 		float d = length(diff);
 		if (filled < renderSettings.lightCollectionCount) {
 			colors[filled] = entry.color;
 			points[filled] = entry.pos;
 			distances[filled] = d;
+			rDistances[filled] = rd;
 			filled++;
 
 			if (filled == renderSettings.lightCollectionCount) {
@@ -40,6 +43,7 @@ vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {
 			colors[furthest] = entry.color;
 			points[furthest] = entry.pos;
 			distances[furthest] = d;
+			rDistances[furthest] = rd;
 
 			uint furthestIndex = 0;
 			for (uint i = 1; i < renderSettings.lightCollectionCount; i++) {
@@ -73,7 +77,8 @@ vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {
 	vec3 color = vec3(0.0);
 
 	for (uint i = 0; i < renderSettings.lightCollectionCount; i++) {
-		color += colors[i];
+		if (distances[i] <= renderSettings.collectionDistance)
+		color += colors[i] * (1.0 - (rDistances[i] / renderSettings.collectionDistance));
 	}
 
 	return color * (1.0 / float(renderSettings.lightCollectionCount));

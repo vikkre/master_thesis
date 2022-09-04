@@ -14,14 +14,16 @@ IMAGE_WIDTH = 1280
 IMAGE_HEIGHT = 720
 MAX_RUNS = 10
 
-LIGHT_RAY_COUNTS = [100, 250, 500]
-LIGHT_JUMP_COUNTS = [1, 2, 3, 4, 5]
-VISION_JUMP_COUNTS = [1, 2, 3, 4, 5]
-LIGHT_COLLECTION_DISTANCES = [0.1, 0.5, 1.0]
+LIGHT_RAY_COUNTS = [100, 250, 500, 750, 1000]
+LIGHT_JUMP_COUNTS = [1, 2, 3, 4]
+VISION_JUMP_COUNTS = [2, 3, 4, 5]
+LIGHT_COLLECTION_DISTANCES = [1.0, 3.0, 5.0, 8.0]
 VISION_RAY_COUNTS = [3, 10, 20]
+COLLECTION_DISTANCE_SHRINK_FACTORS = [5.0, 7.5, 10.0, 15.0]
+LIGHT_COLLECTION_COUNTS = [5, 10, 20, 30]
 
 RENDERTIME_REGEX = re.compile(r"INFO: Render Time: ([0-9.]+) \(~(\d+) FPS\)")
-RUNCATEGORY = os.path.join("simple")
+RUNCATEGORY = os.path.join("light_count_collection")
 RENDERER_PATH = os.path.join("res", "renderer", "full_monte_carlo.renderer")
 SCENE_PATH = os.path.join("res", "scene", "cornell_box_with_blocks.scene")
 
@@ -34,9 +36,9 @@ MonteCarloRenderer
 	visionJumpCount({vision_jump_count})
 	collectionDistance({light_collection_distance})
 	visionRayPerPixelCount({vision_ray_count})
-	collectionDistanceShrinkFactor(5.0)
-	lightCollectionCount(10)
-	useCountLightCollecton(0)
+	collectionDistanceShrinkFactor({collection_distance_shrink_factor})
+	lightCollectionCount({light_collection_count})
+	useCountLightCollecton(1)
 """
 
 
@@ -97,31 +99,34 @@ def run_monte_carlo_renderers(out_path, run_category):
 			for vision_jump_count in VISION_JUMP_COUNTS:
 				for light_collection_distance in LIGHT_COLLECTION_DISTANCES:
 					for vision_ray_count in VISION_RAY_COUNTS:
-						current = dict(
-							light_ray_count=light_ray_count, light_jump_count=light_jump_count, vision_jump_count=vision_jump_count,
-							light_collection_distance=light_collection_distance, vision_ray_count=vision_ray_count
-						)
-						current_key = {k:str(v) for k,v in current.items()}
-						already_done = current_key in done
-						print("Current:", current_key, "(skipping)" if already_done else "")
-						if already_done: continue
+						for collection_distance_shrink_factor in COLLECTION_DISTANCE_SHRINK_FACTORS:
+							for light_collection_count in LIGHT_COLLECTION_COUNTS:
+								current = dict(
+									light_ray_count=light_ray_count, light_jump_count=light_jump_count, vision_jump_count=vision_jump_count,
+									light_collection_distance=light_collection_distance, vision_ray_count=vision_ray_count,
+									collection_distance_shrink_factor=collection_distance_shrink_factor, light_collection_count=light_collection_count
+								)
+								current_key = {k:str(v) for k,v in current.items()}
+								already_done = current_key in done
+								print("Current:", current_key, "(skipping)" if already_done else "")
+								if already_done: continue
 
-						name = "monte_carlo__{light_ray_count}_{light_jump_count}_{vision_jump_count}_{light_collection_distance}_{vision_ray_count}".format(**current)
-						renderer = MONTE_CARLO_RENDERER_TEMPLATE.format(**current)
-						
-						renderer_path = os.path.join(dirpath, "{}.renderer".format(name))
-						with open(renderer_path, "w") as file:
-							file.write(renderer)
+								name = "monte_carlo__{light_ray_count}_{light_jump_count}_{vision_jump_count}_{light_collection_distance}_{vision_ray_count}_{collection_distance_shrink_factor}_{light_collection_count}".format(**current)
+								renderer = MONTE_CARLO_RENDERER_TEMPLATE.format(**current)
+								
+								renderer_path = os.path.join(dirpath, "{}.renderer".format(name))
+								with open(renderer_path, "w") as file:
+									file.write(renderer)
 
-						data = ray_trace(renderer_path, SCENE_PATH, dirpath, name)
+								data = ray_trace(renderer_path, SCENE_PATH, dirpath, name)
 
-						data_path = os.path.join(dirpath, "{}.csv".format(name))
-						saveCSV(data_path, data)
+								data_path = os.path.join(dirpath, "{}.csv".format(name))
+								saveCSV(data_path, data)
 
-						current["average_time"] = sum([float(x["seconds"]) for x in data]) / len(data)
-						current["average_fps"] = sum([float(x["fps"]) for x in data]) / len(data)
-						results.append(current)
-						saveCSV(results_path, results)
+								current["average_time"] = sum([float(x["seconds"]) for x in data]) / len(data)
+								current["average_fps"] = sum([float(x["fps"]) for x in data]) / len(data)
+								results.append(current)
+								saveCSV(results_path, results)
 
 
 def main():

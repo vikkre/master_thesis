@@ -77,7 +77,7 @@ vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {
 	vec3 color = vec3(0.0);
 
 	for (uint i = 0; i < renderSettings.lightCollectionCount; i++) {
-		if (distances[i] <= renderSettings.collectionDistance)
+		if (rDistances[i] <= renderSettings.collectionDistance)
 		color += colors[i] * (1.0 - (rDistances[i] / renderSettings.collectionDistance));
 	}
 

@@ -21,6 +21,10 @@
 #include "mesh_manager.h"
 #include "input_parser.h"
 
+#include "input/input.h"
+#include "input/fake_input.h"
+#include "input/real_input.h"
+
 #include "math/vector.h"
 #include "math/matrix.h"
 #include "math/rotation.h"
@@ -106,6 +110,15 @@ int main(int argc, char* argv[]) {
 
 	engine->initTlas();
 
+	Input* input = nullptr;
+	if (renderLimit) {
+		input = new FakeInput(engine->device.renderInfo.camera.position);
+	} else {
+		RealInput* rInput = new RealInput();
+		rInput->r = 15.0f;
+		input = rInput;
+	}
+
 
 	SDL_Event event;
 	bool run = true;
@@ -116,7 +129,9 @@ int main(int argc, char* argv[]) {
 			bool sdl_quit = event.type == SDL_QUIT;
 			bool window_quit = event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE;
 			if (sdl_quit || window_quit) run = false;
+			else input->handleEvents(event);
 		}
+		engine->device.renderInfo.camera.position = input->getPosition();
 
 		if (!renderLimit || rendered < maxRenderCount) {
 			int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
@@ -132,9 +147,11 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 
-		SDL_Delay(100);
+		// if (renderLimit) SDL_Delay(100);
+		SDL_Delay(50);
 	}
 
+	delete input;
 	delete meshManager;
 	delete engine;
 

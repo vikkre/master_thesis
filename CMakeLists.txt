@@ -34,17 +34,17 @@ macro(add_shader output_shader)
 	list(APPEND SHADER ${output_shader})
 endmacro()
 
-add_shader(prakt_raygen.spv     prakt_raygen.rgen      )
-add_shader(prakt_closesthit.spv prakt_closesthit.rchit )
-add_shader(prakt_miss.spv       prakt_miss.rmiss       )
-add_shader(prakt_shadow.spv     prakt_shadow.rmiss     )
-
 add_shader(monte_carlo_miss.spv          monte_carlo_miss.rmiss         monte_carlo.glsl )
 add_shader(monte_carlo_closesthit.spv    monte_carlo_closesthit.rchit   monte_carlo.glsl )
 add_shader(monte_carlo_light_raygen.spv  monte_carlo_light_raygen.rgen  monte_carlo.glsl )
 add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       monte_carlo.glsl )
 add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen monte_carlo.glsl )
 add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    monte_carlo.glsl )
+
+add_shader(ddgi_miss.spv                ddgi_miss.rmiss               ddgi.glsl )
+add_shader(ddgi_closesthit.spv          ddgi_closesthit.rchit         ddgi.glsl )
+add_shader(ddgi_probe_raygen.spv        ddgi_probe_raygen.rgen        ddgi.glsl )
+add_shader(ddgi_shading_update_comp.spv ddgi_shading_update_comp.comp ddgi.glsl )
 
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )

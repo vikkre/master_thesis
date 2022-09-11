@@ -7,21 +7,12 @@
 
 #define PI 3.1415926538
 
-#define LIGHT_COLLECTION_INDEX_STACK_SIZE 2000
-#define LIGHT_COLLECTION_DATA_ARRAY_SIZE 100
 
-
-struct PointData {
-	vec3 pos;
-	vec3 color;
-};
-
-struct KDData {
-	vec3 pos;
-	vec3 color;
-	uint direction;
-	int leftIndex;
-	int rightIndex;
+struct Surfel {
+	vec3 rayDirection;
+	vec3 hitRadiance;
+	float hitDistance;
+	bool hit;
 };
 
 struct ObjectProperties {
@@ -52,29 +43,24 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	vec3 backgroundColor;
 	vec3 lightPosition;
-	uint lightRayCount;
-	uint lightJumpCount;
-	uint visionJumpCount;
-	float collectionDistance;
-	uint visionRayPerPixelCount;
-	float collectionDistanceShrinkFactor;
-	uint lightCollectionCount;
-	uint useCountLightCollecton;
+	float betweenProbeDistance;
+	uint singleDirectionProbeCount;
+	uint totalProbeCount;
+	uint perProbeRayCount;
+	float maxProbeRayDistance;
+	uint probeSampleSideLength;
+	float depthSharpness;
 } renderSettings;
-layout(binding = 4, set = 0) buffer Count {uint c;} count;
-layout(binding = 5, set = 0, scalar) buffer PD { PointData d[]; } pointData;
-layout(binding = 6, set = 0, scalar) buffer KDD { KDData d[]; } kdData;
-layout(binding = 7, set = 0, r32ui) uniform uimage2D rawImageRed;
-layout(binding = 8, set = 0, r32ui) uniform uimage2D rawImageGreen;
-layout(binding = 9, set = 0, r32ui) uniform uimage2D rawImageBlue;
-layout(binding = 10, set = 0, rgba8) uniform image2D finalImage;
+layout(binding = 4, set = 0, scalar) buffer SB { Surfel s[]; } surfels;
+layout(binding = 5, set = 0, rgba8) uniform image2D irradianceBuffer;
+layout(binding = 6, set = 0, rgba16f) uniform image2D depthBuffer;
 
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };
 
 #ifndef COMPUTE_SHADER
 struct RayPayload {
-	bool miss;
+	bool hit;
 	vec3 pos;
 	vec3 normal;
 	vec3 color;
@@ -145,4 +131,32 @@ vec3 sphericalFibonacci(float i, float n) {
 		sin(phi) * sinTheta,
 		cosTheta
 	);
+}
+
+
+vec2 signNotZero(vec2 v) {
+	return vec2(
+		v.x >= 0.0 ? 1.0 : -1.0,
+		v.y >= 0.0 ? 1.0 : -1.0
+	);
+}
+
+// Assumes that v is a unit vector. The result is an octahedral vector on the [-1, +1] square.
+vec2 octEncode(in vec3 v) {
+	float l1norm = abs(v.x) + abs(v.y) + abs(v.z);
+	vec2 result = v.xy * (1.0 / l1norm);
+	if (v.z < 0.0) {
+		result = (1.0 - abs(result.yx)) * signNotZero(result.xy);
+	}
+	return result;
+}
+
+
+// Returns a unit vector. Argument o is an octahedral vector packed via octEncode, on the [-1, +1] square
+vec3 octDecode(vec2 o) {
+	vec3 v = vec3(o.x, o.y, 1.0 - abs(o.x) - abs(o.y));
+	if (v.z < 0.0) {
+		v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+	}
+	return normalize(v);
 }

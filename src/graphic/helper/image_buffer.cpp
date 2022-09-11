@@ -211,7 +211,9 @@ const VkImageView& ImageBuffer::getImageView() const {
 }
 
 void ImageBuffer::saveImageAsNetpbm(const std::string& filename) {
-	const size_t imageSize = properties.width * properties.height * 4;
+	bool size16bit = properties.format == VK_FORMAT_R16G16B16A16_UNORM;
+	unsigned int pixelSize = size16bit ? 2 : 1;
+	size_t imageSize = properties.width * properties.height * 4 * pixelSize;
 
 	DataBuffer tmpBuffer(device);
 	tmpBuffer.properties.bufferSize = imageSize;
@@ -238,19 +240,21 @@ void ImageBuffer::saveImageAsNetpbm(const std::string& filename) {
 	cmd.start();
 	this->cmdTransitionImageLayout(cmd.getCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	vkCmdCopyImageToBuffer(cmd.getCommandBuffer(), image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, tmpBuffer.getBuffer(), 1, &region);
-	this->cmdTransitionImageLayout(cmd.getCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	this->cmdTransitionImageLayout(cmd.getCommandBuffer(), VK_IMAGE_LAYOUT_GENERAL);
 	cmd.end();
 
 	std::vector<char> data(imageSize);
 	tmpBuffer.getData(data.data());
 
 	std::ofstream file(filename, std::ios::out | std::ios::binary);
-	file << "P6\n" << properties.width << "\n" << properties.height << "\n" << 255 << "\n";
+	unsigned int sizeformat = 255;
+	if (size16bit) sizeformat = 65535;
+	file << "P6\n" << properties.width << "\n" << properties.height << "\n" << sizeformat << "\n";
 
 	for (size_t i = 0; i < properties.width * properties.height; ++i) {
-		file.write(&data[i * 4 + 2], 1);
-		file.write(&data[i * 4 + 1], 1);
-		file.write(&data[i * 4 + 0], 1);
+		file.write(&data[i * 4 * pixelSize + 2], pixelSize);
+		file.write(&data[i * 4 * pixelSize + 1], pixelSize);
+		file.write(&data[i * 4 * pixelSize + 0], pixelSize);
 	}
 
 	file.close();

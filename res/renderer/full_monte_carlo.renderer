@@ -1,13 +1,13 @@
 MonteCarloRenderer
 	backgroundColor(0, 0, 0)
 	lightPosition(0, 4.5, 0)
-	lightRayCount(1000)
+	lightRayCount(500)
 	lightJumpCount(1)
-	visionJumpCount(4)
-	collectionDistance(7)
-	visionRayPerPixelCount(1)
-	collectionDistanceShrinkFactor(7)
-	lightCollectionCount(25)
+	visionJumpCount(2)
+	collectionDistance(2.5)
+	visionRayPerPixelCount(3)
+	collectionDistanceShrinkFactor(5)
+	lightCollectionCount(3)
 	useCountLightCollecton(1)
 
 #GaussDenoiser

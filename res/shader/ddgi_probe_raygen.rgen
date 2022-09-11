@@ -1,0 +1,42 @@
+#version 460
+
+#define RAYGEN_SHADER
+#include "ddgi.glsl"
+
+
+void main() {
+	uint surfelIndex = uint(gl_LaunchIDEXT.y) * renderSettings.perProbeRayCount + uint(gl_LaunchIDEXT.x);
+
+	uint se = 2 * renderSettings.singleDirectionProbeCount + 1;
+	uint i = uint(gl_LaunchIDEXT.y);
+
+	uint x = (i % se);
+	i = (i - x) / se;
+
+	uint y = (i % se);
+	i = (i - y) / se;
+
+	uint z = (i % se);
+	
+	ivec3 prepos = ivec3(x, y, z) - ivec3(renderSettings.singleDirectionProbeCount);
+	vec3 origin = renderSettings.betweenProbeDistance * vec3(prepos);
+	vec3 direction = sphericalFibonacci(float(gl_LaunchIDEXT.x), float(renderSettings.perProbeRayCount));
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	float tmax = renderSettings.maxProbeRayDistance;
+	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+	surfels.s[surfelIndex].rayDirection = direction;
+	
+	if (rayPayload.hit) {
+		surfels.s[surfelIndex].hitRadiance = rayPayload.color;
+		surfels.s[surfelIndex].hitDistance = length(origin - (rayPayload.pos + 0.01 * rayPayload.normal));
+		surfels.s[surfelIndex].hit = true;
+	} else {
+		surfels.s[surfelIndex].hitRadiance = vec3(0.0);
+		surfels.s[surfelIndex].hitDistance = 0.0;
+		surfels.s[surfelIndex].hit = false;
+	}
+}

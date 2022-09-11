@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "../ray_tracing_pipeline.h"
+#include "../compute_pipeline.h"
 
 #include "../device.h"
 #include "../helper/data_buffer.h"
@@ -15,43 +16,56 @@
 #include "../helper/top_acceleration_structure_buffer.h"
 #include "../helper/descriptor_collection.h"
 
+#include "../../math/vector.h"
+
 #include "renderer.h"
 
 
-class PraktikumsRenderer: public Renderer {
+class DDGIRenderer: public Renderer {
 	public:
-		PraktikumsRenderer(Device* device);
-		~PraktikumsRenderer();
+		DDGIRenderer(Device* device);
+		~DDGIRenderer();
 
 		virtual void init() override;
 		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
 		virtual void updateUniforms(size_t index) override;
 		virtual void passObjects(const std::vector<GraphicsObject*>& objects) override;
-		virtual void parseInput(const InputEntry& /* inputEntry */) override;
+		virtual void parseInput(const InputEntry& inputEntry) override;
 
-		struct GlobalData {
-			Matrix4f viewInverse;
-			Matrix4f projInverse;
-			Matrix4f view;
-			Matrix4f proj;
+		struct RenderSettings {
 			Vector3f backgroundColor;
 			Vector3f lightPosition;
-		} globalData;
+			float betweenProbeDistance;
+			u_int32_t singleDirectionProbeCount;
+			u_int32_t totalProbeCount;
+			u_int32_t perProbeRayCount;
+			float maxProbeRayDistance;
+			u_int32_t probeSampleSideLength;
+			float depthSharpness;
+		} renderSettings;
 
 	private:
 		void createTLAS();
 		void createBuffers();
 		void createDescriptorCollection();
-		void createPipeline();
+		void createProbePipeline();
+		void createShadingUpdatePipeline();
+
+		Vector2u getIrradianceFieldSurfaceExtend() const;
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
-		RayTracingPipeline pipeline;
+		RayTracingPipeline probePipeline;
+		ComputePipeline shadingUpdatePipeline;
 
 		std::vector<GraphicsObject*> objects;
 		std::vector<void*> objDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
-		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
 		MultiBufferDescriptor<DataBuffer> objDataBuffers;
+		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
+		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
+		MultiBufferDescriptor<DataBuffer> surfelBuffer;
+		MultiBufferDescriptor<ImageBuffer> irradianceBuffer;
+		MultiBufferDescriptor<ImageBuffer> depthBuffer;
 };

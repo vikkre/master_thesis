@@ -156,7 +156,7 @@ void main() {
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
 			if (renderSettings.useCountLightCollecton == 1) {
 				outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
-				break;
+				// break;
 			} else {
 				outColor += rayColor * getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);
 			}

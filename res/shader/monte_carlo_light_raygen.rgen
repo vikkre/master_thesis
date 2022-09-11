@@ -6,7 +6,8 @@
 
 void main() {
 	vec3 origin = renderSettings.lightPosition;
-	vec3 direction = randomNormal(gl_LaunchIDEXT, 0, 1);
+	// vec3 direction = randomNormal(gl_LaunchIDEXT, 0, 1);
+	vec3 direction = sphericalFibonacci(float(gl_LaunchIDEXT.x), float(renderSettings.lightRayCount));
 
 	uint rayFlags = gl_RayFlagsOpaqueEXT;
 	uint cullMask = 0xFF;
@@ -39,10 +40,4 @@ void main() {
 			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
 		}
 	}
-
-	// if (!rayPayload.miss) {
-	// 	uint index = atomicAdd(count.c, 1);
-	// 	pointData.d[index].pos = rayPayload.pos;
-	// 	pointData.d[index].color = color;
-	// }
 }

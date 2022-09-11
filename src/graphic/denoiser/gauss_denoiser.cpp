@@ -27,8 +27,8 @@ void GaussDenoiser::updateUniforms(size_t index) {
 }
 
 void GaussDenoiser::parseInput(const InputEntry& inputEntry) {
-	settings.kernelSize = inputEntry.getInt("kernelSize");
-	settings.sigma = inputEntry.getFloat("sigma");
+	settings.kernelSize = inputEntry.get<u_int32_t>("kernelSize");
+	settings.sigma = inputEntry.get<float>("sigma");
 }
 
 void GaussDenoiser::createBuffers() {

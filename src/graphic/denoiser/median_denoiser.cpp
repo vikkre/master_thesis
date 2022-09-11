@@ -27,7 +27,7 @@ void MedianDenoiser::updateUniforms(size_t index) {
 }
 
 void MedianDenoiser::parseInput(const InputEntry& inputEntry) {
-	settings.kernelSize = inputEntry.getInt("kernelSize");
+	settings.kernelSize = inputEntry.get<u_int32_t>("kernelSize");
 }
 
 void MedianDenoiser::createBuffers() {

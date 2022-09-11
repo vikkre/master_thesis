@@ -34,17 +34,17 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 		const InputEntry& entry = parser.getInputEntry(i);
 
 		Mesh* mesh = getMesh(entry.name);
-		Vector3f pos = entry.getVector3f("position");
+		Vector3f pos = entry.getVector<3, float>("position");
 		GraphicsObject* obj = new GraphicsObject(device, mesh, pos);
 
-		if (entry.keyExists("color"))    obj->color    = entry.getVector3f("color");
-		if (entry.keyExists("scale"))    obj->scale    = entry.getVector3f("scale");
+		if (entry.keyExists("color"))    obj->color    = entry.getVector<3, float>("color");
+		if (entry.keyExists("scale"))    obj->scale    = entry.getVector<3, float>("scale");
 		if (entry.keyExists("rotation")) obj->rotation = entry.getRotation("rotation");
 
-		if (entry.keyExists("diffuse"))         obj->diffuseWeight          = entry.getFloat("diffuse");
-		if (entry.keyExists("reflect"))         obj->reflectWeight          = entry.getFloat("reflect");
-		if (entry.keyExists("transparent"))     obj->transparentWeight      = entry.getFloat("transparent");
-		if (entry.keyExists("refractionIndex")) obj->rtData.refractionIndex = entry.getFloat("refractionIndex");
+		if (entry.keyExists("diffuse"))         obj->diffuseWeight          = entry.get<float>("diffuse");
+		if (entry.keyExists("reflect"))         obj->reflectWeight          = entry.get<float>("reflect");
+		if (entry.keyExists("transparent"))     obj->transparentWeight      = entry.get<float>("transparent");
+		if (entry.keyExists("refractionIndex")) obj->rtData.refractionIndex = entry.get<float>("refractionIndex");
 
 		createdObjects.push_back(obj);
 	}

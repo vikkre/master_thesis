@@ -83,16 +83,16 @@ void MonteCarloRenderer::passObjects(const std::vector<GraphicsObject*>& objects
 }
 
 void MonteCarloRenderer::parseInput(const InputEntry& inputEntry) {
-	renderSettings.backgroundColor = inputEntry.getVector3f("backgroundColor");
-	renderSettings.lightPosition = inputEntry.getVector3f("lightPosition");
-	renderSettings.lightRayCount = inputEntry.getInt("lightRayCount");
-	renderSettings.lightJumpCount = inputEntry.getInt("lightJumpCount");
-	renderSettings.visionJumpCount = inputEntry.getInt("visionJumpCount");
-	renderSettings.collectionDistance = inputEntry.getFloat("collectionDistance");
-	renderSettings.visionRayPerPixelCount = inputEntry.getInt("visionRayPerPixelCount");
-	renderSettings.collectionDistanceShrinkFactor = inputEntry.getFloat("collectionDistanceShrinkFactor");
-	renderSettings.lightCollectionCount = inputEntry.getInt("lightCollectionCount");
-	renderSettings.useCountLightCollecton = inputEntry.getInt("useCountLightCollecton");
+	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
+	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
+	renderSettings.lightRayCount = inputEntry.get<u_int32_t>("lightRayCount");
+	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
+	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
+	renderSettings.collectionDistance = inputEntry.get<float>("collectionDistance");
+	renderSettings.visionRayPerPixelCount = inputEntry.get<u_int32_t>("visionRayPerPixelCount");
+	renderSettings.collectionDistanceShrinkFactor = inputEntry.get<float>("collectionDistanceShrinkFactor");
+	renderSettings.lightCollectionCount = inputEntry.get<u_int32_t>("lightCollectionCount");
+	renderSettings.useCountLightCollecton = inputEntry.get<u_int32_t>("useCountLightCollecton");
 }
 
 void MonteCarloRenderer::createTLAS() {

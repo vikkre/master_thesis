@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
+#include <sstream>
 
 #include "init_exception.h"
 #include "math/vector.h"
@@ -18,10 +19,25 @@ class InputEntry {
 
 		void insert(const RawInputEntry& rawInputEntry);
 		bool keyExists(const std::string& key) const;
-		
-		int getInt(const std::string& key) const;
-		float getFloat(const std::string& key) const;
-		Vector3f getVector3f(const std::string& key) const;
+
+		template <typename T>
+		T get(const std::string& key, size_t index=0) const {
+			T value;
+			std::stringstream(data.at(key).at(index)) >> value;
+			return value;
+		}
+
+		template <size_t s, typename T>
+		Vector<s, T> getVector(const std::string& key) const {
+			Vector<s, T> vec;
+
+			for (size_t i = 0; i < s; ++i) {
+				vec[i] = get<T>(key, i);
+			}
+
+			return vec;
+		}
+
 		Rotation getRotation(const std::string& key) const;
 
 		std::string name;

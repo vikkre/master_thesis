@@ -3,7 +3,7 @@ MonteCarloRenderer
 	lightPosition(0, 4.5, 0)
 	lightRayCount(500)
 	lightJumpCount(1)
-	visionJumpCount(2)
+	visionJumpCount(3)
 	collectionDistance(2.5)
 	visionRayPerPixelCount(3)
 	collectionDistanceShrinkFactor(5)

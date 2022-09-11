@@ -73,18 +73,18 @@ void DDGIRenderer::passObjects(const std::vector<GraphicsObject*>& objects) {
 }
 
 void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
-	renderSettings.backgroundColor = inputEntry.getVector3f("backgroundColor");
-	renderSettings.lightPosition = inputEntry.getVector3f("lightPosition");
+	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
+	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 
-	renderSettings.betweenProbeDistance = inputEntry.getFloat("betweenProbeDistance");
-	renderSettings.singleDirectionProbeCount = inputEntry.getInt("singleDirectionProbeCount");
-	renderSettings.perProbeRayCount = inputEntry.getInt("perProbeRayCount");
-	unsigned int singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
+	renderSettings.betweenProbeDistance = inputEntry.get<float>("betweenProbeDistance");
+	renderSettings.singleDirectionProbeCount = inputEntry.get<u_int32_t>("singleDirectionProbeCount");
+	renderSettings.perProbeRayCount = inputEntry.get<u_int32_t>("perProbeRayCount");
+	u_int32_t singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
 	renderSettings.totalProbeCount = singleExtend*singleExtend*singleExtend;
 
-	renderSettings.maxProbeRayDistance = inputEntry.getFloat("maxProbeRayDistance");
-	renderSettings.probeSampleSideLength = inputEntry.getInt("probeSampleSideLength");
-	renderSettings.depthSharpness = inputEntry.getFloat("depthSharpness");
+	renderSettings.maxProbeRayDistance = inputEntry.get<float>("maxProbeRayDistance");
+	renderSettings.probeSampleSideLength = inputEntry.get<u_int32_t>("probeSampleSideLength");
+	renderSettings.depthSharpness = inputEntry.get<float>("depthSharpness");
 }
 
 void DDGIRenderer::createTLAS() {

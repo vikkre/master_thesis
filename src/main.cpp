@@ -30,6 +30,10 @@
 #include "math/rotation.h"
 
 
+constexpr Uint32 FPS = 30;
+constexpr Uint32 MS_PER_FRAME = 1000/FPS;
+
+
 int64_t measureExecTimeMicroseconds(std::function<void()> exec) {
 	auto start = std::chrono::high_resolution_clock::now();
 	exec();
@@ -123,9 +127,12 @@ int main(int argc, char* argv[]) {
 
 	SDL_Event event;
 	bool run = true;
+	Uint32 currentTime = SDL_GetTicks();
 	unsigned int rendered = 0;
 
 	while (run) {
+		currentTime = SDL_GetTicks();
+
 		while(SDL_PollEvent(&event)) {
 			bool sdl_quit = event.type == SDL_QUIT;
 			bool window_quit = event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE;
@@ -148,8 +155,12 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 
-		// if (renderLimit) SDL_Delay(100);
-		SDL_Delay(50);
+		if (renderLimit) {
+			SDL_Delay(100);
+		} else {
+			int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();
+			if (sleepTime > 0) SDL_Delay(sleepTime);
+		}
 	}
 
 	delete input;

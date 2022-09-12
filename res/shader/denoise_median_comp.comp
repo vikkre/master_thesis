@@ -10,7 +10,6 @@ layout(binding = 2, set = 0, scalar) uniform Settings {
 
 
 #define MAX_ARRAY_SIZE 15*15
-// #define settings.kernelSize 7
 
 
 void main() {

@@ -39,10 +39,12 @@ class ImageBuffer: public Buffer {
 			VkImageAspectFlags aspectFlags;
 			VkImageLayout layout;
 			bool createImageView;
+			bool createSampler;
 		} properties;
 
 	private:
 		void initImageView();
+		void initSampler();
 		void cmdTransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
 		Device* device;
@@ -50,6 +52,7 @@ class ImageBuffer: public Buffer {
 		VkImage image;
 		VkDeviceMemory imageMemory;
 		VkImageView imageView;
+		VkSampler textureSampler;
 		VkDescriptorImageInfo descriptorImageInfo;
 
 		bool deleteImage;

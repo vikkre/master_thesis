@@ -37,6 +37,7 @@ class Device {
 		const VkDevice& getDevice() const;
 		const VkPhysicalDevice& getPhysicalDevice() const;
 		const Queues& getQueues() const;
+		const VkPhysicalDeviceProperties getProperties() const;
 
 		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
@@ -64,5 +65,6 @@ class Device {
 		VkPhysicalDevice physicalDevice;
 		VkDevice device;
 		Queues queues;
+		VkPhysicalDeviceProperties properties;
 		VkPhysicalDeviceMemoryProperties memProperties;
 };

@@ -60,16 +60,8 @@ void RayTracingPipeline::cmdExecutePipeline(VkCommandBuffer commandBuffer) {
 	);
 }
 
-void RayTracingPipeline::cmdRayTracingBarrier(VkCommandBuffer commandBuffer) {
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		// VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
-		VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-		0,
-		0, nullptr,
-		0, nullptr,
-		0, nullptr
-	);
+VkPipelineStageFlags RayTracingPipeline::getStageMask() {
+	return VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
 }
 
 void RayTracingPipeline::createShaderBindingTable() {

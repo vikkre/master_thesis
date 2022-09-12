@@ -6,13 +6,16 @@
 
 ImageBuffer::ImageBuffer(Device* device)
 :Buffer(), properties(),
-device(device), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE), imageView(VK_NULL_HANDLE),
-deleteImage(true) {
+device(device), image(VK_NULL_HANDLE), imageMemory(VK_NULL_HANDLE),
+imageView(VK_NULL_HANDLE), textureSampler(VK_NULL_HANDLE),
+descriptorImageInfo(), deleteImage(true) {
 	properties.layout = VK_IMAGE_LAYOUT_UNDEFINED;
 	properties.createImageView = false;
+	properties.createSampler = false;
 }
 
 ImageBuffer::~ImageBuffer() {
+	if (textureSampler != VK_NULL_HANDLE) vkDestroySampler(device->getDevice(), textureSampler, nullptr);
 	if (imageView != VK_NULL_HANDLE) vkDestroyImageView(device->getDevice(), imageView, nullptr);
 	if (imageMemory != VK_NULL_HANDLE) vkFreeMemory(device->getDevice(), imageMemory, nullptr);
 	if (deleteImage) vkDestroyImage(device->getDevice(), image, nullptr);
@@ -68,6 +71,10 @@ void ImageBuffer::init() {
 		descriptorImageInfo = {};
 		descriptorImageInfo.imageView = imageView;
 		descriptorImageInfo.imageLayout = properties.layout;
+	}
+
+	if (properties.createSampler) {
+		initSampler();
 	}
 }
 
@@ -166,6 +173,27 @@ void ImageBuffer::initImageView() {
 
 	if (vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
 		throw InitException("vkCreateImageView", "failed to create image view!");
+	}
+}
+
+void ImageBuffer::initSampler() {
+	VkSamplerCreateInfo samplerInfo{};
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
+	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.anisotropyEnable = VK_TRUE;
+	samplerInfo.maxAnisotropy = device->getProperties().limits.maxSamplerAnisotropy;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+	if (vkCreateSampler(device->getDevice(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+		throw InitException("vkCreateSampler", "failed to create image texture sampler!");
 	}
 }
 

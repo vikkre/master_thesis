@@ -156,7 +156,6 @@ void main() {
 		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
 			if (renderSettings.useCountLightCollecton == 1) {
 				outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
-				// break;
 			} else {
 				outColor += rayColor * getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);
 			}
@@ -171,18 +170,6 @@ void main() {
 		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
 			origin = rayPayload.pos;
 			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
-		}
-	}
-
-	if (!rayPayload.miss) {
-		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, int(renderSettings.visionJumpCount), 0);
-
-		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-			if (renderSettings.useCountLightCollecton == 1) {
-				// outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
-			} else {
-				outColor += rayColor * getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);
-			}
 		}
 	}
 

@@ -8,6 +8,7 @@ layout(binding = 2, set = 0, scalar) uniform Settings {
 	uint kernelSize;
 	float sigma;
 } settings;
+layout(binding = 3, set = 0, scalar) buffer GB { float g[]; } gaussBuffer;
 
 
 #define GAUSS_ARRAY_MAX_SIZE 20
@@ -15,22 +16,6 @@ layout(binding = 2, set = 0, scalar) uniform Settings {
 
 void main() {
 	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-
-	float gauss[GAUSS_ARRAY_MAX_SIZE];
-	float sum = 0.0;
-	for (uint i = 0; i < settings.kernelSize; i++) {
-		float a = (float(i) - (float(settings.kernelSize) - 1.0));
-		a = a*a;
-		float b = (2.0 * settings.sigma * settings.sigma);
-		float r = exp(-a/b);
-		gauss[i] = r;
-		sum += r;
-	}
-	sum = 1.0/sum;
-	for (uint i = 0; i < settings.kernelSize; i++) {
-		gauss[i] *= sum;
-	}
-
 	vec4 color = vec4(0.0);
 	ivec2 size = imageSize(rawImage);
 	int off = int(settings.kernelSize / 2.0);
@@ -39,7 +24,7 @@ void main() {
 		for (int y = -off; y <= off; y++) {
 			ivec2 p = pos + ivec2(x, y);
 			if (0 <= p.x && p.x < size.x && 0 <= p.y && p.y < size.y) {
-				color += imageLoad(rawImage, p) * gauss[x + off] * gauss[y + off];
+				color += imageLoad(rawImage, p) * gaussBuffer.g[x + off] * gaussBuffer.g[y + off];
 			}
 		}
 	}

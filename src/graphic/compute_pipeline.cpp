@@ -18,6 +18,11 @@ void ComputePipeline::cmdExecutePipeline(VkCommandBuffer commandBuffer) {
 	vkCmdDispatch(commandBuffer, x, y, z);
 }
 
+VkPipelineStageFlags ComputePipeline::getStageMask() {
+	return VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+}
+
+
 void ComputePipeline::createPipeline() {
 	std::ifstream file(device->basepath + shaderPath, std::ios::ate | std::ios::binary);
 

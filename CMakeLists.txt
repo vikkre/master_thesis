@@ -45,6 +45,7 @@ add_shader(ddgi_miss.spv                ddgi_miss.rmiss               ddgi.glsl 
 add_shader(ddgi_closesthit.spv          ddgi_closesthit.rchit         ddgi.glsl )
 add_shader(ddgi_probe_raygen.spv        ddgi_probe_raygen.rgen        ddgi.glsl )
 add_shader(ddgi_shading_update_comp.spv ddgi_shading_update_comp.comp ddgi.glsl )
+add_shader(ddgi_final_raygen.spv        ddgi_final_raygen.rgen        ddgi.glsl )
 
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )

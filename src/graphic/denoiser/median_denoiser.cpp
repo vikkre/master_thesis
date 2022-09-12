@@ -17,7 +17,7 @@ void MedianDenoiser::initDenoiser() {
 }
 
 void MedianDenoiser::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
-	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+	Denoiser::cmdPipelineBarrier(commandBuffer);
 	descriptorCollection.cmdBind(index, commandBuffer);
 	denoisePipeline.cmdExecutePipeline(commandBuffer);
 }

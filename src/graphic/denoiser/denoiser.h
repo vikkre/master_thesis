@@ -22,6 +22,8 @@ class Denoiser {
 		MultiBufferDescriptor<ImageBuffer>* getInputImageBuffer();
 		void setOutputImageBuffer(MultiBufferDescriptor<ImageBuffer>* outputImageBuffer);
 
+		static void cmdPipelineBarrier(VkCommandBuffer commandBuffer);
+
 	protected:
 		void createInputImages();
 

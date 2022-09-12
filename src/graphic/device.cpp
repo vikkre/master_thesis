@@ -72,6 +72,7 @@ void Device::init() {
 	pickPhysicalDevice();
 	createLogicalDevice();
 	queues.init();
+	vkGetPhysicalDeviceProperties(physicalDevice, &properties);
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 }
 
@@ -208,6 +209,7 @@ void Device::createLogicalDevice() {
 	deviceFeatures10.features.sparseResidencyBuffer = VK_TRUE;
 	deviceFeatures10.features.sparseResidencyAliased = VK_TRUE;
 	deviceFeatures10.features.sparseBinding = VK_TRUE;
+	deviceFeatures10.features.samplerAnisotropy = VK_TRUE;
 
 	VkPhysicalDeviceVulkan11Features deviceFeatures11{};
 	deviceFeatures11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
@@ -299,6 +301,10 @@ const VkPhysicalDevice& Device::getPhysicalDevice() const {
 
 const Queues& Device::getQueues() const {
 	return queues;
+}
+
+const VkPhysicalDeviceProperties Device::getProperties() const {
+	return properties;
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const {

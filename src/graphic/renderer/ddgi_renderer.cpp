@@ -5,6 +5,7 @@
 #define RMISS_SHADER               "ddgi_miss.spv"
 #define PROBE_RGEN_SHADER          "ddgi_probe_raygen.spv"
 #define SHADING_UPDATE_COMP_SHADER "ddgi_shading_update_comp.spv"
+#define FINAL_RGEN_SHADER          "ddgi_final_raygen.spv"
 
 
 struct Surfel {
@@ -17,8 +18,8 @@ struct Surfel {
 
 DDGIRenderer::DDGIRenderer(Device* device)
 :device(device), descriptorCollection(device),
-probePipeline(device), shadingUpdatePipeline(device),
-objects(), objDataPtrs(),
+probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
+objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device),
 surfelBuffer(device), irradianceBuffer(device), depthBuffer(device) {}
 
@@ -30,6 +31,7 @@ void DDGIRenderer::init() {
 	createDescriptorCollection();
 	createProbePipeline();
 	createShadingUpdatePipeline();
+	createFinalPipeline();
 }
 
 void DDGIRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
@@ -37,9 +39,13 @@ void DDGIRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 
 	probePipeline.cmdExecutePipeline(commandBuffer);
 
-	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+	Renderer::cmdPipelineBarrier(probePipeline.getStageMask(), shadingUpdatePipeline.getStageMask(), commandBuffer);
 
 	shadingUpdatePipeline.cmdExecutePipeline(commandBuffer);
+
+	Renderer::cmdPipelineBarrier(shadingUpdatePipeline.getStageMask(), finalPipeline.getStageMask(), commandBuffer);
+
+	finalPipeline.cmdExecutePipeline(commandBuffer);
 }
 
 void DDGIRenderer::updateUniforms(size_t index) {
@@ -66,10 +72,6 @@ void DDGIRenderer::updateUniforms(size_t index) {
 		objects.at(i)->passBufferData(index);
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
-}
-
-void DDGIRenderer::passObjects(const std::vector<GraphicsObject*>& objects) {
-	this->objects = objects;
 }
 
 void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
@@ -108,6 +110,7 @@ void DDGIRenderer::createBuffers() {
 	shadingBufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 	shadingBufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
 	shadingBufferProperties.createImageView = true;
+	shadingBufferProperties.createSampler = true;
 	// shadingBufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 
 	irradianceBuffer.bufferProperties = shadingBufferProperties;
@@ -140,7 +143,7 @@ void DDGIRenderer::createBuffers() {
 }
 
 void DDGIRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(7);
+	descriptorCollection.bufferDescriptors.resize(8);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
 	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
@@ -149,7 +152,7 @@ void DDGIRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(4) = &surfelBuffer;
 	descriptorCollection.bufferDescriptors.at(5) = &irradianceBuffer;
 	descriptorCollection.bufferDescriptors.at(6) = &depthBuffer;
-	// descriptorCollection.bufferDescriptors.at() = outputImages;
+	descriptorCollection.bufferDescriptors.at(7) = outputImages;
 
 	descriptorCollection.init();
 }
@@ -176,6 +179,19 @@ void DDGIRenderer::createShadingUpdatePipeline() {
 	shadingUpdatePipeline.y = irradianceBuffer.bufferProperties.height;
 
 	shadingUpdatePipeline.init();
+}
+
+void DDGIRenderer::createFinalPipeline() {
+	finalPipeline.raygenShaders.push_back(FINAL_RGEN_SHADER);
+	finalPipeline.missShaders.push_back(RMISS_SHADER);
+	finalPipeline.hitShaders.push_back(RCHIT_SHADER);
+
+	finalPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+
+	finalPipeline.width = device->renderInfo.swapchainExtend.width;
+	finalPipeline.height = device->renderInfo.swapchainExtend.height;
+
+	finalPipeline.init();
 }
 
 Vector2u DDGIRenderer::getIrradianceFieldSurfaceExtend() const {

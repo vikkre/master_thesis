@@ -22,7 +22,7 @@ class RayTracingPipeline {
 		void init();
 		void cmdExecutePipeline(VkCommandBuffer commandBuffer);
 
-		static void cmdRayTracingBarrier(VkCommandBuffer commandBuffer);
+		static VkPipelineStageFlags getStageMask();
 
 		std::vector<std::string> raygenShaders, missShaders, hitShaders;
 

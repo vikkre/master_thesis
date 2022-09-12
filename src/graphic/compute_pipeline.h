@@ -17,6 +17,8 @@ class ComputePipeline {
 		void init();
 		void cmdExecutePipeline(VkCommandBuffer commandBuffer);
 
+		static VkPipelineStageFlags getStageMask();
+
 		std::string shaderPath;
 		VkPipelineLayout pipelineLayout;
 		uint32_t x, y, z;

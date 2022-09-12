@@ -29,6 +29,7 @@ class GaussDenoiser: public Denoiser {
 		void createDenoisePipeline();
 
 		MultiBufferDescriptor<DataBuffer> settingsBuffers;
+		MultiBufferDescriptor<DataBuffer> gaussBuffers;
 		DescriptorCollection descriptorCollection;
 		ComputePipeline denoisePipeline;
 };

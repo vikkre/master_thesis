@@ -26,7 +26,7 @@ struct KDData {
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
 :device(device), descriptorCollection(device),
 lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device),
-objects(), objDataPtrs(),
+objDataPtrs(),
 tlas(device), storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
 globalDataBuffers(device), renderSettingsBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device), objDataBuffers(device) {}
@@ -52,15 +52,15 @@ void MonteCarloRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) 
 
 	lightGenerationPipeline.cmdExecutePipeline(commandBuffer);
 
-	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+	Renderer::cmdPipelineBarrier(lightGenerationPipeline.getStageMask(), kdPipeline.getStageMask(), commandBuffer);
 
 	kdPipeline.cmdExecutePipeline(commandBuffer);
 
-	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+	Renderer::cmdPipelineBarrier(kdPipeline.getStageMask(), visionPipeline.getStageMask(), commandBuffer);
 
 	visionPipeline.cmdExecutePipeline(commandBuffer);
 
-	RayTracingPipeline::cmdRayTracingBarrier(commandBuffer);
+	Renderer::cmdPipelineBarrier(visionPipeline.getStageMask(), finalRenderPipeline.getStageMask(), commandBuffer);
 
 	finalRenderPipeline.cmdExecutePipeline(commandBuffer);
 }
@@ -76,10 +76,6 @@ void MonteCarloRenderer::updateUniforms(size_t index) {
 		objects.at(i)->passBufferData(index);
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
-}
-
-void MonteCarloRenderer::passObjects(const std::vector<GraphicsObject*>& objects) {
-	this->objects = objects;
 }
 
 void MonteCarloRenderer::parseInput(const InputEntry& inputEntry) {

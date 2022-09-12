@@ -29,7 +29,6 @@ class MonteCarloRenderer: public Renderer {
 		virtual void init() override;
 		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
 		virtual void updateUniforms(size_t index) override;
-		virtual void passObjects(const std::vector<GraphicsObject*>& objects) override;
 		virtual void parseInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
@@ -61,7 +60,6 @@ class MonteCarloRenderer: public Renderer {
 		RayTracingPipeline visionPipeline;
 		ComputePipeline finalRenderPipeline;
 
-		std::vector<GraphicsObject*> objects;
 		std::vector<void*> objDataPtrs;
 
 		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;

@@ -24,9 +24,9 @@ block.obj
 	scale(15, 5.0, 0.1)
 	color(1, 0, 0)
 
-block.obj
+ball.obj
 	position(0, 0, 0)
-#	scale(0.05, 2, 2)
+	scale(3, 3, 3)
 	diffuse(0)
 	reflect(0)
 	transparent(1)

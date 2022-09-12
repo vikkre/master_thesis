@@ -68,4 +68,5 @@ class DDGIRenderer: public Renderer {
 		MultiBufferDescriptor<DataBuffer> surfelBuffer;
 		MultiBufferDescriptor<ImageBuffer> irradianceBuffer;
 		MultiBufferDescriptor<ImageBuffer> depthBuffer;
+		MultiSamplerDescriptor irradianceSampler;
 };

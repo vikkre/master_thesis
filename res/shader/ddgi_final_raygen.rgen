@@ -26,4 +26,6 @@ void main() {
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	}
+
+	// vec4 color = texture(irradianceSampler, texel);
 }

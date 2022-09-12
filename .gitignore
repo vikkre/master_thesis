@@ -12,7 +12,7 @@ CTestTestfile.cmake
 _deps
 RayTrace
 build/*.ppm
-
+*.ppm
 out/*
 
 # Prerequisites

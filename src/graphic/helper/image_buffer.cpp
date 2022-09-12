@@ -65,7 +65,7 @@ void ImageBuffer::init() {
 		commandBuffer.end();
 	}
 
-	if (properties.createImageView) {
+	if (properties.createImageView || properties.createSampler) {
 		initImageView();
 
 		descriptorImageInfo = {};
@@ -75,6 +75,11 @@ void ImageBuffer::init() {
 
 	if (properties.createSampler) {
 		initSampler();
+
+		descriptorSamplerInfo = {};
+		descriptorSamplerInfo.sampler = textureSampler;
+		descriptorSamplerInfo.imageView = imageView;
+		descriptorSamplerInfo.imageLayout = properties.layout;
 	}
 }
 
@@ -153,6 +158,24 @@ VkWriteDescriptorSet ImageBuffer::getWriteDescriptorSet(VkDescriptorSet descript
 
 VkDescriptorType ImageBuffer::getDescriptorType() const {
 	return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+}
+
+VkWriteDescriptorSet ImageBuffer::getWriteDescriptorSetSampler(VkDescriptorSet descriptorSet, uint32_t binding) const {
+	VkWriteDescriptorSet writeSet{};
+
+	writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeSet.pNext = nullptr;
+	writeSet.dstSet = descriptorSet;
+	writeSet.dstBinding = binding;
+	writeSet.descriptorCount = 1;
+	writeSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	writeSet.pImageInfo = &descriptorSamplerInfo;
+
+	return writeSet;
+}
+
+VkDescriptorType ImageBuffer::getDescriptorTypeSampler() const {
+	return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 }
 
 void ImageBuffer::initImageView() {

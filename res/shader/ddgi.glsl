@@ -54,7 +54,8 @@ layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 layout(binding = 4, set = 0, scalar) buffer SB { Surfel s[]; } surfels;
 layout(binding = 5, set = 0, rgba8) uniform image2D irradianceBuffer;
 layout(binding = 6, set = 0, rgba16f) uniform image2D depthBuffer;
-layout(binding = 7, set = 0, rgba8) uniform image2D finalImage;
+layout(binding = 7, set = 0) uniform sampler2D irradianceSampler;
+layout(binding = 8, set = 0, rgba8) uniform image2D finalImage;
 
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };

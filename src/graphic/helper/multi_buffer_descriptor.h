@@ -7,6 +7,7 @@
 #include "../device.h"
 #include "buffer.h"
 #include "buffer_descriptor.h"
+#include "image_buffer.h"
 
 #include "../../init_exception.h"
 
@@ -61,4 +62,41 @@ class MultiBufferDescriptor: public BufferDescriptor {
 	private:
 		Device* device;
 		std::vector<BufferType> buffers;
+		friend class MultiSamplerDescriptor;
+};
+
+class MultiSamplerDescriptor: public BufferDescriptor {
+	public:
+		MultiSamplerDescriptor(MultiBufferDescriptor<ImageBuffer>* imageBuffers)
+		:BufferDescriptor(), imageBuffers(imageBuffers) {}
+
+		~MultiSamplerDescriptor() {}
+
+		virtual void getWriteDescriptorSets(std::vector<VkWriteDescriptorSet>& writeDescriptorSets, const std::vector<VkDescriptorSet>& descriptorSets, uint32_t binding) const override {
+			if (descriptorSets.size() != imageBuffers->buffers.size()) {
+				throw InitException("MultiSamplerDescriptor::getWriteDescriptorSets", "descriptorSets.size() and buffers.size() are unequal!");
+			}
+			
+			for (unsigned int i = 0; i < imageBuffers->buffers.size(); ++i) {
+				writeDescriptorSets.push_back(imageBuffers->buffers[i].getWriteDescriptorSetSampler(descriptorSets[i], binding));
+			}
+		}
+
+		virtual VkDescriptorSetLayoutBinding getLayoutBinding(uint32_t binding) const override {
+			VkDescriptorSetLayoutBinding layoutBinding{};
+
+			layoutBinding.binding = binding;
+			layoutBinding.descriptorType = imageBuffers->buffers[0].getDescriptorTypeSampler();
+			layoutBinding.descriptorCount = 1;
+			layoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
+
+			return layoutBinding;
+		}
+
+		virtual const Buffer* getBuffer() const override {
+			return &imageBuffers->buffers[0];
+		}
+	
+	private:
+		MultiBufferDescriptor<ImageBuffer>* imageBuffers;
 };

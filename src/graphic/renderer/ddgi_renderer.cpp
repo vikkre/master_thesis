@@ -21,7 +21,8 @@ DDGIRenderer::DDGIRenderer(Device* device)
 probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
 objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device),
-surfelBuffer(device), irradianceBuffer(device), depthBuffer(device) {}
+surfelBuffer(device), irradianceBuffer(device), depthBuffer(device),
+irradianceSampler(&irradianceBuffer) {}
 
 DDGIRenderer::~DDGIRenderer() {}
 
@@ -105,7 +106,7 @@ void DDGIRenderer::createBuffers() {
 	shadingBufferProperties.width = extend[0];
 	shadingBufferProperties.height = extend[1];
 	shadingBufferProperties.tiling = VK_IMAGE_TILING_OPTIMAL;
-	shadingBufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+	shadingBufferProperties.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 	shadingBufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	shadingBufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 	shadingBufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
@@ -143,7 +144,7 @@ void DDGIRenderer::createBuffers() {
 }
 
 void DDGIRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(8);
+	descriptorCollection.bufferDescriptors.resize(9);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
 	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
@@ -152,7 +153,8 @@ void DDGIRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(4) = &surfelBuffer;
 	descriptorCollection.bufferDescriptors.at(5) = &irradianceBuffer;
 	descriptorCollection.bufferDescriptors.at(6) = &depthBuffer;
-	descriptorCollection.bufferDescriptors.at(7) = outputImages;
+	descriptorCollection.bufferDescriptors.at(7) = &irradianceSampler;
+	descriptorCollection.bufferDescriptors.at(8) = outputImages;
 
 	descriptorCollection.init();
 }

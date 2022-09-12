@@ -23,6 +23,8 @@ class ImageBuffer: public Buffer {
 		void cmdClear(VkCommandBuffer commandBuffer);
 		virtual VkWriteDescriptorSet getWriteDescriptorSet(VkDescriptorSet descriptorSet, uint32_t binding) const override;
 		virtual VkDescriptorType getDescriptorType() const override;
+		VkWriteDescriptorSet getWriteDescriptorSetSampler(VkDescriptorSet descriptorSet, uint32_t binding) const;
+		VkDescriptorType getDescriptorTypeSampler() const;
 
 		const VkImage& getImage() const;
 		const VkDeviceMemory& getMemory() const;
@@ -54,6 +56,7 @@ class ImageBuffer: public Buffer {
 		VkImageView imageView;
 		VkSampler textureSampler;
 		VkDescriptorImageInfo descriptorImageInfo;
+		VkDescriptorImageInfo descriptorSamplerInfo;
 
 		bool deleteImage;
 };

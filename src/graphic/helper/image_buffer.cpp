@@ -262,9 +262,7 @@ const VkImageView& ImageBuffer::getImageView() const {
 }
 
 void ImageBuffer::saveImageAsNetpbm(const std::string& filename) {
-	bool size16bit = properties.format == VK_FORMAT_R16G16B16A16_UNORM;
-	unsigned int pixelSize = size16bit ? 2 : 1;
-	size_t imageSize = properties.width * properties.height * 4 * pixelSize;
+	size_t imageSize = properties.width * properties.height * 4;
 
 	DataBuffer tmpBuffer(device);
 	tmpBuffer.properties.bufferSize = imageSize;
@@ -299,13 +297,12 @@ void ImageBuffer::saveImageAsNetpbm(const std::string& filename) {
 
 	std::ofstream file(filename, std::ios::out | std::ios::binary);
 	unsigned int sizeformat = 255;
-	if (size16bit) sizeformat = 65535;
 	file << "P6\n" << properties.width << "\n" << properties.height << "\n" << sizeformat << "\n";
 
 	for (size_t i = 0; i < properties.width * properties.height; ++i) {
-		file.write(&data[i * 4 * pixelSize + 2], pixelSize);
-		file.write(&data[i * 4 * pixelSize + 1], pixelSize);
-		file.write(&data[i * 4 * pixelSize + 0], pixelSize);
+		file.write(&data[i * 4 + 2], 1);
+		file.write(&data[i * 4 + 1], 1);
+		file.write(&data[i * 4 + 0], 1);
 	}
 
 	file.close();

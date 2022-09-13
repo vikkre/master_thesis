@@ -4,9 +4,6 @@
 #include "ddgi.glsl"
 
 
-#define ENERGY_CONSERVAION 0.95
-#define EPSILON 1e-6
-
 
 uint getProbeID(ivec2 texelCoord) {
 	uint probeSampleSideLengthWBorder = renderSettings.probeSampleSideLength + 2;
@@ -49,16 +46,18 @@ void main() {
 		float irradianceWeight = max(0.0, dot(texelDirection, rayDirection));
 		float depthWeight = pow(irradianceWeight, renderSettings.depthSharpness);
 
-		if (irradianceWeight >= EPSILON) {
+		if (irradianceWeight >= 1e-6) {
 			irradianceResult += irradianceWeight * hitRadiance;
 			totalIrradianceWeight += irradianceWeight;
 		}
 		
-		if (depthWeight >= EPSILON) {
+		if (depthWeight >= 1e-6) {
 			dephtResult += depthWeight * vec2(rayProbeDistance, rayProbeDistance*rayProbeDistance);
 			totalDepthWeight += depthWeight;
 		}
 	}
+
+	totalDepthWeight *= renderSettings.maxProbeRayDistance;
 
 	imageStore(irradianceBuffer, pos, vec4(irradianceResult / totalIrradianceWeight, 0.0));
 	imageStore(depthBuffer, pos, vec4(dephtResult / totalDepthWeight, 0.0, 0.0));

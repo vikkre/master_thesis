@@ -7,6 +7,11 @@
 
 #define PI 3.1415926538
 
+#define NORMAL_BIAS 0.01
+#define CRUSH_THRESHOLD 0.2
+#define LINEAR_BLENDING 0
+#define ENERGY_PRESERVATION 0.9
+
 
 struct Surfel {
 	vec3 rayDirection;
@@ -53,9 +58,10 @@ layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 } renderSettings;
 layout(binding = 4, set = 0, scalar) buffer SB { Surfel s[]; } surfels;
 layout(binding = 5, set = 0, rgba8) uniform image2D irradianceBuffer;
-layout(binding = 6, set = 0, rgba16f) uniform image2D depthBuffer;
+layout(binding = 6, set = 0, rgba8) uniform image2D depthBuffer;
 layout(binding = 7, set = 0) uniform sampler2D irradianceSampler;
-layout(binding = 8, set = 0, rgba8) uniform image2D finalImage;
+layout(binding = 8, set = 0) uniform sampler2D depthSampler;
+layout(binding = 9, set = 0, rgba8) uniform image2D finalImage;
 
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };
@@ -161,4 +167,8 @@ vec3 octDecode(vec2 o) {
 		v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
 	}
 	return normalize(v);
+}
+
+vec3 lerp(vec3 v0, vec3 v1, vec3 t) {
+	return v0 + t * (v1 - v0);
 }

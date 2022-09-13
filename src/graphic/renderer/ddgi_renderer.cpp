@@ -22,7 +22,7 @@ probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
 objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device),
 surfelBuffer(device), irradianceBuffer(device), depthBuffer(device),
-irradianceSampler(&irradianceBuffer) {}
+irradianceSampler(&irradianceBuffer), depthSampler(&depthBuffer) {}
 
 DDGIRenderer::~DDGIRenderer() {}
 
@@ -67,7 +67,7 @@ void DDGIRenderer::updateUniforms(size_t index) {
 	// file.close();
 
 	irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
-	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
+	depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
 
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects.at(i)->passBufferData(index);
@@ -119,7 +119,7 @@ void DDGIRenderer::createBuffers() {
 	irradianceBuffer.init();
 
 	depthBuffer.bufferProperties = shadingBufferProperties;
-	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16B16A16_UNORM;
+	depthBuffer.bufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 	depthBuffer.init();
 
 	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();
@@ -144,7 +144,7 @@ void DDGIRenderer::createBuffers() {
 }
 
 void DDGIRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(9);
+	descriptorCollection.bufferDescriptors.resize(10);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
 	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
@@ -154,7 +154,8 @@ void DDGIRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(5) = &irradianceBuffer;
 	descriptorCollection.bufferDescriptors.at(6) = &depthBuffer;
 	descriptorCollection.bufferDescriptors.at(7) = &irradianceSampler;
-	descriptorCollection.bufferDescriptors.at(8) = outputImages;
+	descriptorCollection.bufferDescriptors.at(8) = &depthSampler;
+	descriptorCollection.bufferDescriptors.at(9) = outputImages;
 
 	descriptorCollection.init();
 }

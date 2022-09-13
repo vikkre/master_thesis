@@ -31,8 +31,9 @@ void main() {
 	surfels.s[surfelIndex].rayDirection = direction;
 	
 	if (rayPayload.hit) {
-		surfels.s[surfelIndex].hitRadiance = rayPayload.color;
-		surfels.s[surfelIndex].hitDistance = length(origin - (rayPayload.pos + 0.01 * rayPayload.normal));
+		vec3 modifiedPos = rayPayload.pos + NORMAL_BIAS * rayPayload.normal;
+		surfels.s[surfelIndex].hitRadiance = rayPayload.color * dot(normalize(renderSettings.lightPosition - modifiedPos), rayPayload.normal);
+		surfels.s[surfelIndex].hitDistance = length(origin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;
 	} else {
 		surfels.s[surfelIndex].hitRadiance = vec3(0.0);

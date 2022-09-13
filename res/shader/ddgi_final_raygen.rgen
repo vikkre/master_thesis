@@ -124,8 +124,8 @@ void main() {
 		vec3 color = rayPayload.color * getShade(modifiedPos, rayPayload.normal);
 		vec3 irradiance = getIrradiance(origin, direction, modifiedPos, rayPayload.normal);
 
-		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
-		// imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(irradiance, 0.0));
+		// imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(irradiance, 0.0));
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	}

@@ -112,12 +112,13 @@ void DDGIRenderer::createBuffers() {
 	shadingBufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
 	shadingBufferProperties.createImageView = true;
 	shadingBufferProperties.createSampler = true;
-	shadingBufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 
 	irradianceBuffer.bufferProperties = shadingBufferProperties;
+	irradianceBuffer.bufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 	irradianceBuffer.init();
 
 	depthBuffer.bufferProperties = shadingBufferProperties;
+	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16B16A16_SFLOAT;
 	depthBuffer.init();
 
 	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();

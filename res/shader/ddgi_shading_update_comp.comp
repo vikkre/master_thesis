@@ -76,21 +76,18 @@ void main() {
 		if (hit) rayProbeDistance = min(rayProbeDistance, hitDistance);
 
 		float irradianceWeight = max(0.0, dot(texelDirection, rayDirection));
-		// float irradianceWeight = 1.0;
 		float depthWeight = pow(irradianceWeight, renderSettings.depthSharpness);
 
-		if (irradianceWeight >= 1e-6) {
+		if (irradianceWeight > 1e-6) {
 			irradianceResult += irradianceWeight * hitRadiance;
 			totalIrradianceWeight += irradianceWeight;
 		}
 		
-		if (depthWeight >= 1e-6) {
+		if (depthWeight > 1e-6) {
 			dephtResult += depthWeight * vec2(rayProbeDistance, rayProbeDistance*rayProbeDistance);
 			totalDepthWeight += depthWeight;
 		}
 	}
-
-	totalDepthWeight *= renderSettings.maxProbeRayDistance;
 
 	imageStore(irradianceBuffer, bufferPos, vec4(irradianceResult / totalIrradianceWeight, 0.0));
 	imageStore(depthBuffer, bufferPos, vec4(dephtResult / totalDepthWeight, 0.0, 0.0));

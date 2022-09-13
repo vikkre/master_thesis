@@ -6,4 +6,4 @@ DDGI
 	perProbeRayCount(64)
 	maxProbeRayDistance(1000)
 	probeSampleSideLength(16)
-	depthSharpness(2.0)
+	depthSharpness(3.0)

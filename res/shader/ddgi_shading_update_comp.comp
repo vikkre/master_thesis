@@ -22,7 +22,39 @@ vec2 normalizedOctCoord(ivec2 texelCoord) {
 
 
 void main() {
-	ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 bufferPos = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 pos = bufferPos;
+	ivec2 bufferSize = imageSize(irradianceBuffer);
+	int sideLenght = int(renderSettings.probeSampleSideLength);
+
+	if (pos.x == 0 || pos.x == bufferSize.x - 1 || pos.y == 0 || pos.y == bufferSize.y - 1) {
+		if (pos.x == 0) {
+			pos.x += sideLenght;
+		} else if (pos.x == bufferSize.x - 1) {
+			pos.x -= sideLenght;
+		}
+
+		if (pos.y == 0) {
+			pos.y += sideLenght;
+		} else if (pos.y == bufferSize.y - 1) {
+			pos.y -= sideLenght;
+		}
+	} else {
+		ivec2 relPos = (pos - ivec2(1)) % ivec2(sideLenght + 2);
+		
+		if (relPos.x == 0) {
+			pos.x += 1;
+		} else if (relPos.x == sideLenght + 1) {
+			pos.x -= 1;
+		}
+
+		if (relPos.y == 0) {
+			pos.y += 1;
+		} else if (relPos.y == sideLenght + 1) {
+			pos.y -= 1;
+		}
+	}
+
 	uint probeID = getProbeID(pos);
 
 	vec3 irradianceResult = vec3(0.0);
@@ -44,6 +76,7 @@ void main() {
 		if (hit) rayProbeDistance = min(rayProbeDistance, hitDistance);
 
 		float irradianceWeight = max(0.0, dot(texelDirection, rayDirection));
+		// float irradianceWeight = 1.0;
 		float depthWeight = pow(irradianceWeight, renderSettings.depthSharpness);
 
 		if (irradianceWeight >= 1e-6) {
@@ -59,6 +92,6 @@ void main() {
 
 	totalDepthWeight *= renderSettings.maxProbeRayDistance;
 
-	imageStore(irradianceBuffer, pos, vec4(irradianceResult / totalIrradianceWeight, 0.0));
-	imageStore(depthBuffer, pos, vec4(dephtResult / totalDepthWeight, 0.0, 0.0));
+	imageStore(irradianceBuffer, bufferPos, vec4(irradianceResult / totalIrradianceWeight, 0.0));
+	imageStore(depthBuffer, bufferPos, vec4(dephtResult / totalDepthWeight, 0.0, 0.0));
 }

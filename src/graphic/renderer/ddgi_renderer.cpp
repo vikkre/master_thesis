@@ -67,7 +67,7 @@ void DDGIRenderer::updateUniforms(size_t index) {
 	// file.close();
 
 	irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
-	depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
+	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
 
 	for (size_t i = 0; i < objects.size(); ++i) {
 		objects.at(i)->passBufferData(index);
@@ -112,14 +112,12 @@ void DDGIRenderer::createBuffers() {
 	shadingBufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
 	shadingBufferProperties.createImageView = true;
 	shadingBufferProperties.createSampler = true;
-	// shadingBufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
+	shadingBufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 
 	irradianceBuffer.bufferProperties = shadingBufferProperties;
-	irradianceBuffer.bufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 	irradianceBuffer.init();
 
 	depthBuffer.bufferProperties = shadingBufferProperties;
-	depthBuffer.bufferProperties.format = VK_FORMAT_B8G8R8A8_UNORM;
 	depthBuffer.init();
 
 	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();

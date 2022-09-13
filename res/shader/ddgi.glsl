@@ -9,7 +9,7 @@
 
 #define NORMAL_BIAS 0.01
 #define CRUSH_THRESHOLD 0.2
-#define LINEAR_BLENDING 0
+#define LINEAR_BLENDING 1
 #define ENERGY_PRESERVATION 0.9
 
 
@@ -80,6 +80,28 @@ struct RayPayload {
 
 #ifdef RAYGEN_SHADER
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
+
+float getShade(vec3 pos, vec3 normal) {
+	vec3 toLight = renderSettings.lightPosition - pos;
+	vec3 normToLight = normalize(toLight);
+	float lightStrenth = dot(normToLight, normal);
+	if (lightStrenth <= 0.0) return 0.0;
+	float distToLight = length(toLight);
+
+	RayPayload tmp = rayPayload;
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, pos, tmin, normToLight, distToLight, 0);
+
+	if (rayPayload.hit) return 0.0;
+
+	rayPayload = tmp;
+
+	return dot(normalize(renderSettings.lightPosition - pos), normal);
+
+}
 #else
 layout(location = 0) rayPayloadInEXT RayPayload rayPayload;
 #endif
@@ -149,8 +171,7 @@ vec2 signNotZero(vec2 v) {
 	);
 }
 
-// Assumes that v is a unit vector. The result is an octahedral vector on the [-1, +1] square.
-vec2 octEncode(in vec3 v) {
+vec2 octEncode(vec3 v) {
 	float l1norm = abs(v.x) + abs(v.y) + abs(v.z);
 	vec2 result = v.xy * (1.0 / l1norm);
 	if (v.z < 0.0) {
@@ -160,7 +181,8 @@ vec2 octEncode(in vec3 v) {
 }
 
 
-// Returns a unit vector. Argument o is an octahedral vector packed via octEncode, on the [-1, +1] square
+/** Returns a unit vector. Argument o is an octahedral vector packed via octEncode,
+    on the [-1, +1] square*/
 vec3 octDecode(vec2 o) {
 	vec3 v = vec3(o.x, o.y, 1.0 - abs(o.x) - abs(o.y));
 	if (v.z < 0.0) {

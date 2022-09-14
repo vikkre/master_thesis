@@ -58,7 +58,7 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		ivec3 probeGridCoord = clamp(baseGridCoord + offset, ivec3(0), ivec3(2 * renderSettings.singleDirectionProbeCount));
 		uint probeIndex = gridCoordToProbeIndex(probeGridCoord);
 		vec3 probePos = gridCoordToPosition(probeGridCoord);
-		vec3 probeToPoint = hitPos - probePos + (hitNormal + 3.0 * originDirection) * NORMAL_BIAS;
+		vec3 probeToPoint = hitPos - probePos + (hitNormal + 3.0 * originDirection) * renderSettings.normalBias;
 		vec3 probeDirection = normalize(-probeToPoint);
 
 		float weight = 1.0;
@@ -84,20 +84,21 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		vec3 irradianceDirection = hitNormal;
 		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz;
 
-		if (weight < CRUSH_THRESHOLD) weight *= weight * weight * (1.0 / (CRUSH_THRESHOLD*CRUSH_THRESHOLD));
+		float crushThreshold = renderSettings.crushThreshold;
+		if (weight < crushThreshold) weight *= weight * weight * (1.0 / (crushThreshold*crushThreshold));
 
 		vec3 trilinear = lerp(vec3(1.0) - alpha, alpha, vec3(offset));
 		weight *= trilinear.x * trilinear.y * trilinear.z;
 
-		if (LINEAR_BLENDING == 0) probeIrradiance = sqrt(probeIrradiance);
+		if (renderSettings.linearBlending == 0) probeIrradiance = sqrt(probeIrradiance);
 
 		sumIrradiance += weight * probeIrradiance;
 		sumWeight += weight;
 	}
 
 	vec3 netIrradiance = sumIrradiance / sumWeight;
-	if (LINEAR_BLENDING == 0) netIrradiance = netIrradiance*netIrradiance;
-	netIrradiance *= ENERGY_PRESERVATION;
+	if (renderSettings.linearBlending == 0) netIrradiance = netIrradiance*netIrradiance;
+	netIrradiance *= renderSettings.energyPreservation;
 
 	return 0.5 * PI * netIrradiance;
 }
@@ -117,15 +118,30 @@ void main() {
 	float tmin = 0.001;
 	float tmax = 10000.0;
 
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+		if (!rayPayload.hit) break;
+
+		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
+
+		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+			break;
+		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
+			origin = rayPayload.pos;
+			direction = reflect(direction, rayPayload.normal);
+		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
+			origin = rayPayload.pos;
+			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
+		}
+	}
 
 	if (rayPayload.hit) {
-		vec3 modifiedPos = rayPayload.pos + NORMAL_BIAS * rayPayload.normal;
+		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
 		vec3 color = rayPayload.color * getShade(modifiedPos, rayPayload.normal);
 		vec3 irradiance = getIrradiance(origin, direction, modifiedPos, rayPayload.normal);
 
-		// imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
-		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(irradiance, 0.0));
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	}

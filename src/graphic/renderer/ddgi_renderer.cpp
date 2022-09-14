@@ -66,7 +66,7 @@ void DDGIRenderer::updateUniforms(size_t index) {
 	// }
 	// file.close();
 
-	irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
+	// irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
 	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
 
 	for (size_t i = 0; i < objects.size(); ++i) {
@@ -78,6 +78,8 @@ void DDGIRenderer::updateUniforms(size_t index) {
 void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
 	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
+	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
+	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 
 	renderSettings.betweenProbeDistance = inputEntry.get<float>("betweenProbeDistance");
 	renderSettings.singleDirectionProbeCount = inputEntry.get<u_int32_t>("singleDirectionProbeCount");
@@ -88,6 +90,10 @@ void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
 	renderSettings.maxProbeRayDistance = inputEntry.get<float>("maxProbeRayDistance");
 	renderSettings.probeSampleSideLength = inputEntry.get<u_int32_t>("probeSampleSideLength");
 	renderSettings.depthSharpness = inputEntry.get<float>("depthSharpness");
+	renderSettings.normalBias = inputEntry.get<float>("normalBias");
+	renderSettings.crushThreshold = inputEntry.get<float>("crushThreshold");
+	renderSettings.linearBlending = inputEntry.get<u_int32_t>("linearBlending");
+	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
 }
 
 void DDGIRenderer::createTLAS() {

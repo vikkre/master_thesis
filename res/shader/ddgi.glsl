@@ -7,11 +7,6 @@
 
 #define PI 3.1415926538
 
-#define NORMAL_BIAS 0.01
-#define CRUSH_THRESHOLD 0.2
-#define LINEAR_BLENDING 1
-#define ENERGY_PRESERVATION 0.9
-
 
 struct Surfel {
 	vec3 rayDirection;
@@ -48,6 +43,8 @@ layout(binding = 2, set = 0, scalar) uniform GlobalData {
 layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	vec3 backgroundColor;
 	vec3 lightPosition;
+	uint lightJumpCount;
+	uint visionJumpCount;
 	float betweenProbeDistance;
 	uint singleDirectionProbeCount;
 	uint totalProbeCount;
@@ -55,6 +52,10 @@ layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	float maxProbeRayDistance;
 	uint probeSampleSideLength;
 	float depthSharpness;
+	float normalBias;
+	float crushThreshold;
+	uint linearBlending;
+	float energyPreservation;
 } renderSettings;
 layout(binding = 4, set = 0, scalar) buffer SB { Surfel s[]; } surfels;
 layout(binding = 5, set = 0, rgba8) uniform image2D irradianceBuffer;

@@ -34,6 +34,8 @@ class DDGIRenderer: public Renderer {
 		struct RenderSettings {
 			Vector3f backgroundColor;
 			Vector3f lightPosition;
+			u_int32_t lightJumpCount;
+			u_int32_t visionJumpCount;
 			float betweenProbeDistance;
 			u_int32_t singleDirectionProbeCount;
 			u_int32_t totalProbeCount;
@@ -41,6 +43,10 @@ class DDGIRenderer: public Renderer {
 			float maxProbeRayDistance;
 			u_int32_t probeSampleSideLength;
 			float depthSharpness;
+			float normalBias;
+			float crushThreshold;
+			u_int32_t linearBlending;
+			float energyPreservation;
 		} renderSettings;
 
 	private:

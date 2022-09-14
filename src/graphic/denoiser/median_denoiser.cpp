@@ -22,13 +22,11 @@ void MedianDenoiser::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	denoisePipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void MedianDenoiser::updateUniforms(size_t index) {
-	settingsBuffers.at(index).passData((void*) &settings);
+void MedianDenoiser::updateUniforms(size_t /* index */) {
+	// settingsBuffers.at(index).passData((void*) &settings);
 }
 
-void MedianDenoiser::parseInput(const InputEntry& inputEntry) {
-	settings.kernelSize = inputEntry.get<u_int32_t>("kernelSize");
-}
+void MedianDenoiser::parseInput(const InputEntry& /* inputEntry */) {}
 
 void MedianDenoiser::createBuffers() {
 	settingsBuffers.bufferProperties.bufferSize = sizeof(MedianDenoiser::Settings);

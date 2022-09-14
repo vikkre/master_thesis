@@ -26,12 +26,29 @@ void main() {
 	uint cullMask = 0xFF;
 	float tmin = 0.001;
 	float tmax = renderSettings.maxProbeRayDistance;
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+		if (!rayPayload.hit) break;
+
+		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
+
+		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+			break;
+		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
+			origin = rayPayload.pos;
+			direction = reflect(direction, rayPayload.normal);
+		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
+			origin = rayPayload.pos;
+			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
+		}
+	}
 
 	surfels.s[surfelIndex].rayDirection = direction;
 	
 	if (rayPayload.hit) {
-		vec3 modifiedPos = rayPayload.pos + NORMAL_BIAS * rayPayload.normal;
+		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
 		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getShade(modifiedPos, rayPayload.normal);
 		surfels.s[surfelIndex].hitDistance = length(origin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;

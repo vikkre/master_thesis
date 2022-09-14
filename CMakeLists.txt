@@ -50,6 +50,12 @@ add_shader(ddgi_final_raygen.spv        ddgi_final_raygen.rgen        ddgi.glsl 
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )
 
+add_shader(denoise_m17_temporal_comp.spv       denoise_m17_temporal_comp.comp       denoise_m17.glsl )
+add_shader(denoise_m17_pre_bilateral_comp.spv  denoise_m17_pre_bilateral_comp.comp  denoise_m17.glsl )
+add_shader(denoise_m17_firefly_comp.spv        denoise_m17_firefly_comp.comp        denoise_m17.glsl )
+add_shader(denoise_m17_disocclusion_comp.spv   denoise_m17_disocclusion_comp.comp   denoise_m17.glsl )
+add_shader(denoise_m17_post_bilateral_comp.spv denoise_m17_post_bilateral_comp.comp denoise_m17.glsl )
+
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
 

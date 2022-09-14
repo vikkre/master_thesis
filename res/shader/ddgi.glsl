@@ -56,6 +56,8 @@ layout(binding = 3, set = 0, scalar) uniform RenderSettings {
 	float crushThreshold;
 	uint linearBlending;
 	float energyPreservation;
+	float texelGetProbeDirectionFactor;
+	float texelGetNormalFactor;
 } renderSettings;
 layout(binding = 4, set = 0, scalar) buffer SB { Surfel s[]; } surfels;
 layout(binding = 5, set = 0, rgba8) uniform image2D irradianceBuffer;

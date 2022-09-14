@@ -67,7 +67,8 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		float trueDirectionToProbeWeight = max(0.0001, (dot(trueDirectionToProbe, hitNormal) + 1.0) * 0.5);
 		weight *= trueDirectionToProbeWeight * trueDirectionToProbeWeight + 0.2;
 
-		vec2 texCoord = textureCoordFromDirection(-probeDirection, probeIndex);
+		vec3 modifiedDirection = normalize((renderSettings.texelGetProbeDirectionFactor * probeDirection) + (renderSettings.texelGetNormalFactor * hitNormal));
+		vec2 texCoord = textureCoordFromDirection(modifiedDirection, probeIndex);
 
 		float distToProbe = length(probeToPoint);
 		vec2 depthTemp = texture(depthSampler, texCoord).xy;

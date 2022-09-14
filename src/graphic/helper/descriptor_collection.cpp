@@ -47,7 +47,7 @@ void DescriptorCollection::createDescriptorSetLayout() {
 	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 
 	for (unsigned int i = 0; i < bufferDescriptors.size(); ++i) {
-		layoutBindings.push_back(bufferDescriptors[i]->getLayoutBinding(i));
+		layoutBindings.push_back(bufferDescriptors.at(i)->getLayoutBinding(i));
 	}
 	
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};

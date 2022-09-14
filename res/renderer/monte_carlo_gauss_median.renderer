@@ -1,0 +1,18 @@
+MonteCarloRenderer
+	backgroundColor(0, 0, 0)
+	lightPosition(0, 4.5, 0)
+	lightRayCount(250)
+	lightJumpCount(3)
+	visionJumpCount(3)
+	collectionDistance(1.5)
+	visionRayPerPixelCount(1)
+	collectionDistanceShrinkFactor(5)
+	lightCollectionCount(5)
+	useCountLightCollecton(1)
+
+GaussDenoiser
+	kernelSize(7)
+	sigma(0.8)
+
+MedianDenoiser
+	kernelSize(7)

@@ -16,6 +16,7 @@
 #include "graphic/renderer/ddgi_renderer.h"
 #include "graphic/denoiser/gauss_denoiser.h"
 #include "graphic/denoiser/median_denoiser.h"
+#include "graphic/denoiser/m17_denoiser.h"
 
 #include "init_exception.h"
 #include "mesh_manager.h"
@@ -56,6 +57,7 @@ Renderer* getRenderer(const std::string& name, Device* device) {
 Denoiser* getDenoiser(const std::string& name, Device* device) {
 	if      (name == "GaussDenoiser")  return new GaussDenoiser(device);
 	else if (name == "MedianDenoiser") return new MedianDenoiser(device);
+	else if (name == "M17Denoiser") return new M17Denoiser(device);
 	else return nullptr;
 }
 

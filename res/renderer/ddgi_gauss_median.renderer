@@ -15,3 +15,10 @@ DDGI
 	energyPreservation(0.6)
 	texelGetProbeDirectionFactor(0.0)
 	texelGetNormalFactor(1.0)
+
+GaussDenoiser
+	kernelSize(7)
+	sigma(0.8)
+
+MedianDenoiser
+	kernelSize(7)

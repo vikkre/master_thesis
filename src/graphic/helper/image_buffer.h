@@ -40,6 +40,7 @@ class ImageBuffer: public Buffer {
 			VkMemoryPropertyFlags properties;
 			VkImageAspectFlags aspectFlags;
 			VkImageLayout layout;
+			VkSamplerMipmapMode mipmapMode;
 			bool createImageView;
 			bool createSampler;
 		} properties;

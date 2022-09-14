@@ -17,9 +17,9 @@ block.obj
 block.obj
 	position(10,  0, -5)
 	scale(15, 5.0, 0.1)
-	color(1, 0, 0)
+	color(0, 1, 0)
 
 block.obj
 	position(10,  0,  5)
 	scale(15, 5.0, 0.1)
-	color(0, 1, 0)
+	color(1, 0, 0)

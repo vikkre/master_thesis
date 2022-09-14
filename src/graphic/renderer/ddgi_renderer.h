@@ -47,6 +47,8 @@ class DDGIRenderer: public Renderer {
 			float crushThreshold;
 			u_int32_t linearBlending;
 			float energyPreservation;
+			float texelGetProbeDirectionFactor;
+			float texelGetNormalFactor;
 		} renderSettings;
 
 	private:

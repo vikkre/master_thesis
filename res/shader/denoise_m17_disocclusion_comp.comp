@@ -1,0 +1,7 @@
+#version 460
+
+#include "denoise_m17.glsl"
+
+void main() {
+	
+}

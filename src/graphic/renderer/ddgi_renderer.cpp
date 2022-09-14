@@ -94,6 +94,8 @@ void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
 	renderSettings.crushThreshold = inputEntry.get<float>("crushThreshold");
 	renderSettings.linearBlending = inputEntry.get<u_int32_t>("linearBlending");
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
+	renderSettings.texelGetProbeDirectionFactor = inputEntry.get<float>("texelGetProbeDirectionFactor");
+	renderSettings.texelGetNormalFactor = inputEntry.get<float>("texelGetNormalFactor");
 }
 
 void DDGIRenderer::createTLAS() {
@@ -116,6 +118,7 @@ void DDGIRenderer::createBuffers() {
 	shadingBufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	shadingBufferProperties.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 	shadingBufferProperties.layout = VK_IMAGE_LAYOUT_GENERAL;
+	shadingBufferProperties.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	shadingBufferProperties.createImageView = true;
 	shadingBufferProperties.createSampler = true;
 

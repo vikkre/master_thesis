@@ -18,16 +18,21 @@ block.obj
 	position(10,  0, -5)
 	scale(15, 5.0, 0.1)
 	color(0, 1, 0)
+	diffuse(0)
+	reflect(1)
 
 block.obj
 	position(10,  0,  5)
 	scale(15, 5.0, 0.1)
 	color(1, 0, 0)
+	diffuse(0)
+	reflect(1)
 
 ball.obj
 	position(0, 0, 0)
 	scale(3, 3, 3)
 	diffuse(0)
-	reflect(0)
-	transparent(1)
+	reflect(1)
+	transparent(0)
 	refractionIndex(1.5)
+

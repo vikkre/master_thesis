@@ -56,6 +56,10 @@ add_shader(denoise_m17_firefly_comp.spv        denoise_m17_firefly_comp.comp    
 add_shader(denoise_m17_disocclusion_comp.spv   denoise_m17_disocclusion_comp.comp   denoise_m17.glsl )
 add_shader(denoise_m17_post_bilateral_comp.spv denoise_m17_post_bilateral_comp.comp denoise_m17.glsl )
 
+add_shader(meta_renderer_miss.spv       meta_renderer_miss.rmiss       meta_renderer.glsl )
+add_shader(meta_renderer_closesthit.spv meta_renderer_closesthit.rchit meta_renderer.glsl )
+add_shader(meta_renderer_raygen.spv     meta_renderer_raygen.rgen      meta_renderer.glsl )
+
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
 

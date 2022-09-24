@@ -20,17 +20,11 @@
 
 #include "renderer.h"
 
-// Result types:
-// 0: Normal Vector
-// 1: Position Vector (requires scaling)
-// 2: Distance (requires scaling)
-// 3: HandlingWeights
 
-
-class MetaRenderer: public Renderer {
+class PhongRenderer: public Renderer {
 	public:
-		MetaRenderer(Device* device);
-		~MetaRenderer();
+		PhongRenderer(Device* device);
+		~PhongRenderer();
 
 		virtual void init() override;
 		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
@@ -38,9 +32,12 @@ class MetaRenderer: public Renderer {
 		virtual void parseInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
-			uint32_t resultType;
-			float scaling;
-			uint32_t lightJump;
+			Vector3f backgroundColor;
+			Vector3f lightPosition;
+			float diffuseConstant;
+			float ambientConstant;
+			float specularConstant;
+			float shininessConstant;
 		} renderSettings;
 
 	private:

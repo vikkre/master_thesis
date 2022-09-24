@@ -15,6 +15,7 @@
 #include "graphic/renderer/monte_carlo_renderer.h"
 #include "graphic/renderer/ddgi_renderer.h"
 #include "graphic/renderer/meta_renderer.h"
+#include "graphic/renderer/phong_renderer.h"
 #include "graphic/denoiser/gauss_denoiser.h"
 #include "graphic/denoiser/median_denoiser.h"
 #include "graphic/denoiser/m17_denoiser.h"
@@ -52,7 +53,8 @@ float microsecondsToSeconds(int64_t microseconds) {
 Renderer* getRenderer(const std::string& name, Device* device) {
 	if (name == "MonteCarloRenderer") return new MonteCarloRenderer(device);
 	if (name == "DDGI") return new DDGIRenderer(device);
-	if (name == "MetaRenderer") return new MetaRanderer(device);
+	if (name == "MetaRenderer") return new MetaRenderer(device);
+	if (name == "PhongRenderer") return new PhongRenderer(device);
 	else return nullptr;
 }
 

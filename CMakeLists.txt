@@ -60,6 +60,10 @@ add_shader(meta_renderer_miss.spv       meta_renderer_miss.rmiss       meta_rend
 add_shader(meta_renderer_closesthit.spv meta_renderer_closesthit.rchit meta_renderer.glsl )
 add_shader(meta_renderer_raygen.spv     meta_renderer_raygen.rgen      meta_renderer.glsl )
 
+add_shader(phong_renderer_miss.spv       phong_renderer_miss.rmiss       phong_renderer.glsl )
+add_shader(phong_renderer_closesthit.spv phong_renderer_closesthit.rchit phong_renderer.glsl )
+add_shader(phong_renderer_raygen.spv     phong_renderer_raygen.rgen      phong_renderer.glsl )
+
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
 

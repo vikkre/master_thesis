@@ -9,10 +9,3 @@ MonteCarloRenderer
 	collectionDistanceShrinkFactor(5)
 	lightCollectionCount(5)
 	useCountLightCollecton(1)
-
-#GaussDenoiser
-#	kernelSize(7)
-#	sigma(0.8)
-
-#MedianDenoiser
-#	kernelSize(7)

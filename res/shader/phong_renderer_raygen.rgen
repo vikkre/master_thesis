@@ -1,0 +1,38 @@
+#version 460
+
+#define RAYGEN_SHADER
+#include "phong_renderer.glsl"
+
+
+void main() {
+	vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+	vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
+	vec2 d = inUV * 2.0 - 1.0;
+
+	vec3 origin = (globalData.viewInverse * vec4(vec3(0), 1)).xyz;
+	vec3 target = (globalData.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
+	vec3 direction = normalize((globalData.viewInverse * vec4(normalize(target), 0)).xyz);
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	float tmax = 10000.0;
+
+	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+
+	if (rayPayload.hit) {
+		vec3 toLightNormal = normalize(renderSettings.lightPosition - rayPayload.pos);
+		vec3 reflectedLightNormal = reflect(-toLightNormal, rayPayload.normal);
+		vec3 toViewerNormal = -direction;
+
+		vec3 ambientColor = renderSettings.ambientConstant * rayPayload.color;
+		vec3 diffuseColor = renderSettings.diffuseConstant * dot(toLightNormal, rayPayload.normal) * rayPayload.color;
+		vec3 specularColor = vec3(renderSettings.specularConstant * pow(dot(reflectedLightNormal, toViewerNormal), renderSettings.shininessConstant));
+
+		// vec3 color = ambientColor + diffuseColor + specularColor;
+		vec3 color = ambientColor + diffuseColor;
+		imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(color, 0.0));
+	} else {
+		imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+	}
+}

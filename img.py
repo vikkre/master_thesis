@@ -5,7 +5,10 @@ import os
 import re
 import csv
 import subprocess
+import numpy as np
 from PIL import Image
+# https://scikit-image.org/docs/dev/api/skimage.restoration.html#skimage.restoration.estimate_sigma
+from skimage.restoration import estimate_sigma
 
 
 EXECPATH = os.path.join("build", "RayTrace")
@@ -37,7 +40,8 @@ RENDERERS = [
 	"ddgi_gauss",
 	"ddgi_median",
 	"ddgi_gauss_median",
-	"ddgi_median_gauss"
+	"ddgi_median_gauss",
+	"phong"
 ]
 
 SCENES = [
@@ -81,9 +85,11 @@ def ray_trace(renderer_path, scene_path, dirpath, outname):
 
 	with Image.open(outimage_path_ppm) as im:
 		im.save(outimage_path_png)
+		im_array = np.array(im)
+		image_sigma = estimate_sigma(im_array, channel_axis=-1)
 	os.remove(outimage_path_ppm)
 
-	return times
+	return times, image_sigma
 
 
 def run_monte_carlo_renderers(out_path, run_category):
@@ -96,8 +102,8 @@ def run_monte_carlo_renderers(out_path, run_category):
 	done = []
 	for result in results:
 		rcopy = copy.deepcopy(result)
-		rcopy.pop("average_time")
-		rcopy.pop("average_fps")
+		for tp in ["average_time", "average_fps", "image_sigma_r", "image_sigma_g", "image_sigma_b", "image_sigma_average"]:
+			rcopy.pop(tp)
 		done.append(rcopy)
 
 	for renderer in RENDERERS:
@@ -114,13 +120,17 @@ def run_monte_carlo_renderers(out_path, run_category):
 			
 			renderer_path = os.path.join(RENDERER_PATH, "{}.renderer".format(renderer))
 			scene_path = os.path.join(SCENE_PATH, "{}.scene".format(scene))
-			data = ray_trace(renderer_path, scene_path, dirpath, name)
+			data, image_sigma = ray_trace(renderer_path, scene_path, dirpath, name)
 
 			data_path = os.path.join(dirpath, "{}.csv".format(name))
 			saveCSV(data_path, data)
 
 			current["average_time"] = sum([float(x["seconds"]) for x in data]) / len(data)
 			current["average_fps"] = sum([float(x["fps"]) for x in data]) / len(data)
+			current["image_sigma_r"] = image_sigma[0]
+			current["image_sigma_g"] = image_sigma[1]
+			current["image_sigma_b"] = image_sigma[2]
+			current["image_sigma_average"] = (image_sigma[0] + image_sigma[1] + image_sigma[2]) / 3
 			results.append(current)
 			saveCSV(results_path, results)
 

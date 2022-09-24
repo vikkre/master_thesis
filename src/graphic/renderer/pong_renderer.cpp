@@ -1,32 +1,32 @@
-#include "meta_renderer.h"
+#include "phong_renderer.h"
 
 
-#define RCHIT_SHADER "meta_renderer_closesthit.spv"
-#define RMISS_SHADER "meta_renderer_miss.spv"
-#define RGEN_SHADER  "meta_renderer_raygen.spv"
+#define RCHIT_SHADER "phong_renderer_closesthit.spv"
+#define RMISS_SHADER "phong_renderer_miss.spv"
+#define RGEN_SHADER  "phong_renderer_raygen.spv"
 
 
-MetaRenderer::MetaRenderer(Device* device)
+PhongRenderer::PhongRenderer(Device* device)
 :device(device), descriptorCollection(device),
 pipeline(device), objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device) {}
 
-MetaRenderer::~MetaRenderer() {}
+PhongRenderer::~PhongRenderer() {}
 
-void MetaRenderer::init() {
+void PhongRenderer::init() {
 	createTLAS();
 	createBuffers();
 	createDescriptorCollection();
 	createPipeline();
 }
 
-void MetaRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+void PhongRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	pipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void MetaRenderer::updateUniforms(size_t index) {
+void PhongRenderer::updateUniforms(size_t index) {
 	globalDataBuffers.at(index).passData((void*) &globalData);
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
@@ -36,13 +36,16 @@ void MetaRenderer::updateUniforms(size_t index) {
 	}
 }
 
-void MetaRenderer::parseInput(const InputEntry& inputEntry) {
-	renderSettings.resultType = inputEntry.get<uint32_t>("resultType");
-	renderSettings.scaling = inputEntry.get<float>("scaling");
-	renderSettings.lightJump = inputEntry.get<uint32_t>("lightJump");
+void PhongRenderer::parseInput(const InputEntry& inputEntry) {
+	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
+	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
+	renderSettings.diffuseConstant = inputEntry.get<float>("diffuseConstant");
+	renderSettings.ambientConstant = inputEntry.get<float>("ambientConstant");
+	renderSettings.specularConstant = inputEntry.get<float>("specularConstant");
+	renderSettings.shininessConstant = inputEntry.get<float>("shininessConstant");
 }
 
-void MetaRenderer::createTLAS() {
+void PhongRenderer::createTLAS() {
 	for (GraphicsObject* obj: objects) {
 		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
 		tlas.bufferProperties.blasInstances.push_back(info.instance);
@@ -52,24 +55,24 @@ void MetaRenderer::createTLAS() {
 	tlas.init();
 }
 
-void MetaRenderer::createBuffers() {
+void PhongRenderer::createBuffers() {
 	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();
 	objDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	objDataBuffers.init();
 
-	globalDataBuffers.bufferProperties.bufferSize = sizeof(MetaRenderer::GlobalData);
+	globalDataBuffers.bufferProperties.bufferSize = sizeof(PhongRenderer::GlobalData);
 	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	globalDataBuffers.init();
 
-	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(MetaRenderer::RenderSettings);
+	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(PhongRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
 }
 
-void MetaRenderer::createDescriptorCollection() {
+void PhongRenderer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.resize(5);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
@@ -81,7 +84,7 @@ void MetaRenderer::createDescriptorCollection() {
 	descriptorCollection.init();
 }
 
-void MetaRenderer::createPipeline() {
+void PhongRenderer::createPipeline() {
 	pipeline.raygenShaders.push_back(RGEN_SHADER);
 	pipeline.missShaders.push_back(RMISS_SHADER);
 	pipeline.hitShaders.push_back(RCHIT_SHADER);

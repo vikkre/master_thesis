@@ -27,4 +27,4 @@ popd
 # build/RayTrace res/renderer/meta_distance.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/meta_distance.ppm 5
 # build/RayTrace res/renderer/meta_weights.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/meta_weights.ppm 5
 
-build/RayTrace res/renderer/phong.renderer res/scene/cornell_box_with_blocks.scene 1280 720
+build/RayTrace res/renderer/phong.renderer res/scene/cornell_box_with_blocks.scene 720 720

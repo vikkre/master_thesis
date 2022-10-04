@@ -13,7 +13,7 @@ from skimage.restoration import estimate_sigma
 
 EXECPATH = os.path.join("build", "RayTrace")
 OUT_PATH = os.path.join("out")
-IMAGE_WIDTH = 1280
+IMAGE_WIDTH = 720
 IMAGE_HEIGHT = 720
 MAX_RUNS = 10
 

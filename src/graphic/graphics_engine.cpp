@@ -60,10 +60,10 @@ void GraphicsEngine::render() {
 	Matrix4f projectionMatrix = device.renderInfo.camera.getProjectionMatrix(aspect);
 	Matrix4f viewMatrix = device.renderInfo.camera.getViewMatrix();
 
-	renderer->globalData.projInverse = projectionMatrix.inverseMatrix();
-	renderer->globalData.viewInverse = viewMatrix.inverseMatrix();
-	renderer->globalData.proj = projectionMatrix;
-	renderer->globalData.view = viewMatrix;
+	renderer->rtData.projInverse = projectionMatrix.inverseMatrix();
+	renderer->rtData.viewInverse = viewMatrix.inverseMatrix();
+	renderer->rtData.proj = projectionMatrix;
+	renderer->rtData.view = viewMatrix;
 
 	swapchain.render([this](size_t index) {
 		this->renderer->updateUniforms(index);

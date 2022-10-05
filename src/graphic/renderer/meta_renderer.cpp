@@ -7,27 +7,27 @@
 
 
 MetaRenderer::MetaRenderer(Device* device)
-:device(device), descriptorCollection(device),
+:Renderer(device), device(device), descriptorCollection(device),
 pipeline(device), objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device) {}
 
 MetaRenderer::~MetaRenderer() {}
 
-void MetaRenderer::init() {
+void MetaRenderer::initRenderer() {
 	createTLAS();
 	createBuffers();
 	createDescriptorCollection();
 	createPipeline();
 }
 
-void MetaRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+void MetaRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	pipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void MetaRenderer::updateUniforms(size_t index) {
-	globalDataBuffers.at(index).passData((void*) &globalData);
+void MetaRenderer::updateRendererUniforms(size_t index) {
+	// globalDataBuffers.at(index).passData((void*) &globalData);
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	for (size_t i = 0; i < objects.size(); ++i) {
@@ -36,7 +36,7 @@ void MetaRenderer::updateUniforms(size_t index) {
 	}
 }
 
-void MetaRenderer::parseInput(const InputEntry& inputEntry) {
+void MetaRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.resultType = inputEntry.get<uint32_t>("resultType");
 	renderSettings.scaling = inputEntry.get<float>("scaling");
 	renderSettings.lightJump = inputEntry.get<uint32_t>("lightJump");
@@ -58,10 +58,10 @@ void MetaRenderer::createBuffers() {
 	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	objDataBuffers.init();
 
-	globalDataBuffers.bufferProperties.bufferSize = sizeof(MetaRenderer::GlobalData);
-	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	globalDataBuffers.init();
+	// globalDataBuffers.bufferProperties.bufferSize = sizeof(MetaRenderer::GlobalData);
+	// globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	// globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	// globalDataBuffers.init();
 
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(MetaRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;

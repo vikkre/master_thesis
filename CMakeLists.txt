@@ -34,12 +34,15 @@ macro(add_shader output_shader)
 	list(APPEND SHADER ${output_shader})
 endmacro()
 
-add_shader(monte_carlo_miss.spv          monte_carlo_miss.rmiss         monte_carlo.glsl )
-add_shader(monte_carlo_closesthit.spv    monte_carlo_closesthit.rchit   monte_carlo.glsl )
-add_shader(monte_carlo_light_raygen.spv  monte_carlo_light_raygen.rgen  monte_carlo.glsl )
-add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       monte_carlo.glsl )
-add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen monte_carlo.glsl )
-add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    monte_carlo.glsl )
+set(SHADER_INCLUDES helper.glsl v1.glsl)
+add_shader(v1_miss.spv          v1_miss.rmiss       v1.glsl )
+add_shader(v1_closesthit.spv    v1_closesthit.rchit v1.glsl )
+
+set(MONTE_CARLO_INCLUDES ${SHADER_INCLUDES} monte_carlo.glsl)
+add_shader(monte_carlo_light_raygen.spv  monte_carlo_light_raygen.rgen  ${MONTE_CARLO_INCLUDES} )
+add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       ${MONTE_CARLO_INCLUDES} )
+add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen ${MONTE_CARLO_INCLUDES} )
+add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    ${MONTE_CARLO_INCLUDES} )
 
 add_shader(ddgi_miss.spv                ddgi_miss.rmiss               ddgi.glsl )
 add_shader(ddgi_closesthit.spv          ddgi_closesthit.rchit         ddgi.glsl )
@@ -49,12 +52,6 @@ add_shader(ddgi_final_raygen.spv        ddgi_final_raygen.rgen        ddgi.glsl 
 
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )
-
-add_shader(denoise_m17_temporal_comp.spv       denoise_m17_temporal_comp.comp       denoise_m17.glsl )
-add_shader(denoise_m17_pre_bilateral_comp.spv  denoise_m17_pre_bilateral_comp.comp  denoise_m17.glsl )
-add_shader(denoise_m17_firefly_comp.spv        denoise_m17_firefly_comp.comp        denoise_m17.glsl )
-add_shader(denoise_m17_disocclusion_comp.spv   denoise_m17_disocclusion_comp.comp   denoise_m17.glsl )
-add_shader(denoise_m17_post_bilateral_comp.spv denoise_m17_post_bilateral_comp.comp denoise_m17.glsl )
 
 add_shader(meta_renderer_miss.spv       meta_renderer_miss.rmiss       meta_renderer.glsl )
 add_shader(meta_renderer_closesthit.spv meta_renderer_closesthit.rchit meta_renderer.glsl )

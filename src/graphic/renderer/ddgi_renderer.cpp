@@ -17,7 +17,7 @@ struct Surfel {
 
 
 DDGIRenderer::DDGIRenderer(Device* device)
-:device(device), descriptorCollection(device),
+:Renderer(device), device(device), descriptorCollection(device),
 probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
 objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device),
@@ -26,7 +26,7 @@ irradianceSampler(&irradianceBuffer), depthSampler(&depthBuffer) {}
 
 DDGIRenderer::~DDGIRenderer() {}
 
-void DDGIRenderer::init() {
+void DDGIRenderer::initRenderer() {
 	createTLAS();
 	createBuffers();
 	createDescriptorCollection();
@@ -35,7 +35,7 @@ void DDGIRenderer::init() {
 	createFinalPipeline();
 }
 
-void DDGIRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+void DDGIRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	probePipeline.cmdExecutePipeline(commandBuffer);
@@ -49,8 +49,8 @@ void DDGIRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	finalPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void DDGIRenderer::updateUniforms(size_t index) {
-	globalDataBuffers.at(index).passData((void*) &globalData);
+void DDGIRenderer::updateRendererUniforms(size_t index) {
+	// globalDataBuffers.at(index).passData((void*) &globalData);
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
@@ -75,7 +75,7 @@ void DDGIRenderer::updateUniforms(size_t index) {
 	}
 }
 
-void DDGIRenderer::parseInput(const InputEntry& inputEntry) {
+void DDGIRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
@@ -135,10 +135,10 @@ void DDGIRenderer::createBuffers() {
 	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	objDataBuffers.init();
 
-	globalDataBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::GlobalData);
-	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	globalDataBuffers.init();
+	// globalDataBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::GlobalData);
+	// globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	// globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	// globalDataBuffers.init();
 
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;

@@ -20,6 +20,7 @@ class ComputePipeline {
 		static VkPipelineStageFlags getStageMask();
 
 		std::string shaderPath;
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		VkPipelineLayout pipelineLayout;
 		uint32_t x, y, z;
 	

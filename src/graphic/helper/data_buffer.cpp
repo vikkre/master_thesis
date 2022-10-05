@@ -133,7 +133,7 @@ VkWriteDescriptorSet DataBuffer::getWriteDescriptorSet(VkDescriptorSet descripto
 
 VkDescriptorType DataBuffer::getDescriptorType() const {
 	VkDescriptorType type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	if ((properties.usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) != 0) {
+	if (properties.usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) {
 		type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	}
 	return type;

@@ -1,8 +1,6 @@
 #include "monte_carlo_renderer.h"
 
 
-#define RCHIT_SHADER          "monte_carlo_closesthit.spv"
-#define RMISS_SHADER          "monte_carlo_miss.spv"
 #define LIGHT_GEN_RGEN_SHADER "monte_carlo_light_raygen.spv"
 #define KD_COMP_SHADER        "monte_carlo_kd_comp.spv"
 #define VISION_RGEN_SHADER    "monte_carlo_vision_raygen.spv"
@@ -24,31 +22,31 @@ struct KDData {
 
 
 MonteCarloRenderer::MonteCarloRenderer(Device* device)
-:device(device), descriptorCollection(device),
+:Renderer(device), device(device), descriptorCollection(device),
 lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device),
-objDataPtrs(),
-tlas(device), storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
-globalDataBuffers(device), renderSettingsBuffers(device), countBuffers(device),
-lightPointBuffers(device), kdBuffers(device), objDataBuffers(device) {}
+storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
+renderSettingsBuffers(device), countBuffers(device),
+lightPointBuffers(device), kdBuffers(device)
+{}
 
 MonteCarloRenderer::~MonteCarloRenderer() {}
 
-void MonteCarloRenderer::init() {
-	createTLAS();
+void MonteCarloRenderer::initRenderer() {
 	createBuffers();
 	createDescriptorCollection();
+	createPipelineLayout();
 	createLightGenerationPipeline();
 	createKDPipeline();
 	createVisionPipeline();
 	createFinalRenderPipeline();
 }
 
-void MonteCarloRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+void MonteCarloRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	storageImagesRed.at(index).cmdClear(commandBuffer);
 	storageImagesGreen.at(index).cmdClear(commandBuffer);
 	storageImagesBlue.at(index).cmdClear(commandBuffer);
 
-	descriptorCollection.cmdBind(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 
 	lightGenerationPipeline.cmdExecutePipeline(commandBuffer);
 
@@ -65,21 +63,14 @@ void MonteCarloRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) 
 	finalRenderPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void MonteCarloRenderer::updateUniforms(size_t index) {
-	globalDataBuffers.at(index).passData((void*) &globalData);
+void MonteCarloRenderer::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	uint32_t count = 0;
 	countBuffers.at(index).passData((void*) &count);
-
-	for (size_t i = 0; i < objects.size(); ++i) {
-		objects.at(i)->passBufferData(index);
-		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
-	}
 }
 
-void MonteCarloRenderer::parseInput(const InputEntry& inputEntry) {
-	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
+void MonteCarloRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightRayCount = inputEntry.get<u_int32_t>("lightRayCount");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
@@ -89,16 +80,6 @@ void MonteCarloRenderer::parseInput(const InputEntry& inputEntry) {
 	renderSettings.collectionDistanceShrinkFactor = inputEntry.get<float>("collectionDistanceShrinkFactor");
 	renderSettings.lightCollectionCount = inputEntry.get<u_int32_t>("lightCollectionCount");
 	renderSettings.useCountLightCollecton = inputEntry.get<u_int32_t>("useCountLightCollecton");
-}
-
-void MonteCarloRenderer::createTLAS() {
-	for (GraphicsObject* obj: objects) {
-		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
-		tlas.bufferProperties.blasInstances.push_back(info.instance);
-		objDataPtrs.push_back(info.dataPtr);
-	}
-
-	tlas.init();
 }
 
 void MonteCarloRenderer::createBuffers() {
@@ -113,11 +94,6 @@ void MonteCarloRenderer::createBuffers() {
 	storageImagesRed.init();
 	storageImagesGreen.init();
 	storageImagesBlue.init();
-
-	globalDataBuffers.bufferProperties.bufferSize = sizeof(MonteCarloRenderer::GlobalData);
-	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	globalDataBuffers.init();
 
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(MonteCarloRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
@@ -138,37 +114,31 @@ void MonteCarloRenderer::createBuffers() {
 	kdBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	kdBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	kdBuffers.init();
-
-	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();
-	objDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	objDataBuffers.init();
 }
 
 void MonteCarloRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(11);
+	descriptorCollection.bufferDescriptors.resize(8);
 
-	descriptorCollection.bufferDescriptors.at(0) = &tlas;
-	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
-	descriptorCollection.bufferDescriptors.at(2) = &globalDataBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(4) = &countBuffers;
-	descriptorCollection.bufferDescriptors.at(5) = &lightPointBuffers;
-	descriptorCollection.bufferDescriptors.at(6) = &kdBuffers;
-	descriptorCollection.bufferDescriptors.at(7) = &storageImagesRed;
-	descriptorCollection.bufferDescriptors.at(8) = &storageImagesGreen;
-	descriptorCollection.bufferDescriptors.at(9) = &storageImagesBlue;
-	descriptorCollection.bufferDescriptors.at(10) = outputImages;
+	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
+	descriptorCollection.bufferDescriptors.at(1) = &countBuffers;
+	descriptorCollection.bufferDescriptors.at(2) = &lightPointBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &kdBuffers;
+	descriptorCollection.bufferDescriptors.at(4) = &storageImagesRed;
+	descriptorCollection.bufferDescriptors.at(5) = &storageImagesGreen;
+	descriptorCollection.bufferDescriptors.at(6) = &storageImagesBlue;
+	descriptorCollection.bufferDescriptors.at(7) = outputImages;
 
 	descriptorCollection.init();
+
+	descriptors.push_back(&descriptorCollection);
 }
 
 void MonteCarloRenderer::createLightGenerationPipeline() {
 	lightGenerationPipeline.raygenShaders.push_back(LIGHT_GEN_RGEN_SHADER);
-	lightGenerationPipeline.missShaders.push_back(RMISS_SHADER);
-	lightGenerationPipeline.hitShaders.push_back(RCHIT_SHADER);
+	lightGenerationPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
+	lightGenerationPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
 
-	lightGenerationPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	lightGenerationPipeline.pipelineLayout = getPipelineLayout();
 
 	lightGenerationPipeline.width = renderSettings.lightRayCount;
 
@@ -177,16 +147,18 @@ void MonteCarloRenderer::createLightGenerationPipeline() {
 
 void MonteCarloRenderer::createKDPipeline() {
 	kdPipeline.shaderPath = KD_COMP_SHADER;
-	kdPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	
+	kdPipeline.pipelineLayout = getPipelineLayout();
+
 	kdPipeline.init();
 }
 
 void MonteCarloRenderer::createVisionPipeline() {
 	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
-	visionPipeline.missShaders.push_back(RMISS_SHADER);
-	visionPipeline.hitShaders.push_back(RCHIT_SHADER);
+	visionPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
+	visionPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
 
-	visionPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	visionPipeline.pipelineLayout = getPipelineLayout();
 
 	visionPipeline.width = device->renderInfo.swapchainExtend.width;
 	visionPipeline.height = device->renderInfo.swapchainExtend.height;
@@ -197,7 +169,8 @@ void MonteCarloRenderer::createVisionPipeline() {
 
 void MonteCarloRenderer::createFinalRenderPipeline() {
 	finalRenderPipeline.shaderPath = FINAL_COMP_SHADER;
-	finalRenderPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	
+	finalRenderPipeline.pipelineLayout = getPipelineLayout();
 
 	finalRenderPipeline.x = device->renderInfo.swapchainExtend.width;
 	finalRenderPipeline.y = device->renderInfo.swapchainExtend.height;

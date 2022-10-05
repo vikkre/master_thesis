@@ -7,27 +7,27 @@
 
 
 PhongRenderer::PhongRenderer(Device* device)
-:device(device), descriptorCollection(device),
+:Renderer(device), device(device), descriptorCollection(device),
 pipeline(device), objDataPtrs(),
 tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device) {}
 
 PhongRenderer::~PhongRenderer() {}
 
-void PhongRenderer::init() {
+void PhongRenderer::initRenderer() {
 	createTLAS();
 	createBuffers();
 	createDescriptorCollection();
 	createPipeline();
 }
 
-void PhongRenderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+void PhongRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer);
 
 	pipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void PhongRenderer::updateUniforms(size_t index) {
-	globalDataBuffers.at(index).passData((void*) &globalData);
+void PhongRenderer::updateRendererUniforms(size_t index) {
+	// globalDataBuffers.at(index).passData((void*) &globalData);
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	for (size_t i = 0; i < objects.size(); ++i) {
@@ -36,7 +36,7 @@ void PhongRenderer::updateUniforms(size_t index) {
 	}
 }
 
-void PhongRenderer::parseInput(const InputEntry& inputEntry) {
+void PhongRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.diffuseConstant = inputEntry.get<float>("diffuseConstant");
@@ -61,10 +61,10 @@ void PhongRenderer::createBuffers() {
 	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	objDataBuffers.init();
 
-	globalDataBuffers.bufferProperties.bufferSize = sizeof(PhongRenderer::GlobalData);
-	globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	globalDataBuffers.init();
+	// globalDataBuffers.bufferProperties.bufferSize = sizeof(PhongRenderer::GlobalData);
+	// globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	// globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	// globalDataBuffers.init();
 
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(PhongRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;

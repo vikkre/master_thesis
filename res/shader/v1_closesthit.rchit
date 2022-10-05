@@ -1,6 +1,7 @@
 #version 460
 
-#include "monte_carlo.glsl"
+#define HIT_OR_MISS_SHADER
+#include "v1.glsl"
 
 
 hitAttributeEXT vec2 attribs;
@@ -23,7 +24,7 @@ void main() {
 	vec3 normal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
 	normal = normalize((obj.model * vec4(normal, 0.0)).xyz);
 
-	rayPayload.miss = false;
+	rayPayload.hit = true;
 	rayPayload.pos = pos;
 	rayPayload.normal = normal;
 	rayPayload.color = obj.color;

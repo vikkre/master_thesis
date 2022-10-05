@@ -50,7 +50,8 @@ out/*
 *.app
 
 # IDE specific files
-.vscode
+.vscode/*
+!.vscode/launch.json
 .idea
 *.cbp
 

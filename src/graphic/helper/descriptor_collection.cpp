@@ -1,17 +1,16 @@
 #include "descriptor_collection.h"
 
 
-#define GLOBAL_BINDING_SET_INDEX 0
+#define DEFAULT_BINDING_SET_INDEX 0
 
 
 DescriptorCollection::DescriptorCollection(Device* device)
-:bufferDescriptors(), device(device),
+:bindingSetIndex(DEFAULT_BINDING_SET_INDEX), bufferDescriptors(), device(device),
 descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSets(), pipelineLayout(VK_NULL_HANDLE) {
 
 }
 
 DescriptorCollection::~DescriptorCollection() {
-	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
 	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(device->getDevice(), descriptorSetLayout, nullptr);
 }
@@ -20,34 +19,37 @@ void DescriptorCollection::init() {
 	createDescriptorSetLayout();
 	createDescriptorPool();
 	createDescriptorSets();
-	createPipelineLayout();
 }
 
 void DescriptorCollection::cmdBind(size_t index, VkCommandBuffer commandBuffer) const {
+	cmdBind(index, commandBuffer, pipelineLayout);
+}
+
+void DescriptorCollection::cmdBind(size_t index, VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const {
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
 		pipelineLayout,
-		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
+		bindingSetIndex, 1, &descriptorSets.at(index),
 		0, nullptr
 	);
 
 	vkCmdBindDescriptorSets(
 		commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 		pipelineLayout,
-		GLOBAL_BINDING_SET_INDEX, 1, &descriptorSets.at(index),
+		bindingSetIndex, 1, &descriptorSets.at(index),
 		0, nullptr
 	);
 }
 
-VkPipelineLayout DescriptorCollection::getPipelineLayout() const {
-	return pipelineLayout;
+VkDescriptorSetLayout DescriptorCollection::getLayout() const {
+	return descriptorSetLayout;
 }
 
 void DescriptorCollection::createDescriptorSetLayout() {
-	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+	std::vector<VkDescriptorSetLayoutBinding> layoutBindings(bufferDescriptors.size());
 
 	for (unsigned int i = 0; i < bufferDescriptors.size(); ++i) {
-		layoutBindings.push_back(bufferDescriptors.at(i)->getLayoutBinding(i));
+		layoutBindings.at(i) = bufferDescriptors.at(i)->getLayoutBinding(i);
 	}
 	
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -106,19 +108,4 @@ void DescriptorCollection::createDescriptorSets() {
 	}
 
 	vkUpdateDescriptorSets(device->getDevice(), writeSets.size(), writeSets.data(), 0, VK_NULL_HANDLE);
-}
-
-void DescriptorCollection::createPipelineLayout() {
-	std::vector<VkDescriptorSetLayout> setLayouts {
-		descriptorSetLayout,
-	};
-
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = setLayouts.size();
-	pipelineLayoutInfo.pSetLayouts = setLayouts.data();
-
-	if (vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-		throw InitException("vkCreatePipelineLayout", "failed to create pipeline layout!");
-	}
 }

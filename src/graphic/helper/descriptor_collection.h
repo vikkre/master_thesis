@@ -15,15 +15,16 @@ class DescriptorCollection {
 
 		void init();
 		void cmdBind(size_t index, VkCommandBuffer commandBuffer) const;
-		VkPipelineLayout getPipelineLayout() const;
+		void cmdBind(size_t index, VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const;
+		VkDescriptorSetLayout getLayout() const;
 
+		unsigned int bindingSetIndex;
 		std::vector<BufferDescriptor*> bufferDescriptors;
 	
 	private:
 		void createDescriptorSetLayout();
 		void createDescriptorPool();
 		void createDescriptorSets();
-		void createPipelineLayout();
 
 		Device* device;
 

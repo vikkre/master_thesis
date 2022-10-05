@@ -26,10 +26,10 @@ class PhongRenderer: public Renderer {
 		PhongRenderer(Device* device);
 		~PhongRenderer();
 
-		virtual void init() override;
-		virtual void cmdRender(size_t index, VkCommandBuffer commandBuffer) override;
-		virtual void updateUniforms(size_t index) override;
-		virtual void parseInput(const InputEntry& inputEntry) override;
+		virtual void initRenderer() override;
+		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
+		virtual void updateRendererUniforms(size_t index) override;
+		virtual void parseRendererInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
 			Vector3f backgroundColor;

@@ -1,6 +1,6 @@
 #version 460
 
-#define RAYGEN_SHADER
+
 #include "monte_carlo.glsl"
 
 

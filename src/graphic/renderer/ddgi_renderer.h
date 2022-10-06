@@ -32,7 +32,6 @@ class DDGIRenderer: public Renderer {
 		virtual void parseRendererInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
-			Vector3f backgroundColor;
 			Vector3f lightPosition;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
@@ -52,7 +51,6 @@ class DDGIRenderer: public Renderer {
 		} renderSettings;
 
 	private:
-		void createTLAS();
 		void createBuffers();
 		void createDescriptorCollection();
 		void createProbePipeline();
@@ -67,11 +65,6 @@ class DDGIRenderer: public Renderer {
 		ComputePipeline shadingUpdatePipeline;
 		RayTracingPipeline finalPipeline;
 
-		std::vector<void*> objDataPtrs;
-
-		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
-		MultiBufferDescriptor<DataBuffer> objDataBuffers;
-		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
 		MultiBufferDescriptor<DataBuffer> surfelBuffer;
 		MultiBufferDescriptor<ImageBuffer> irradianceBuffer;

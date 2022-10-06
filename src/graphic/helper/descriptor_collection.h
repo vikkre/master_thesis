@@ -14,7 +14,6 @@ class DescriptorCollection {
 		~DescriptorCollection();
 
 		void init();
-		void cmdBind(size_t index, VkCommandBuffer commandBuffer) const;
 		void cmdBind(size_t index, VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const;
 		VkDescriptorSetLayout getLayout() const;
 
@@ -31,5 +30,4 @@ class DescriptorCollection {
 		VkDescriptorSetLayout descriptorSetLayout;
 		VkDescriptorPool descriptorPool;
 		std::vector<VkDescriptorSet> descriptorSets;
-		VkPipelineLayout pipelineLayout;
 };

@@ -13,12 +13,13 @@ MedianDenoiser::~MedianDenoiser() {}
 void MedianDenoiser::initDenoiser() {
 	createBuffers();
 	createDescriptorCollection();
+	createPipelineLayout();
 	createDenoisePipeline();
 }
 
 void MedianDenoiser::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	Denoiser::cmdPipelineBarrier(commandBuffer);
-	descriptorCollection.cmdBind(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 	denoisePipeline.cmdExecutePipeline(commandBuffer);
 }
 
@@ -43,11 +44,13 @@ void MedianDenoiser::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(2) = &settingsBuffers;
 
 	descriptorCollection.init();
+
+	descriptors.push_back(&descriptorCollection);
 }
 
 void MedianDenoiser::createDenoisePipeline() {
 	denoisePipeline.shaderPath = DENOISE_SHADER;
-	denoisePipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	denoisePipeline.pipelineLayout = getPipelineLayout();
 
 	denoisePipeline.x = device->renderInfo.swapchainExtend.width;
 	denoisePipeline.y = device->renderInfo.swapchainExtend.height;

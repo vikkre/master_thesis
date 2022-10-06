@@ -6,7 +6,7 @@
 
 DescriptorCollection::DescriptorCollection(Device* device)
 :bindingSetIndex(DEFAULT_BINDING_SET_INDEX), bufferDescriptors(), device(device),
-descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSets(), pipelineLayout(VK_NULL_HANDLE) {
+descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSets() {
 
 }
 
@@ -19,10 +19,6 @@ void DescriptorCollection::init() {
 	createDescriptorSetLayout();
 	createDescriptorPool();
 	createDescriptorSets();
-}
-
-void DescriptorCollection::cmdBind(size_t index, VkCommandBuffer commandBuffer) const {
-	cmdBind(index, commandBuffer, pipelineLayout);
 }
 
 void DescriptorCollection::cmdBind(size_t index, VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const {

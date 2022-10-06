@@ -18,12 +18,13 @@ GaussDenoiser::~GaussDenoiser() {}
 void GaussDenoiser::initDenoiser() {
 	createBuffers();
 	createDescriptorCollection();
+	createPipelineLayout();
 	createDenoisePipeline();
 }
 
 void GaussDenoiser::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 	Denoiser::cmdPipelineBarrier(commandBuffer);
-	descriptorCollection.cmdBind(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 	denoisePipeline.cmdExecutePipeline(commandBuffer);
 }
 
@@ -73,11 +74,13 @@ void GaussDenoiser::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.at(3) = &gaussBuffers;
 
 	descriptorCollection.init();
+
+	descriptors.push_back(&descriptorCollection);
 }
 
 void GaussDenoiser::createDenoisePipeline() {
 	denoisePipeline.shaderPath = DENOISE_SHADER;
-	denoisePipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	denoisePipeline.pipelineLayout = getPipelineLayout();
 
 	denoisePipeline.x = device->renderInfo.swapchainExtend.width;
 	denoisePipeline.y = device->renderInfo.swapchainExtend.height;

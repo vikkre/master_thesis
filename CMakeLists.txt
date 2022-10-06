@@ -44,22 +44,19 @@ add_shader(monte_carlo_kd_comp.spv       monte_carlo_kd_comp.comp       ${MONTE_
 add_shader(monte_carlo_vision_raygen.spv monte_carlo_vision_raygen.rgen ${MONTE_CARLO_INCLUDES} )
 add_shader(monte_carlo_final_comp.spv    monte_carlo_final_comp.comp    ${MONTE_CARLO_INCLUDES} )
 
-add_shader(ddgi_miss.spv                ddgi_miss.rmiss               ddgi.glsl )
-add_shader(ddgi_closesthit.spv          ddgi_closesthit.rchit         ddgi.glsl )
-add_shader(ddgi_probe_raygen.spv        ddgi_probe_raygen.rgen        ddgi.glsl )
-add_shader(ddgi_shading_update_comp.spv ddgi_shading_update_comp.comp ddgi.glsl )
-add_shader(ddgi_final_raygen.spv        ddgi_final_raygen.rgen        ddgi.glsl )
+set(DDGI_INCLUDES ${SHADER_INCLUDES} ddgi.glsl)
+add_shader(ddgi_probe_raygen.spv        ddgi_probe_raygen.rgen        ${DDGI_INCLUDES} )
+add_shader(ddgi_shading_update_comp.spv ddgi_shading_update_comp.comp ${DDGI_INCLUDES} )
+add_shader(ddgi_final_raygen.spv        ddgi_final_raygen.rgen        ${DDGI_INCLUDES} )
+
+set(META_RENDERER_INCLUDES ${SHADER_INCLUDES} meta_renderer.glsl)
+add_shader(meta_renderer_raygen.spv meta_renderer_raygen.rgen ${META_RENDERER_INCLUDES} )
+
+set(PHONG_RENDERER_INCLUDES ${SHADER_INCLUDES} phong_renderer.glsl)
+add_shader(phong_renderer_raygen.spv phong_renderer_raygen.rgen ${PHONG_RENDERER_INCLUDES} )
 
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )
-
-add_shader(meta_renderer_miss.spv       meta_renderer_miss.rmiss       meta_renderer.glsl )
-add_shader(meta_renderer_closesthit.spv meta_renderer_closesthit.rchit meta_renderer.glsl )
-add_shader(meta_renderer_raygen.spv     meta_renderer_raygen.rgen      meta_renderer.glsl )
-
-add_shader(phong_renderer_miss.spv       phong_renderer_miss.rmiss       phong_renderer.glsl )
-add_shader(phong_renderer_closesthit.spv phong_renderer_closesthit.rchit phong_renderer.glsl )
-add_shader(phong_renderer_raygen.spv     phong_renderer_raygen.rgen      phong_renderer.glsl )
 
 
 add_executable(RayTrace ${PROJECT_SRC} ${SHADER})

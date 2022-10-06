@@ -2,13 +2,13 @@
 
 #extension GL_EXT_scalar_block_layout: enable
 
-layout(binding = 0, set = 0, rgba8) uniform image2D rawImage;
-layout(binding = 1, set = 0, rgba8) uniform image2D resultImage;
-layout(binding = 2, set = 0, scalar) uniform Settings {
+layout(set = 0, binding = 0, rgba8) uniform image2D rawImage;
+layout(set = 0, binding = 1, rgba8) uniform image2D resultImage;
+layout(set = 0, binding = 2, scalar) uniform Settings {
 	uint kernelSize;
 	float sigma;
 } settings;
-layout(binding = 3, set = 0, scalar) buffer GB { float g[]; } gaussBuffer;
+layout(set = 0, binding = 3, scalar) buffer GB { float g[]; } gaussBuffer;
 
 
 #define GAUSS_ARRAY_MAX_SIZE 20

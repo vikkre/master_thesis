@@ -1,4 +1,5 @@
 MetaRenderer
+	backgroundColor(0, 0, 0)
 	resultType(2)
 	scaling(50.0)
 	lightJump(1)

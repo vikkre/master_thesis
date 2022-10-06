@@ -1,6 +1,6 @@
 #version 460
 
-#define RAYGEN_SHADER
+
 #include "meta_renderer.glsl"
 
 
@@ -9,9 +9,9 @@ void main() {
 	vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
 	vec2 d = inUV * 2.0 - 1.0;
 
-	vec3 origin = (globalData.viewInverse * vec4(vec3(0), 1)).xyz;
-	vec3 target = (globalData.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
-	vec3 direction = normalize((globalData.viewInverse * vec4(normalize(target), 0)).xyz);
+	vec3 origin = (rtSettings.viewInverse * vec4(vec3(0), 1)).xyz;
+	vec3 target = (rtSettings.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
+	vec3 direction = normalize((rtSettings.viewInverse * vec4(normalize(target), 0)).xyz);
 
 	uint rayFlags = gl_RayFlagsOpaqueEXT;
 	uint cullMask = 0xFF;

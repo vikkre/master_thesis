@@ -5,6 +5,7 @@
 
 #include "../helper/multi_buffer_descriptor.h"
 #include "../helper/image_buffer.h"
+#include "../helper/descriptor_collection.h"
 #include "../../input_parser.h"
 
 
@@ -27,9 +28,17 @@ class Denoiser {
 
 	protected:
 		void createInputImages();
+		void createPipelineLayout();
+
+		VkPipelineLayout getPipelineLayout();
 
 		Device* device;
 
 		MultiBufferDescriptor<ImageBuffer> inputImages;
 		MultiBufferDescriptor<ImageBuffer>* outputImages;
+
+		std::vector<const DescriptorCollection*> descriptors;
+	
+	private:
+		VkPipelineLayout pipelineLayout;
 };

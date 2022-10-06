@@ -41,7 +41,6 @@ class PhongRenderer: public Renderer {
 		} renderSettings;
 
 	private:
-		void createTLAS();
 		void createBuffers();
 		void createDescriptorCollection();
 		void createPipeline();
@@ -50,10 +49,5 @@ class PhongRenderer: public Renderer {
 		DescriptorCollection descriptorCollection;
 		RayTracingPipeline pipeline;
 
-		std::vector<void*> objDataPtrs;
-
-		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
-		MultiBufferDescriptor<DataBuffer> objDataBuffers;
-		MultiBufferDescriptor<DataBuffer> globalDataBuffers;
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
 };

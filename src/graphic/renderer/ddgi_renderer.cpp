@@ -1,8 +1,6 @@
 #include "ddgi_renderer.h"
 
 
-#define RCHIT_SHADER               "ddgi_closesthit.spv"
-#define RMISS_SHADER               "ddgi_miss.spv"
 #define PROBE_RGEN_SHADER          "ddgi_probe_raygen.spv"
 #define SHADING_UPDATE_COMP_SHADER "ddgi_shading_update_comp.spv"
 #define FINAL_RGEN_SHADER          "ddgi_final_raygen.spv"
@@ -19,24 +17,23 @@ struct Surfel {
 DDGIRenderer::DDGIRenderer(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
-objDataPtrs(),
-tlas(device), objDataBuffers(device), globalDataBuffers(device), renderSettingsBuffers(device),
+renderSettingsBuffers(device),
 surfelBuffer(device), irradianceBuffer(device), depthBuffer(device),
 irradianceSampler(&irradianceBuffer), depthSampler(&depthBuffer) {}
 
 DDGIRenderer::~DDGIRenderer() {}
 
 void DDGIRenderer::initRenderer() {
-	createTLAS();
 	createBuffers();
 	createDescriptorCollection();
+	createPipelineLayout();
 	createProbePipeline();
 	createShadingUpdatePipeline();
 	createFinalPipeline();
 }
 
 void DDGIRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
-	descriptorCollection.cmdBind(index, commandBuffer);
+	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 
 	probePipeline.cmdExecutePipeline(commandBuffer);
 
@@ -50,7 +47,6 @@ void DDGIRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 }
 
 void DDGIRenderer::updateRendererUniforms(size_t index) {
-	// globalDataBuffers.at(index).passData((void*) &globalData);
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
@@ -68,15 +64,9 @@ void DDGIRenderer::updateRendererUniforms(size_t index) {
 
 	// irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
 	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
-
-	for (size_t i = 0; i < objects.size(); ++i) {
-		objects.at(i)->passBufferData(index);
-		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
-	}
 }
 
 void DDGIRenderer::parseRendererInput(const InputEntry& inputEntry) {
-	renderSettings.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
@@ -96,16 +86,6 @@ void DDGIRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
 	renderSettings.texelGetProbeDirectionFactor = inputEntry.get<float>("texelGetProbeDirectionFactor");
 	renderSettings.texelGetNormalFactor = inputEntry.get<float>("texelGetNormalFactor");
-}
-
-void DDGIRenderer::createTLAS() {
-	for (GraphicsObject* obj: objects) {
-		GraphicsObject::ObjectInfo info = obj->getObjectInfo();
-		tlas.bufferProperties.blasInstances.push_back(info.instance);
-		objDataPtrs.push_back(info.dataPtr);
-	}
-
-	tlas.init();
 }
 
 void DDGIRenderer::createBuffers() {
@@ -130,16 +110,6 @@ void DDGIRenderer::createBuffers() {
 	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16B16A16_SFLOAT;
 	depthBuffer.init();
 
-	objDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * objDataPtrs.size();
-	objDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	objDataBuffers.init();
-
-	// globalDataBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::GlobalData);
-	// globalDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	// globalDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	// globalDataBuffers.init();
-
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -152,28 +122,27 @@ void DDGIRenderer::createBuffers() {
 }
 
 void DDGIRenderer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(10);
+	descriptorCollection.bufferDescriptors.resize(7);
 
-	descriptorCollection.bufferDescriptors.at(0) = &tlas;
-	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
-	descriptorCollection.bufferDescriptors.at(2) = &globalDataBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(4) = &surfelBuffer;
-	descriptorCollection.bufferDescriptors.at(5) = &irradianceBuffer;
-	descriptorCollection.bufferDescriptors.at(6) = &depthBuffer;
-	descriptorCollection.bufferDescriptors.at(7) = &irradianceSampler;
-	descriptorCollection.bufferDescriptors.at(8) = &depthSampler;
-	descriptorCollection.bufferDescriptors.at(9) = outputImages;
+	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
+	descriptorCollection.bufferDescriptors.at(1) = &surfelBuffer;
+	descriptorCollection.bufferDescriptors.at(2) = &irradianceBuffer;
+	descriptorCollection.bufferDescriptors.at(3) = &depthBuffer;
+	descriptorCollection.bufferDescriptors.at(4) = &irradianceSampler;
+	descriptorCollection.bufferDescriptors.at(5) = &depthSampler;
+	descriptorCollection.bufferDescriptors.at(6) = outputImages;
 
 	descriptorCollection.init();
+
+	descriptors.push_back(&descriptorCollection);
 }
 
 void DDGIRenderer::createProbePipeline() {
 	probePipeline.raygenShaders.push_back(PROBE_RGEN_SHADER);
-	probePipeline.missShaders.push_back(RMISS_SHADER);
-	probePipeline.hitShaders.push_back(RCHIT_SHADER);
+	probePipeline.missShaders.push_back(Renderer::RMISS_SHADER);
+	probePipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
 
-	probePipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	probePipeline.pipelineLayout = getPipelineLayout();
 
 	probePipeline.width = renderSettings.perProbeRayCount;
 	probePipeline.height = renderSettings.totalProbeCount;
@@ -184,7 +153,7 @@ void DDGIRenderer::createProbePipeline() {
 void DDGIRenderer::createShadingUpdatePipeline() {
 	shadingUpdatePipeline.shaderPath = SHADING_UPDATE_COMP_SHADER;
 
-	shadingUpdatePipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	shadingUpdatePipeline.pipelineLayout = getPipelineLayout();
 
 	shadingUpdatePipeline.x = irradianceBuffer.bufferProperties.width;
 	shadingUpdatePipeline.y = irradianceBuffer.bufferProperties.height;
@@ -194,10 +163,10 @@ void DDGIRenderer::createShadingUpdatePipeline() {
 
 void DDGIRenderer::createFinalPipeline() {
 	finalPipeline.raygenShaders.push_back(FINAL_RGEN_SHADER);
-	finalPipeline.missShaders.push_back(RMISS_SHADER);
-	finalPipeline.hitShaders.push_back(RCHIT_SHADER);
+	finalPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
+	finalPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
 
-	finalPipeline.pipelineLayout = descriptorCollection.getPipelineLayout();
+	finalPipeline.pipelineLayout = getPipelineLayout();
 
 	finalPipeline.width = device->renderInfo.swapchainExtend.width;
 	finalPipeline.height = device->renderInfo.swapchainExtend.height;

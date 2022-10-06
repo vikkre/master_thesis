@@ -4,7 +4,9 @@
 Denoiser::Denoiser(Device* device)
 :device(device), inputImages(device), outputImages(nullptr) {}
 
-Denoiser::~Denoiser() {}
+Denoiser::~Denoiser() {
+	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
+}
 
 void Denoiser::init() {
 	createInputImages();
@@ -48,4 +50,25 @@ void Denoiser::cmdInnerBarrier(VkCommandBuffer commandBuffer) {
 void Denoiser::createInputImages() {
 	inputImages.bufferProperties = outputImages->bufferProperties;
 	inputImages.init();
+}
+
+void Denoiser::createPipelineLayout() {
+	std::vector<VkDescriptorSetLayout> descriptorSetLayouts(descriptors.size());
+
+	for (const DescriptorCollection* descriptor: descriptors) {
+		descriptorSetLayouts.at(descriptor->bindingSetIndex) = descriptor->getLayout();
+	}
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+
+	if (vkCreatePipelineLayout(device->getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+		throw InitException("vkCreatePipelineLayout", "failed to create pipeline layout!");
+	}
+}
+
+VkPipelineLayout Denoiser::getPipelineLayout() {
+	return pipelineLayout;
 }

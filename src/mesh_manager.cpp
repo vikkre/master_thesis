@@ -46,6 +46,27 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 		if (entry.keyExists("transparent"))     obj->transparentWeight      = entry.get<float>("transparent");
 		if (entry.keyExists("refractionIndex")) obj->rtData.refractionIndex = entry.get<float>("refractionIndex");
 
+		if (entry.keyExists("move")) {
+			obj->move = true;
+			obj->moveStopPos = Vector3f({
+				entry.get<float>("move", 0),
+				entry.get<float>("move", 1),
+				entry.get<float>("move", 2)
+			});
+			float dist = obj->moveStartPos.distance(obj->moveStopPos);
+			obj->moveSpeed = entry.get<float>("move", 3) / dist;
+		}
+
+		if (entry.keyExists("rotate")) {
+			obj->rotate = true;
+			obj->rotationAxis = Vector3f({
+				entry.get<float>("rotate", 0),
+				entry.get<float>("rotate", 1),
+				entry.get<float>("rotate", 2)
+			});
+			obj->rotationSpeed = entry.get<float>("rotate", 3);
+		}
+
 		createdObjects.push_back(obj);
 	}
 }

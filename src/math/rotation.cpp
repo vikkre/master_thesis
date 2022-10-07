@@ -24,7 +24,7 @@ Vector3f Rotation::getAxis() const {
 
 Rotation Rotation::apply(const Rotation& other) const {
 	Rotation ret;
-	ret.s = this->s * other.s - this->v.dot(other.v);
+	ret.s = (this->s * other.s) - this->v.dot(other.v);
 	ret.v = (this->s * other.v) + (other.s * this->v) + cross(this->v, other.v);
 
 	return ret;

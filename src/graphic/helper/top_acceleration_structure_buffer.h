@@ -17,6 +17,8 @@ class TopAccelerationStructureBuffer: public Buffer {
 		~TopAccelerationStructureBuffer();
 
 		void init();
+		void updateUniforms();
+		void cmdUpdate(VkCommandBuffer commandBuffer);
 
 		const DataBuffer& getBuffer() const;
 		const VkAccelerationStructureKHR& getAccelerationStructure() const;

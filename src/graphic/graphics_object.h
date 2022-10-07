@@ -34,6 +34,7 @@ class GraphicsObject {
 		~GraphicsObject();
 
 		void init();
+		void update(float deltaTime);
 		void passBufferData(size_t index);
 		void recordCommandBuffer(size_t index, VkCommandBuffer commandBuffer);
 
@@ -52,6 +53,19 @@ class GraphicsObject {
 		float diffuseWeight;
 		float reflectWeight;
 		float transparentWeight;
+
+		bool move;
+		bool rotate;
+
+		Vector3f moveStartPos;
+		Vector3f moveStopPos;
+		float moveSpeed;
+		float movedDistance;
+
+		Vector3f rotationAxis;
+		Rotation totalRotation;
+		float rotationSpeed;
+		float rotatedAngle;
 	
 	private:
 		const Mesh* mesh;

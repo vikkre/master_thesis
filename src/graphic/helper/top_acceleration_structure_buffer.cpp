@@ -5,6 +5,9 @@
 #include "../device.h"
 
 
+#define BUILD_GEOMETRY_FLAGS VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR
+
+
 TopAccelerationStructureBuffer::TopAccelerationStructureBuffer(const Device* device)
 :Buffer(), properties(), device(device),
 structureGeometry(), buildSizeInfo(), accelerationStructure(VK_NULL_HANDLE),
@@ -25,6 +28,36 @@ void TopAccelerationStructureBuffer::init() {
 	tlasWriteSetStructure.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
 	tlasWriteSetStructure.accelerationStructureCount = 1;
 	tlasWriteSetStructure.pAccelerationStructures = &accelerationStructure;
+}
+
+void TopAccelerationStructureBuffer::updateUniforms() {
+	instancesBuffer.passData((void*) properties.blasInstances.data());
+}
+
+void TopAccelerationStructureBuffer::cmdUpdate(VkCommandBuffer commandBuffer) {
+	VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo{};
+	accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+	accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+	accelerationBuildGeometryInfo.flags = BUILD_GEOMETRY_FLAGS;
+	accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR;
+	accelerationBuildGeometryInfo.srcAccelerationStructure = accelerationStructure;
+	accelerationBuildGeometryInfo.dstAccelerationStructure = accelerationStructure;
+	accelerationBuildGeometryInfo.geometryCount = 1;
+	accelerationBuildGeometryInfo.pGeometries = &structureGeometry;
+	accelerationBuildGeometryInfo.scratchData.deviceAddress = scratchBuffer.getAddress();
+
+	VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
+	accelerationStructureBuildRangeInfo.primitiveCount = properties.blasInstances.size();
+	accelerationStructureBuildRangeInfo.primitiveOffset = 0;
+	accelerationStructureBuildRangeInfo.firstVertex = 0;
+	accelerationStructureBuildRangeInfo.transformOffset = 0;
+	std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+
+	FuncLoad::vkCmdBuildAccelerationStructuresKHR(
+		commandBuffer, 1,
+		&accelerationBuildGeometryInfo,
+		accelerationBuildStructureRangeInfos.data()
+	);
 }
 
 void TopAccelerationStructureBuffer::createInstancesBuffer() {
@@ -48,7 +81,7 @@ void TopAccelerationStructureBuffer::getBuildSize() {
 	VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfo{};
 	accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 	accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
-	accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+	accelerationStructureBuildGeometryInfo.flags = BUILD_GEOMETRY_FLAGS;
 	accelerationStructureBuildGeometryInfo.geometryCount = 1;
 	accelerationStructureBuildGeometryInfo.pGeometries = &structureGeometry;
 
@@ -90,8 +123,9 @@ void TopAccelerationStructureBuffer::buildAccelerationStructure() {
 	VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo{};
 	accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 	accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
-	accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+	accelerationBuildGeometryInfo.flags = BUILD_GEOMETRY_FLAGS;
 	accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+	accelerationBuildGeometryInfo.srcAccelerationStructure = VK_NULL_HANDLE;
 	accelerationBuildGeometryInfo.dstAccelerationStructure = accelerationStructure;
 	accelerationBuildGeometryInfo.geometryCount = 1;
 	accelerationBuildGeometryInfo.pGeometries = &structureGeometry;

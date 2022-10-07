@@ -10,10 +10,28 @@ GraphicsObject::GraphicsObject(const Device* device, const Mesh* mesh, const Vec
 :scale({1.0f, 1.0f, 1.0f}), rotation(), position(position),
 color(Vector3f({1.0f, 1.0f, 1.0f})),
 diffuseWeight(1.0f), reflectWeight(0.0f), transparentWeight(0.0f),
+move(false), rotate(false),
+moveStartPos(position), moveStopPos(position), moveSpeed(0.0f), movedDistance(0.0f),
+rotationAxis({0.0f, 0.0f, 0.0f}), totalRotation(), rotationSpeed(0.0f), rotatedAngle(0.0f),
 mesh(mesh), device(device) {}
 
 GraphicsObject::~GraphicsObject() {
 	vkDeviceWaitIdle(device->getDevice());
+}
+
+void GraphicsObject::update(float deltaTime) {
+	if (move) {
+		movedDistance += moveSpeed * deltaTime;
+		float t = sin(movedDistance * M_PI) * 0.5f + 0.5f;
+		position = lerp(moveStartPos, moveStopPos, t);
+	}
+
+	if (rotate) {
+		rotatedAngle += rotationSpeed * deltaTime;
+		totalRotation = Rotation(rotationAxis, rotatedAngle).apply(rotation);
+	} else {
+		totalRotation = rotation;
+	}
 }
 
 void GraphicsObject::passBufferData(size_t /* index */) {
@@ -57,8 +75,8 @@ GraphicsObject::ObjectInfo GraphicsObject::getObjectInfo() const {
 Matrix4f GraphicsObject::getMatrix() const {
 	Matrix4f objectMatrix;
 
-	objectMatrix *= rotation.getMatrix();
 	objectMatrix *= getScaleMatrix(scale);
+	objectMatrix *= totalRotation.getMatrix();
 	objectMatrix *= getTranslationMatrix(position);
 
 	return objectMatrix;

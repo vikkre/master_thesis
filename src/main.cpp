@@ -108,7 +108,8 @@ int main(int argc, char* argv[]) {
 
 	engine->renderer = getRenderer(rendererParser.getInputEntry(0).name, &engine->device);
 	engine->renderer->parseInput(rendererParser.getInputEntry(0));
-	engine->renderer->passObjects(meshManager->getCreatedObjects());
+	std::vector<GraphicsObject*> objs = meshManager->getCreatedObjects();
+	engine->renderer->passObjects(objs);
 
 	for (unsigned int i = 1; i < rendererParser.size(); ++i) {
 		const InputEntry& inputEntry = rendererParser.getInputEntry(i);
@@ -131,11 +132,12 @@ int main(int argc, char* argv[]) {
 
 	SDL_Event event;
 	bool run = true;
-	Uint32 currentTime = SDL_GetTicks();
+	Uint32 currentTime = SDL_GetTicks(), lastTime = SDL_GetTicks();
 	unsigned int rendered = 0;
 
 	while (run) {
 		currentTime = SDL_GetTicks();
+		float deltaTime = float(currentTime - lastTime) / 1000.0f;
 
 		while(SDL_PollEvent(&event)) {
 			bool sdl_quit = event.type == SDL_QUIT;
@@ -144,6 +146,8 @@ int main(int argc, char* argv[]) {
 			else input->handleEvents(event);
 		}
 		engine->device.renderInfo.camera.position = input->getPosition();
+
+		for (GraphicsObject* obj: objs) obj->update(deltaTime);
 
 		if (!renderLimit || rendered < maxRenderCount) {
 			int64_t renderTime = measureExecTimeMicroseconds([&engine]() {
@@ -165,6 +169,7 @@ int main(int argc, char* argv[]) {
 			int sleepTime = currentTime + MS_PER_FRAME - SDL_GetTicks();
 			if (sleepTime > 0) SDL_Delay(sleepTime);
 		}
+		lastTime = currentTime;
 	}
 
 	delete input;

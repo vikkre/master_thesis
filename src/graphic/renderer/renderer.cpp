@@ -22,6 +22,10 @@ void Renderer::init() {
 }
 
 void Renderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
+	tlas.at(index).cmdUpdate(commandBuffer);
+
+	cmdPipelineBarrier(VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR, VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, commandBuffer);
+
 	descriptorCollection.cmdBind(index, commandBuffer, pipelineLayout);
 	
 	cmdRenderFrame(index, commandBuffer);
@@ -31,9 +35,16 @@ void Renderer::updateUniforms(size_t index) {
 	rtDataBuffers.at(index).passData((void*) &rtData);
 
 	for (size_t i = 0; i < objects.size(); ++i) {
+		GraphicsObject::ObjectInfo info = objects.at(i)->getObjectInfo();
+		tlas.bufferProperties.blasInstances.at(i) = info.instance;
+		objDataPtrs.at(i) = info.dataPtr;
+
 		objects.at(i)->passBufferData(index);
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
 	}
+
+	tlas.at(index).properties = tlas.bufferProperties;
+	tlas.at(index).updateUniforms();
 
 	updateRendererUniforms(index);
 }

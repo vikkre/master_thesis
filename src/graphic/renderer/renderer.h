@@ -61,7 +61,7 @@ class Renderer {
 		DescriptorCollection descriptorCollection;
 		std::vector<void*> objDataPtrs;
 
-		SingleBufferDescriptor<TopAccelerationStructureBuffer> tlas;
+		MultiBufferDescriptor<TopAccelerationStructureBuffer> tlas;
 		MultiBufferDescriptor<DataBuffer> rtDataBuffers;
 		MultiBufferDescriptor<DataBuffer> objDataBuffers;
 

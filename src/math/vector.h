@@ -219,6 +219,24 @@ Vector<3, T> cross(const Vector<3, T>& a, const Vector<3, S>& b) {
 	return ret;
 }
 
+// lerp
+
+template<typename T>
+T lerp(T v0, T v1, float t) {
+	return (1.0f - t) * v0 + t * v1;
+}
+
+template<size_t s, typename T>
+Vector<s, T> lerp(const Vector<s, T>& v0, const Vector<s, T>& v1, float t) {
+	Vector<s, T> res;
+
+	for (size_t i = 0; i < s; ++i) {
+		res[i] = lerp(v0[i], v1[i], t);
+	}
+
+	return res;
+}
+
 // Compares
 
 template<size_t s, typename T, typename S>

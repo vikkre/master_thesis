@@ -8,7 +8,8 @@ popd
 
 # build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/cornell_box_blocks.ppm 30
 # build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box.scene 1280 720
-build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
+build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
 # build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 # build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_gray.scene 1280 720

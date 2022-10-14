@@ -1,9 +1,9 @@
-#include "ddgi_renderer.h"
+#include "majercik2019_renderer.h"
 
 
-#define PROBE_RGEN_SHADER          "ddgi_probe_raygen.spv"
-#define SHADING_UPDATE_COMP_SHADER "ddgi_shading_update_comp.spv"
-#define FINAL_RGEN_SHADER          "ddgi_final_raygen.spv"
+#define PROBE_RGEN_SHADER          "majercik2019_probe_raygen.spv"
+#define SHADING_UPDATE_COMP_SHADER "majercik2019_shading_update_comp.spv"
+#define FINAL_RGEN_SHADER          "majercik2019_final_raygen.spv"
 
 
 struct Surfel {
@@ -14,16 +14,16 @@ struct Surfel {
 };
 
 
-DDGIRenderer::DDGIRenderer(Device* device)
+Majercik2019::Majercik2019(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 probePipeline(device), shadingUpdatePipeline(device), finalPipeline(device),
 renderSettingsBuffers(device),
 surfelBuffer(device), irradianceBuffer(device), depthBuffer(device),
 irradianceSampler(&irradianceBuffer), depthSampler(&depthBuffer) {}
 
-DDGIRenderer::~DDGIRenderer() {}
+Majercik2019::~Majercik2019() {}
 
-void DDGIRenderer::initRenderer() {
+void Majercik2019::initRenderer() {
 	createBuffers();
 	createDescriptorCollection();
 	createPipelineLayout();
@@ -32,7 +32,7 @@ void DDGIRenderer::initRenderer() {
 	createFinalPipeline();
 }
 
-void DDGIRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
+void Majercik2019::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 
 	probePipeline.cmdExecutePipeline(commandBuffer);
@@ -46,7 +46,7 @@ void DDGIRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	finalPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void DDGIRenderer::updateRendererUniforms(size_t index) {
+void Majercik2019::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
@@ -66,7 +66,7 @@ void DDGIRenderer::updateRendererUniforms(size_t index) {
 	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
 }
 
-void DDGIRenderer::parseRendererInput(const InputEntry& inputEntry) {
+void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
@@ -88,7 +88,7 @@ void DDGIRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.texelGetNormalFactor = inputEntry.get<float>("texelGetNormalFactor");
 }
 
-void DDGIRenderer::createBuffers() {
+void Majercik2019::createBuffers() {
 	Vector2u extend = getIrradianceFieldSurfaceExtend();
 	ImageBuffer::Properties shadingBufferProperties;
 	shadingBufferProperties.width = extend[0];
@@ -110,7 +110,7 @@ void DDGIRenderer::createBuffers() {
 	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16B16A16_SFLOAT;
 	depthBuffer.init();
 
-	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(DDGIRenderer::RenderSettings);
+	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(Majercik2019::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
@@ -121,7 +121,7 @@ void DDGIRenderer::createBuffers() {
 	surfelBuffer.init();
 }
 
-void DDGIRenderer::createDescriptorCollection() {
+void Majercik2019::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.resize(7);
 
 	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
@@ -137,7 +137,7 @@ void DDGIRenderer::createDescriptorCollection() {
 	descriptors.push_back(&descriptorCollection);
 }
 
-void DDGIRenderer::createProbePipeline() {
+void Majercik2019::createProbePipeline() {
 	probePipeline.raygenShaders.push_back(PROBE_RGEN_SHADER);
 	probePipeline.missShaders.push_back(Renderer::RMISS_SHADER);
 	probePipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
@@ -150,7 +150,7 @@ void DDGIRenderer::createProbePipeline() {
 	probePipeline.init();
 }
 
-void DDGIRenderer::createShadingUpdatePipeline() {
+void Majercik2019::createShadingUpdatePipeline() {
 	shadingUpdatePipeline.shaderPath = SHADING_UPDATE_COMP_SHADER;
 
 	shadingUpdatePipeline.pipelineLayout = getPipelineLayout();
@@ -161,7 +161,7 @@ void DDGIRenderer::createShadingUpdatePipeline() {
 	shadingUpdatePipeline.init();
 }
 
-void DDGIRenderer::createFinalPipeline() {
+void Majercik2019::createFinalPipeline() {
 	finalPipeline.raygenShaders.push_back(FINAL_RGEN_SHADER);
 	finalPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
 	finalPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
@@ -174,7 +174,7 @@ void DDGIRenderer::createFinalPipeline() {
 	finalPipeline.init();
 }
 
-Vector2u DDGIRenderer::getIrradianceFieldSurfaceExtend() const {
+Vector2u Majercik2019::getIrradianceFieldSurfaceExtend() const {
 	unsigned int probeExtendWBorder = renderSettings.probeSampleSideLength + 2;
 	unsigned int singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
 	return Vector2u({

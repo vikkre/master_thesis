@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class DDGIRenderer: public Renderer {
+class PathTracer: public Renderer {
 	public:
-		DDGIRenderer(Device* device);
-		~DDGIRenderer();
+		PathTracer(Device* device);
+		~PathTracer();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
@@ -33,42 +33,37 @@ class DDGIRenderer: public Renderer {
 
 		struct RenderSettings {
 			Vector3f lightPosition;
+			u_int32_t lightRayCount;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
-			float betweenProbeDistance;
-			u_int32_t singleDirectionProbeCount;
-			u_int32_t totalProbeCount;
-			u_int32_t perProbeRayCount;
-			float maxProbeRayDistance;
-			u_int32_t probeSampleSideLength;
-			float depthSharpness;
-			float normalBias;
-			float crushThreshold;
-			u_int32_t linearBlending;
-			float energyPreservation;
-			float texelGetProbeDirectionFactor;
-			float texelGetNormalFactor;
+			float collectionDistance;
+			u_int32_t visionRayPerPixelCount;
+			float collectionDistanceShrinkFactor;
+			u_int32_t lightCollectionCount;
+			u_int32_t useCountLightCollecton;
 		} renderSettings;
 
 	private:
 		void createBuffers();
 		void createDescriptorCollection();
-		void createProbePipeline();
-		void createShadingUpdatePipeline();
-		void createFinalPipeline();
-
-		Vector2u getIrradianceFieldSurfaceExtend() const;
+		void createLightGenerationPipeline();
+		void createKDPipeline();
+		void createVisionPipeline();
+		void createFinalRenderPipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
-		RayTracingPipeline probePipeline;
-		ComputePipeline shadingUpdatePipeline;
-		RayTracingPipeline finalPipeline;
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+		RayTracingPipeline lightGenerationPipeline;
+		ComputePipeline kdPipeline;
+		RayTracingPipeline visionPipeline;
+		ComputePipeline finalRenderPipeline;
 
+		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
+		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
+		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
-		MultiBufferDescriptor<DataBuffer> surfelBuffer;
-		MultiBufferDescriptor<ImageBuffer> irradianceBuffer;
-		MultiBufferDescriptor<ImageBuffer> depthBuffer;
-		MultiSamplerDescriptor irradianceSampler;
-		MultiSamplerDescriptor depthSampler;
+		MultiBufferDescriptor<DataBuffer> countBuffers;
+		MultiBufferDescriptor<DataBuffer> lightPointBuffers;
+		MultiBufferDescriptor<DataBuffer> kdBuffers;
 };

@@ -1,7 +1,7 @@
 #version 460
 
 #define COMPUTE_SHADER
-#include "ddgi.glsl"
+#include "majercik2019.glsl"
 
 
 

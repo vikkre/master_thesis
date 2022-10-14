@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class MonteCarloRenderer: public Renderer {
+class Majercik2019: public Renderer {
 	public:
-		MonteCarloRenderer(Device* device);
-		~MonteCarloRenderer();
+		Majercik2019(Device* device);
+		~Majercik2019();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
@@ -33,37 +33,42 @@ class MonteCarloRenderer: public Renderer {
 
 		struct RenderSettings {
 			Vector3f lightPosition;
-			u_int32_t lightRayCount;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
-			float collectionDistance;
-			u_int32_t visionRayPerPixelCount;
-			float collectionDistanceShrinkFactor;
-			u_int32_t lightCollectionCount;
-			u_int32_t useCountLightCollecton;
+			float betweenProbeDistance;
+			u_int32_t singleDirectionProbeCount;
+			u_int32_t totalProbeCount;
+			u_int32_t perProbeRayCount;
+			float maxProbeRayDistance;
+			u_int32_t probeSampleSideLength;
+			float depthSharpness;
+			float normalBias;
+			float crushThreshold;
+			u_int32_t linearBlending;
+			float energyPreservation;
+			float texelGetProbeDirectionFactor;
+			float texelGetNormalFactor;
 		} renderSettings;
 
 	private:
 		void createBuffers();
 		void createDescriptorCollection();
-		void createLightGenerationPipeline();
-		void createKDPipeline();
-		void createVisionPipeline();
-		void createFinalRenderPipeline();
+		void createProbePipeline();
+		void createShadingUpdatePipeline();
+		void createFinalPipeline();
+
+		Vector2u getIrradianceFieldSurfaceExtend() const;
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
-		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
-		RayTracingPipeline lightGenerationPipeline;
-		ComputePipeline kdPipeline;
-		RayTracingPipeline visionPipeline;
-		ComputePipeline finalRenderPipeline;
+		RayTracingPipeline probePipeline;
+		ComputePipeline shadingUpdatePipeline;
+		RayTracingPipeline finalPipeline;
 
-		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
-		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
-		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
-		MultiBufferDescriptor<DataBuffer> countBuffers;
-		MultiBufferDescriptor<DataBuffer> lightPointBuffers;
-		MultiBufferDescriptor<DataBuffer> kdBuffers;
+		MultiBufferDescriptor<DataBuffer> surfelBuffer;
+		MultiBufferDescriptor<ImageBuffer> irradianceBuffer;
+		MultiBufferDescriptor<ImageBuffer> depthBuffer;
+		MultiSamplerDescriptor irradianceSampler;
+		MultiSamplerDescriptor depthSampler;
 };

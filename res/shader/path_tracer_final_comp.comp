@@ -1,7 +1,7 @@
 #version 460
 
 #define COMPUTE_SHADER
-#include "monte_carlo.glsl"
+#include "path_tracer.glsl"
 
 
 void main() {

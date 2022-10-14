@@ -1,7 +1,7 @@
 #version 460
 
 
-#include "monte_carlo.glsl"
+#include "path_tracer.glsl"
 
 
 vec3 getClosestNeighboursColorByCount(vec3 refPoint, vec3 normal) {

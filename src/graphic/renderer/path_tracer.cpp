@@ -1,10 +1,10 @@
-#include "monte_carlo_renderer.h"
+#include "path_tracer.h"
 
 
-#define LIGHT_GEN_RGEN_SHADER "monte_carlo_light_raygen.spv"
-#define KD_COMP_SHADER        "monte_carlo_kd_comp.spv"
-#define VISION_RGEN_SHADER    "monte_carlo_vision_raygen.spv"
-#define FINAL_COMP_SHADER     "monte_carlo_final_comp.spv"
+#define LIGHT_GEN_RGEN_SHADER "path_tracer_light_raygen.spv"
+#define KD_COMP_SHADER        "path_tracer_kd_comp.spv"
+#define VISION_RGEN_SHADER    "path_tracer_vision_raygen.spv"
+#define FINAL_COMP_SHADER     "path_tracer_final_comp.spv"
 
 
 struct LightPoint {
@@ -21,7 +21,7 @@ struct KDData {
 };
 
 
-MonteCarloRenderer::MonteCarloRenderer(Device* device)
+PathTracer::PathTracer(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device),
 storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
@@ -29,9 +29,9 @@ renderSettingsBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device)
 {}
 
-MonteCarloRenderer::~MonteCarloRenderer() {}
+PathTracer::~PathTracer() {}
 
-void MonteCarloRenderer::initRenderer() {
+void PathTracer::initRenderer() {
 	createBuffers();
 	createDescriptorCollection();
 	createPipelineLayout();
@@ -41,7 +41,7 @@ void MonteCarloRenderer::initRenderer() {
 	createFinalRenderPipeline();
 }
 
-void MonteCarloRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
+void PathTracer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	storageImagesRed.at(index).cmdClear(commandBuffer);
 	storageImagesGreen.at(index).cmdClear(commandBuffer);
 	storageImagesBlue.at(index).cmdClear(commandBuffer);
@@ -63,14 +63,14 @@ void MonteCarloRenderer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuf
 	finalRenderPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void MonteCarloRenderer::updateRendererUniforms(size_t index) {
+void PathTracer::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	uint32_t count = 0;
 	countBuffers.at(index).passData((void*) &count);
 }
 
-void MonteCarloRenderer::parseRendererInput(const InputEntry& inputEntry) {
+void PathTracer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightRayCount = inputEntry.get<u_int32_t>("lightRayCount");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
@@ -82,7 +82,7 @@ void MonteCarloRenderer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.useCountLightCollecton = inputEntry.get<u_int32_t>("useCountLightCollecton");
 }
 
-void MonteCarloRenderer::createBuffers() {
+void PathTracer::createBuffers() {
 	ImageBuffer::Properties singleColorBufferProperties = outputImages->bufferProperties;
 	singleColorBufferProperties.format = VK_FORMAT_R32_UINT;
 	singleColorBufferProperties.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
@@ -95,7 +95,7 @@ void MonteCarloRenderer::createBuffers() {
 	storageImagesGreen.init();
 	storageImagesBlue.init();
 
-	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(MonteCarloRenderer::RenderSettings);
+	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(PathTracer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
@@ -116,7 +116,7 @@ void MonteCarloRenderer::createBuffers() {
 	kdBuffers.init();
 }
 
-void MonteCarloRenderer::createDescriptorCollection() {
+void PathTracer::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.resize(8);
 
 	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
@@ -133,7 +133,7 @@ void MonteCarloRenderer::createDescriptorCollection() {
 	descriptors.push_back(&descriptorCollection);
 }
 
-void MonteCarloRenderer::createLightGenerationPipeline() {
+void PathTracer::createLightGenerationPipeline() {
 	lightGenerationPipeline.raygenShaders.push_back(LIGHT_GEN_RGEN_SHADER);
 	lightGenerationPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
 	lightGenerationPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
@@ -145,7 +145,7 @@ void MonteCarloRenderer::createLightGenerationPipeline() {
 	lightGenerationPipeline.init();
 }
 
-void MonteCarloRenderer::createKDPipeline() {
+void PathTracer::createKDPipeline() {
 	kdPipeline.shaderPath = KD_COMP_SHADER;
 	
 	kdPipeline.pipelineLayout = getPipelineLayout();
@@ -153,7 +153,7 @@ void MonteCarloRenderer::createKDPipeline() {
 	kdPipeline.init();
 }
 
-void MonteCarloRenderer::createVisionPipeline() {
+void PathTracer::createVisionPipeline() {
 	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
 	visionPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
 	visionPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
@@ -167,7 +167,7 @@ void MonteCarloRenderer::createVisionPipeline() {
 	visionPipeline.init();
 }
 
-void MonteCarloRenderer::createFinalRenderPipeline() {
+void PathTracer::createFinalRenderPipeline() {
 	finalRenderPipeline.shaderPath = FINAL_COMP_SHADER;
 	
 	finalRenderPipeline.pipelineLayout = getPipelineLayout();

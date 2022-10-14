@@ -5,8 +5,6 @@ GraphicsEngine::GraphicsEngine(const std::string& basepath)
 :device(basepath), swapchain(&device), renderer(nullptr), denoisers(),
 commandBuffersRecorded(false) {
 	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
-	device.renderInfo.camera.position = Vector3f({0.0f, 0.0f, 0.0f});
-	device.renderInfo.camera.lookAt   = Vector3f({0.0f, 0.0f, 0.0f});
 }
 
 GraphicsEngine::~GraphicsEngine() {

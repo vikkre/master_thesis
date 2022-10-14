@@ -2,11 +2,14 @@
 
 #include "input.h"
 
+#include "../math/matrix.h"
+#include "../math/rotation.h"
 
-class FakeInput: public Input {
+
+class SphericalInput: public Input {
 	public:
-		FakeInput(Vector3f position);
-		~FakeInput();
+		SphericalInput();
+		~SphericalInput();
 
 		virtual void handleEvents(const SDL_Event& event) override;
 
@@ -14,7 +17,14 @@ class FakeInput: public Input {
 		virtual Vector3f getLookAt() const override;
 		virtual Vector3f getUp() const override;
 
-		Vector3f position;
+		void toggleMouse(bool escape);
+
+		float r;
+		float theta;
+		float phi;
+
 		Vector3f lookAt;
-		Vector3f up;
+
+	private:
+		bool checkMouseMotion;
 };

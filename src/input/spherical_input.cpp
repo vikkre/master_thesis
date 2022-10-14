@@ -1,4 +1,4 @@
-#include "real_input.h"
+#include "spherical_input.h"
 
 #define R_SPEED     1.0f
 #define ANGLE_SPEED 0.01f
@@ -10,12 +10,13 @@
 #define THETA_CHANGE  M_PI * 2.0f
 
 
-RealInput::RealInput()
-:Input(), r(1.0f), theta(0.0f), phi(M_PI_2), checkMouseMotion(false) {}
+SphericalInput::SphericalInput()
+:Input(), r(1.0f), theta(0.0f), phi(M_PI_2),
+lookAt({0.0f, 0.0f, 0.0f}), checkMouseMotion(false) {}
 
-RealInput::~RealInput() {}
+SphericalInput::~SphericalInput() {}
 
-void RealInput::handleEvents(const SDL_Event& event) {
+void SphericalInput::handleEvents(const SDL_Event& event) {
 	if (event.type == SDL_KEYDOWN) {
 		switch (event.key.keysym.sym) {
 			case SDLK_w:      r -= R_SPEED;       break;
@@ -38,15 +39,23 @@ void RealInput::handleEvents(const SDL_Event& event) {
 	}
 }
 
-Vector3f RealInput::getPosition() const {
+Vector3f SphericalInput::getPosition() const {
 	return Vector3f({
 		r * sin(phi) * cos(theta),
 		r * cos(phi),
 		r * sin(phi) * sin(theta),
-	});
+	}) + lookAt;
 }
 
-void RealInput::toggleMouse(bool checkMouseMotion) {
+Vector3f SphericalInput::getLookAt() const {
+	return lookAt;
+}
+
+Vector3f SphericalInput::getUp() const {
+	return Vector3f({0.0f, 1.0f, 0.0f});
+}
+
+void SphericalInput::toggleMouse(bool checkMouseMotion) {
 	SDL_ShowCursor(checkMouseMotion ? SDL_DISABLE : SDL_ENABLE);
 	SDL_SetRelativeMouseMode(checkMouseMotion ? SDL_TRUE : SDL_FALSE);
 	this->checkMouseMotion = checkMouseMotion;

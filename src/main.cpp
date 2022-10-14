@@ -25,7 +25,8 @@
 
 #include "input/input.h"
 #include "input/fake_input.h"
-#include "input/real_input.h"
+#include "input/spherical_input.h"
+#include "input/free_input.h"
 
 #include "math/vector.h"
 #include "math/matrix.h"
@@ -97,7 +98,6 @@ int main(int argc, char* argv[]) {
 	engine->init();
 
 	engine->device.renderInfo.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
-	engine->device.renderInfo.camera.position = Vector3f({22.0f, 0.0f, 0.0f});
 
 	MeshManager* meshManager = new MeshManager(&engine->device, basepath);
 
@@ -120,14 +120,20 @@ int main(int argc, char* argv[]) {
 
 	engine->initTlas();
 
+	const bool useSphericalCamera = false;
 	Input* input = nullptr;
 	if (renderLimit) {
-		input = new FakeInput(engine->device.renderInfo.camera.position);
-	} else {
-		RealInput* rInput = new RealInput();
+		FakeInput* nInput = new FakeInput(Vector3f({22.0f, 0.0f, 0.0f}));
+		input = nInput;
+	} else if (useSphericalCamera) {
+		SphericalInput* rInput = new SphericalInput();
 		rInput->r = 15.0f;
 		input = rInput;
+	} else {
+		FreeInput* fInput = new FreeInput();
+		input = fInput;
 	}
+	engine->device.renderInfo.camera.input = input;
 
 
 	SDL_Event event;
@@ -145,7 +151,6 @@ int main(int argc, char* argv[]) {
 			if (sdl_quit || window_quit) run = false;
 			else input->handleEvents(event);
 		}
-		engine->device.renderInfo.camera.position = input->getPosition();
 
 		for (GraphicsObject* obj: objs) obj->update(deltaTime);
 

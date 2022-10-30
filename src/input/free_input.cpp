@@ -1,6 +1,6 @@
 #include "free_input.h"
 
-#define MOVE_SPEED  1.0f
+#define MOVE_SPEED  35.0f
 #define ANGLE_SPEED 0.01f
 
 #define PHI_MIN       0.01f
@@ -12,20 +12,33 @@
 
 FreeInput::FreeInput()
 :Input(), theta(M_PI), phi(M_PI_2),
-position({22.0f, 0.0f, 0.0f}), checkMouseMotion(false) {}
+position({22.0f, 0.0f, 0.0f}), checkMouseMotion(false),
+forward(false), backward(false), left(false), right(false), up(false), down(false) {}
 
 FreeInput::~FreeInput() {}
 
 void FreeInput::handleEvents(const SDL_Event& event) {
 	if (event.type == SDL_KEYDOWN) {
 		switch (event.key.keysym.sym) {
-			case SDLK_w:      move(+1.0f,  0.0f);         break;
-			case SDLK_s:      move(-1.0f,  0.0f);         break;
-			case SDLK_a:      move( 0.0f, +1.0f);         break;
-			case SDLK_d:      move( 0.0f, -1.0f);         break;
-			case SDLK_LSHIFT: position[1] -= 1.0f; break;
-			case SDLK_SPACE:  position[1] += 1.0f; break;
-			case SDLK_ESCAPE: toggleMouse(false);  break;
+			case SDLK_w:      forward  = true; break;
+			case SDLK_s:      backward = true; break;
+			case SDLK_a:      left     = true; break;
+			case SDLK_d:      right    = true; break;
+			case SDLK_SPACE:  up       = true; break;
+			case SDLK_LSHIFT: down     = true; break;
+
+			case SDLK_ESCAPE: toggleMouse(false); break;
+		}
+
+	} else if (event.type == SDL_KEYUP) {
+		std::cout << "what?" << std::endl;
+		switch (event.key.keysym.sym) {
+			case SDLK_w:      forward  = false; break;
+			case SDLK_s:      backward = false; break;
+			case SDLK_a:      left     = false; break;
+			case SDLK_d:      right    = false; break;
+			case SDLK_SPACE:  up       = false; break;
+			case SDLK_LSHIFT: down     = false; break;
 		}
 
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -41,6 +54,16 @@ void FreeInput::handleEvents(const SDL_Event& event) {
 			if (theta > THETA_MAX) theta -= THETA_CHANGE;
 		}
 	}
+}
+
+void FreeInput::update(float deltaTime) {
+	if (forward)  move(+1.0f,  0.0f, deltaTime);
+	if (backward) move(-1.0f,  0.0f, deltaTime);
+	if (left)     move( 0.0f, +1.0f, deltaTime);
+	if (right)    move( 0.0f, -1.0f, deltaTime);
+
+	if (up)   position[1] += MOVE_SPEED * deltaTime;
+	if (down) position[1] -= MOVE_SPEED * deltaTime;
 }
 
 Vector3f FreeInput::getPosition() const {
@@ -69,11 +92,11 @@ void FreeInput::toggleMouse(bool checkMouseMotion) {
 	this->checkMouseMotion = checkMouseMotion;
 }
 
-void FreeInput::move(float direction, float side) {
+void FreeInput::move(float direction, float side, float deltaTime) {
 	Vector3f lookDirection = getLookDirection();
 	lookDirection[1] = 0.0f;
 	lookDirection.normalize();
 	Vector3f sideDirection = Vector3f({lookDirection[2], 0.0f, -lookDirection[0]});
 	Vector3f moveDirection = (direction * lookDirection) + (side * sideDirection);
-	position += MOVE_SPEED * moveDirection;
+	position += MOVE_SPEED * deltaTime * moveDirection;
 }

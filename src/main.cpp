@@ -150,6 +150,8 @@ int main(int argc, char* argv[]) {
 			else input->handleEvents(event);
 		}
 
+		input->update(deltaTime);
+
 		for (GraphicsObject* obj: objs) obj->update(deltaTime);
 
 		if (!renderLimit || rendered < maxRenderCount) {

@@ -123,11 +123,15 @@ void main() {
 	}
 
 	if (rayPayload.hit) {
-		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-		vec3 color = rayPayload.color * getIlluminationByShadowtrace(modifiedPos, rayPayload.normal);
-		vec3 irradiance = getIrradiance(rayInfoCopy.origin, rayInfoCopy.direction, modifiedPos, rayPayload.normal);
+		if (rayPayload.lightSource) {
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
+		} else {
+			vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
+			vec3 color = rayPayload.color * getIlluminationByShadowtrace(vec3(gl_LaunchIDEXT), modifiedPos, rayPayload.normal);
+			vec3 irradiance = getIrradiance(rayInfoCopy.origin, rayInfoCopy.direction, modifiedPos, rayPayload.normal);
 
-		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
+		}
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	}

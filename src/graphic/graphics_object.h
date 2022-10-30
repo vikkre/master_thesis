@@ -23,6 +23,8 @@ class GraphicsObject {
 			float reflectThreshold;
 			float transparentThreshold;
 			float refractionIndex;
+			u_int32_t lightSource;
+			u_int32_t indexCount;
 		};
 
 		struct ObjectInfo {

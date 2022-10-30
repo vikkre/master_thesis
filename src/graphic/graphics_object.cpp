@@ -46,6 +46,8 @@ void GraphicsObject::passBufferData(size_t /* index */) {
 	rtData.diffuseThreshold = diffuseWeight / totalWeight;
 	rtData.reflectThreshold = reflectWeight / totalWeight + rtData.diffuseThreshold;
 	rtData.transparentThreshold = transparentWeight / totalWeight + rtData.reflectThreshold;
+
+	rtData.indexCount = mesh->indices.size() / 3;
 }
 
 GraphicsObject::ObjectInfo GraphicsObject::getObjectInfo() const {

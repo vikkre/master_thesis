@@ -67,6 +67,13 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 			obj->rotationSpeed = entry.get<float>("rotate", 3);
 		}
 
+		if (entry.keyExists("lightSource")) {
+			obj->rtData.lightSource = true;
+			createdLightSources.push_back(obj);
+		} else {
+			obj->rtData.lightSource = false;
+		}
+
 		createdObjects.push_back(obj);
 	}
 }

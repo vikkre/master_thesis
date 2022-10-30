@@ -31,7 +31,6 @@ void FreeInput::handleEvents(const SDL_Event& event) {
 		}
 
 	} else if (event.type == SDL_KEYUP) {
-		std::cout << "what?" << std::endl;
 		switch (event.key.keysym.sym) {
 			case SDLK_w:      forward  = false; break;
 			case SDLK_s:      backward = false; break;

@@ -1,5 +1,5 @@
 PathTracer
-	lightRayCount(250)
+	lightRayCount(500)
 	lightJumpCount(3)
 	visionJumpCount(3)
 	collectionDistance(1.5)

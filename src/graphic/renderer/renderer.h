@@ -20,6 +20,7 @@ class Renderer {
 			Matrix4f projInverse;
 			Matrix4f view;
 			Matrix4f proj;
+			u_int32_t lightSourceCount;
 		} rtData;
 
 		Renderer(Device* device);
@@ -36,6 +37,7 @@ class Renderer {
 		virtual void parseRendererInput(const InputEntry& inputEntry)=0;
 
 		void passObjects(const std::vector<GraphicsObject*>& objects);
+		void passLightSources(const std::vector<GraphicsObject*>& lightSources);
 		void setOutputImageBuffer(MultiBufferDescriptor<ImageBuffer>* outputImageBuffer);
 
 		static void cmdPipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkCommandBuffer commandBuffer);
@@ -45,6 +47,7 @@ class Renderer {
 
 	protected:
 		std::vector<GraphicsObject*> objects;
+		std::vector<GraphicsObject*> lightSources;
 		MultiBufferDescriptor<ImageBuffer>* outputImages;
 
 		std::vector<const DescriptorCollection*> descriptors;
@@ -59,10 +62,12 @@ class Renderer {
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		std::vector<void*> objDataPtrs;
+		std::vector<void*> lightSourceDataPtrs;
 
 		MultiBufferDescriptor<TopAccelerationStructureBuffer> tlas;
 		MultiBufferDescriptor<DataBuffer> rtDataBuffers;
 		MultiBufferDescriptor<DataBuffer> objDataBuffers;
+		MultiBufferDescriptor<DataBuffer> lightSourceDataBuffers;
 
 		VkPipelineLayout pipelineLayout;
 };

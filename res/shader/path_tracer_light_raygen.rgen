@@ -5,7 +5,7 @@
 
 
 void main() {
-	RaySendInfo rayInfo = getLightRayUniform(gl_LaunchIDEXT.x, renderSettings.lightRayCount);
+	RaySendInfo rayInfo = getLightRayRandom(vec3(gl_LaunchIDEXT));
 
 	vec3 color = vec3(1.0);
 

@@ -8,7 +8,8 @@ const std::vector<std::string> Renderer::RCHIT_SHADERS = {"v1_closesthit.spv"};
 Renderer::Renderer(Device* device)
 :rtData(), objects(), outputImages(nullptr),
 device(device), descriptorCollection(device), objDataPtrs(),
-tlas(device), rtDataBuffers(device), objDataBuffers(device) {}
+tlas(device), rtDataBuffers(device),
+objDataBuffers(device), lightSourceDataBuffers(device) {}
 
 Renderer::~Renderer() {
 	vkDestroyPipelineLayout(device->getDevice(), pipelineLayout, nullptr);
@@ -32,8 +33,10 @@ void Renderer::cmdRender(size_t index, VkCommandBuffer commandBuffer) {
 }
 
 void Renderer::updateUniforms(size_t index) {
+	rtData.lightSourceCount = lightSources.size();
 	rtDataBuffers.at(index).passData((void*) &rtData);
 
+	size_t currentLightSource = 0;
 	for (size_t i = 0; i < objects.size(); ++i) {
 		GraphicsObject::ObjectInfo info = objects.at(i)->getObjectInfo();
 		tlas.bufferProperties.blasInstances.at(i) = info.instance;
@@ -41,6 +44,11 @@ void Renderer::updateUniforms(size_t index) {
 
 		objects.at(i)->passBufferData(index);
 		objDataBuffers.at(index).passData(objDataPtrs.at(i), i * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
+
+		if (objects.at(i)->rtData.lightSource == 1) {
+			lightSourceDataBuffers.at(index).passData(objDataPtrs.at(i), currentLightSource * GraphicsObject::getRTDataSize(), GraphicsObject::getRTDataSize());
+			++currentLightSource;
+		}
 	}
 
 	tlas.at(index).properties = tlas.bufferProperties;
@@ -55,6 +63,10 @@ void Renderer::parseInput(const InputEntry& inputEntry) {
 
 void Renderer::passObjects(const std::vector<GraphicsObject*>& objects) {
 	this->objects = objects;
+}
+
+void Renderer::passLightSources(const std::vector<GraphicsObject*>& lightSources) {
+	this->lightSources = lightSources;
 }
 
 void Renderer::setOutputImageBuffer(MultiBufferDescriptor<ImageBuffer>* outputImageBuffer) {
@@ -110,15 +122,21 @@ void Renderer::createBuffers() {
 	objDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	objDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	objDataBuffers.init();
+
+	lightSourceDataBuffers.bufferProperties.bufferSize = GraphicsObject::getRTDataSize() * lightSources.size();
+	lightSourceDataBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	lightSourceDataBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	lightSourceDataBuffers.init();
 }
 
 void Renderer::createDescriptorCollection() {
 	descriptorCollection.bindingSetIndex = 1;
-	descriptorCollection.bufferDescriptors.resize(3);
+	descriptorCollection.bufferDescriptors.resize(4);
 
 	descriptorCollection.bufferDescriptors.at(0) = &tlas;
 	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
 	descriptorCollection.bufferDescriptors.at(2) = &rtDataBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &lightSourceDataBuffers;
 
 	descriptorCollection.init();
 

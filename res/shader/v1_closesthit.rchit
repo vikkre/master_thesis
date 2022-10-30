@@ -33,4 +33,5 @@ void main() {
 	rayPayload.reflectThreshold = obj.reflectThreshold;
 	rayPayload.transparentThreshold = obj.transparentThreshold;
 	rayPayload.refractionIndex = obj.refractionIndex;
+	rayPayload.lightSource = obj.lightSource == 1;
 }

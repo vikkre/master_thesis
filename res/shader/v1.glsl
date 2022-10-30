@@ -19,6 +19,8 @@ struct ObjectProperties {
 	float reflectThreshold;
 	float transparentThreshold;
 	float refractionIndex;
+	uint lightSource;
+	uint indexCount;
 };
 
 struct Vertex {
@@ -33,7 +35,9 @@ layout(set = 1, binding = 2, scalar) uniform RayTraceingSettings {
 	mat4 projInverse;
 	mat4 view;
 	mat4 proj;
+	uint lightSourceCount;
 } rtSettings;
+layout(set = 1, binding = 3, scalar) buffer LightSources_ { ObjectProperties l[]; } lightSources;
 
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };
@@ -48,6 +52,7 @@ struct RayPayload {
 	float reflectThreshold;
 	float transparentThreshold;
 	float refractionIndex;
+	bool lightSource;
 };
 
 #ifdef HIT_OR_MISS_SHADER
@@ -62,18 +67,32 @@ struct RaySendInfo {
 	bool backfaceCulling;
 };
 
-RaySendInfo getLightRayRandom(vec3 seed, int i) {
-	RaySendInfo rayInfo;
-	rayInfo.origin = LIGHT_POSITION;
-	rayInfo.direction = randomNormal(seed, i, 1);
-	rayInfo.backfaceCulling = false;
-	return rayInfo;
-}
+RaySendInfo getLightRayRandom(vec3 seed) {
+	uint lightIndex = uint(rand(seed, 0, 1) * float(rtSettings.lightSourceCount));
 
-RaySendInfo getLightRayUniform(uint index, uint maxRayCount) {
+	ObjectProperties obj = lightSources.l[lightIndex];
+	Indices indices      = Indices(obj.indexAddress);
+	Vertices vertices    = Vertices(obj.vertexAddress);
+
+	float x = rand(seed, 1, 1);
+	float y = rand(seed, 2, 1);
+	vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
+
+	uint i = uint(rand(seed, 3, 1) * float(obj.indexCount));
+	ivec3 ind = indices.i[0];
+	Vertex v0 = vertices.v[ind.x];
+	Vertex v1 = vertices.v[ind.y];
+	Vertex v2 = vertices.v[ind.z];
+
+	vec3 pos = v0.pos * barycentricCoords.x + v1.pos * barycentricCoords.y + v2.pos * barycentricCoords.z;
+	pos = (obj.model * vec4(pos, 1.0)).xyz;
+
+	vec3 normal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
+	normal = normalize((obj.model * vec4(normal, 0.0)).xyz);
+
 	RaySendInfo rayInfo;
-	rayInfo.origin = LIGHT_POSITION;
-	rayInfo.direction = sphericalFibonacci(float(index), float(maxRayCount));
+	rayInfo.origin = pos;
+	rayInfo.direction = randomNormalDirection(seed, 4, 1, normal);
 	rayInfo.backfaceCulling = false;
 	return rayInfo;
 }
@@ -133,8 +152,32 @@ uint handleHit(inout RaySendInfo rayInfo, int i) {
 	}
 }
 
-float getIlluminationByShadowtrace(vec3 pos, vec3 normal) {
-	vec3 toLight = LIGHT_POSITION - pos;
+float getIlluminationByShadowtrace(vec3 seed, vec3 pos, vec3 normal) {
+	uint lightIndex = uint(rand(seed, 0, 1) * float(rtSettings.lightSourceCount));
+
+	ObjectProperties obj = lightSources.l[lightIndex];
+	Indices indices      = Indices(obj.indexAddress);
+	Vertices vertices    = Vertices(obj.vertexAddress);
+
+	float x = rand(seed, 1, 1);
+	float y = rand(seed, 2, 1);
+	vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
+
+	uint i = uint(rand(seed, 3, 1) * float(obj.indexCount));
+	ivec3 ind = indices.i[0];
+	Vertex v0 = vertices.v[ind.x];
+	Vertex v1 = vertices.v[ind.y];
+	Vertex v2 = vertices.v[ind.z];
+
+	vec3 lpos = v0.pos * barycentricCoords.x + v1.pos * barycentricCoords.y + v2.pos * barycentricCoords.z;
+	lpos = (obj.model * vec4(lpos, 1.0)).xyz;
+
+	vec3 lnormal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
+	lnormal = normalize((obj.model * vec4(lnormal, 0.0)).xyz);
+
+	vec3 lightPosition = lpos + (lnormal * 0.1);
+
+	vec3 toLight = lightPosition - pos;
 	vec3 direction = normalize(toLight);
 	float lightStrength = dot(direction, normal);
 	if (lightStrength <= 0.0) return 0.0;

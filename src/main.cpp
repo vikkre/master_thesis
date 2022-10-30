@@ -108,6 +108,8 @@ int main(int argc, char* argv[]) {
 	engine->renderer->parseInput(rendererParser.getInputEntry(0));
 	std::vector<GraphicsObject*> objs = meshManager->getCreatedObjects();
 	engine->renderer->passObjects(objs);
+	std::vector<GraphicsObject*> lightSources = meshManager->getCreatedLightSources();
+	engine->renderer->passLightSources(lightSources);
 
 	for (unsigned int i = 1; i < rendererParser.size(); ++i) {
 		const InputEntry& inputEntry = rendererParser.getInputEntry(i);

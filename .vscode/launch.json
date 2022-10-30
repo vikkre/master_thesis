@@ -10,7 +10,7 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/build/RayTrace",
 			"args": [
-				"res/renderer/path_tracer.renderer",
+				"res/renderer/Majercik2019_median.renderer",
 				"res/scene/cornell_box_with_blocks.scene",
 				"1280", "720",
 			],

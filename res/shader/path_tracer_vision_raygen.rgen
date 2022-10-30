@@ -140,6 +140,11 @@ void main() {
 
 		if (!rayPayload.hit) break;
 
+		if (rayPayload.lightSource) {
+			outColor = rayPayload.color;
+			break;
+		}
+
 		uint traceValue = handleHit(rayInfo, i);
 
 		if (traceValue == DIFFUSE_VALUE) {

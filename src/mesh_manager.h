@@ -29,6 +29,7 @@ class MeshManager {
 		void createObjectsFromFile(const std::string filename);
 
 		std::vector<GraphicsObject*> getCreatedObjects() const { return createdObjects; }
+		std::vector<GraphicsObject*> getCreatedLightSources() const { return createdLightSources; }
 
 	private:
 		Mesh* loadObj(const std::string& filename);
@@ -39,4 +40,5 @@ class MeshManager {
 
 		std::unordered_map<std::string, Mesh*> meshes;
 		std::vector<GraphicsObject*> createdObjects;
+		std::vector<GraphicsObject*> createdLightSources;
 };

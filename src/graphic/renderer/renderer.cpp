@@ -1,8 +1,8 @@
 #include "renderer.h"
 
 
-const std::string Renderer::RMISS_SHADER = "v1_miss.spv";
-const std::string Renderer::RCHIT_SHADER = "v1_closesthit.spv";
+const std::vector<std::string> Renderer::RMISS_SHADERS = {"v1_miss.spv", "v1_shadow_miss.spv"};
+const std::vector<std::string> Renderer::RCHIT_SHADERS = {"v1_closesthit.spv", "v1_shadow_closesthit.spv"};
 
 
 Renderer::Renderer(Device* device)
@@ -50,7 +50,6 @@ void Renderer::updateUniforms(size_t index) {
 }
 
 void Renderer::parseInput(const InputEntry& inputEntry) {
-	rtData.backgroundColor = inputEntry.getVector<3, float>("backgroundColor");
 	parseRendererInput(inputEntry);
 }
 

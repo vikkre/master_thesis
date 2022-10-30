@@ -22,6 +22,4 @@ struct RenderInfo {
 	std::vector<ImageBuffer*> swapchainImages;
 
 	Camera camera;
-	Vector3f backgroundColor;
-	Vector3f lightPosition;
 };

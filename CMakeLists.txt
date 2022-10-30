@@ -35,8 +35,8 @@ macro(add_shader output_shader)
 endmacro()
 
 set(SHADER_INCLUDES helper.glsl v1.glsl)
-add_shader(v1_miss.spv          v1_miss.rmiss       v1.glsl )
-add_shader(v1_closesthit.spv    v1_closesthit.rchit v1.glsl )
+add_shader(v1_miss.spv       v1_miss.rmiss       v1.glsl )
+add_shader(v1_closesthit.spv v1_closesthit.rchit v1.glsl )
 
 set(PATH_TRACER_INCLUDES ${SHADER_INCLUDES} path_tracer.glsl)
 add_shader(path_tracer_light_raygen.spv  path_tracer_light_raygen.rgen  ${PATH_TRACER_INCLUDES} )

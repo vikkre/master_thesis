@@ -32,7 +32,6 @@ class PathTracer: public Renderer {
 		virtual void parseRendererInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
-			Vector3f lightPosition;
 			u_int32_t lightRayCount;
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;

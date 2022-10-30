@@ -31,6 +31,7 @@ class Mesh {
 		const DataBuffer& getVertexBuffer() const;
 		const DataBuffer& getIndexBuffer() const;
 		const BottomAccelerationStructure& getBlas() const;
+		float getWeight() const;
 
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
@@ -39,6 +40,7 @@ class Mesh {
 		void createVertexBuffer();
 		void createIndexBuffer();
 		void createBlas();
+		void calcWeight();
 
 		const Device* device;
 
@@ -48,4 +50,5 @@ class Mesh {
 		std::vector<VkBuffer> vertexBuffers;
 		std::vector<VkDeviceSize> vertexBufferOffsets;
 		BottomAccelerationStructure blas;
+		float weight;
 };

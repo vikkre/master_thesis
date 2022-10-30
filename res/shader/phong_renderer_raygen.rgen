@@ -5,25 +5,13 @@
 
 
 void main() {
-	vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
-	vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
-	vec2 d = inUV * 2.0 - 1.0;
-
-	vec3 origin = (rtSettings.viewInverse * vec4(vec3(0), 1)).xyz;
-	vec3 target = (rtSettings.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
-	vec3 direction = normalize((rtSettings.viewInverse * vec4(normalize(target), 0)).xyz);
-
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	float tmax = 10000.0;
-
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+	traceRay(rayInfo);
 
 	if (rayPayload.hit) {
-		vec3 toLightNormal = normalize(renderSettings.lightPosition - rayPayload.pos);
+		vec3 toLightNormal = normalize(LIGHT_POSITION - rayPayload.pos);
 		vec3 reflectedLightNormal = reflect(-toLightNormal, rayPayload.normal);
-		vec3 toViewerNormal = -direction;
+		vec3 toViewerNormal = -rayInfo.direction;
 
 		vec3 ambientColor = renderSettings.ambientConstant * rayPayload.color;
 		vec3 diffuseColor = renderSettings.diffuseConstant * dot(toLightNormal, rayPayload.normal) * rayPayload.color;

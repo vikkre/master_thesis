@@ -106,41 +106,26 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 
 
 void main() {
-	vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
-	vec2 inUV = pixelCenter/vec2(gl_LaunchSizeEXT.xy);
-	vec2 d = inUV * 2.0 - 1.0;
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 
-	vec3 origin = (rtSettings.viewInverse * vec4(vec3(0), 1)).xyz;
-	vec3 target = (rtSettings.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
-	vec3 direction = normalize((rtSettings.viewInverse * vec4(normalize(target), 0)).xyz);
-
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	float tmax = 10000.0;
-
+	RaySendInfo rayInfoCopy = rayInfo;
 	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
-		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+		rayInfoCopy = rayInfo;
+		traceRay(rayInfo);
 
 		if (!rayPayload.hit) break;
 
-		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
+		uint traceValue = handleHit(rayInfo, i);
 
-		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+		if (traceValue == DIFFUSE_VALUE) {
 			break;
-		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
-			origin = rayPayload.pos;
-			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
-			origin = rayPayload.pos;
-			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
 		}
 	}
 
 	if (rayPayload.hit) {
 		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-		vec3 color = rayPayload.color * getShade(modifiedPos, rayPayload.normal);
-		vec3 irradiance = getIrradiance(origin, direction, modifiedPos, rayPayload.normal);
+		vec3 color = rayPayload.color * getIlluminationByShadowtrace(modifiedPos, rayPayload.normal);
+		vec3 irradiance = getIrradiance(rayInfoCopy.origin, rayInfoCopy.direction, modifiedPos, rayPayload.normal);
 
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
 	} else {

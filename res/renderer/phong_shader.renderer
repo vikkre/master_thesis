@@ -1,6 +1,4 @@
 PhongShader
-	backgroundColor(0, 0, 0)
-	lightPosition(0, 4.5, 0)
 	diffuseConstant(0.7)
 	ambientConstant(0.3)
 	specularConstant(0.3)

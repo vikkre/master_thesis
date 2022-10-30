@@ -28,7 +28,6 @@ void PhongRenderer::updateRendererUniforms(size_t index) {
 }
 
 void PhongRenderer::parseRendererInput(const InputEntry& inputEntry) {
-	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.diffuseConstant = inputEntry.get<float>("diffuseConstant");
 	renderSettings.ambientConstant = inputEntry.get<float>("ambientConstant");
 	renderSettings.specularConstant = inputEntry.get<float>("specularConstant");
@@ -55,8 +54,8 @@ void PhongRenderer::createDescriptorCollection() {
 
 void PhongRenderer::createPipeline() {
 	pipeline.raygenShaders.push_back(RGEN_SHADER);
-	pipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	pipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	pipeline.missShaders = Renderer::RMISS_SHADERS;
+	pipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	pipeline.pipelineLayout = getPipelineLayout();
 

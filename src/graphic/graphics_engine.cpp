@@ -3,9 +3,7 @@
 
 GraphicsEngine::GraphicsEngine(const std::string& basepath)
 :device(basepath), swapchain(&device), renderer(nullptr), denoisers(),
-commandBuffersRecorded(false) {
-	device.renderInfo.backgroundColor = Vector3f({0.0f, 0.0f, 0.0f});
-}
+commandBuffersRecorded(false) {}
 
 GraphicsEngine::~GraphicsEngine() {
 	for (Denoiser* denoiser: denoisers) delete denoiser;

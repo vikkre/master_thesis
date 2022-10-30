@@ -9,7 +9,7 @@
 Mesh::Mesh(const Device* device)
 :vertices(), indices(),
 device(device),
-vertexBuffer(device), indexBuffer(device), blas(device) {}
+vertexBuffer(device), indexBuffer(device), blas(device), weight(0.0f) {}
 
 Mesh::~Mesh() {
 	vkDeviceWaitIdle(device->getDevice());
@@ -24,6 +24,7 @@ void Mesh::init() {
 	createVertexBuffer();
 	createIndexBuffer();
 	createBlas();
+	calcWeight();
 }
 
 void Mesh::addPoint(const Vector3f& point, const Vector3f& normal) {
@@ -72,6 +73,25 @@ void Mesh::createBlas() {
 	blas.init();
 }
 
+void Mesh::calcWeight() {
+	for (unsigned int i = 0; i < indices.size(); i += 3) {
+		Vertex& v1 = vertices[indices[i + 0]];
+		Vertex& v2 = vertices[indices[i + 1]];
+		Vertex& v3 = vertices[indices[i + 2]];
+
+		// Vector3f ab = v2.point - v1.point;
+		// Vector3f ac = v3.point - v1.point;
+		// Vector3f cp = cross(ab, ac);
+		// weight += cp.magnitude() / 2.0f;
+
+		float a = (v1.point - v2.point).magnitude();
+		float b = (v2.point - v3.point).magnitude();
+		float c = (v3.point - v1.point).magnitude();
+		float s = (a + b + c) / 2.0f;
+		weight += sqrt(s * (s - a) * (s - b) * (s - c));
+	}
+}
+
 const DataBuffer& Mesh::getVertexBuffer() const {
 	return vertexBuffer;
 }
@@ -82,4 +102,8 @@ const DataBuffer& Mesh::getIndexBuffer() const {
 
 const BottomAccelerationStructure& Mesh::getBlas() const {
 	return blas;
+}
+
+float Mesh::getWeight() const {
+	return weight;
 }

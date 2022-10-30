@@ -1,6 +1,4 @@
 Majercik2019
-	backgroundColor(0, 0, 0)
-	lightPosition(0, 4.5, 0)
 	lightJumpCount(3)
 	visionJumpCount(3)
 	betweenProbeDistance(2)

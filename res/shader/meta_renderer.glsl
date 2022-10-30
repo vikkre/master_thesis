@@ -5,7 +5,6 @@
 #extension GL_EXT_shader_explicit_arithmetic_types_int64: require
 
 
-#include "helper.glsl"
 #include "v1.glsl"
 
 

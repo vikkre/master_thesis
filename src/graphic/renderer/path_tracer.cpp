@@ -71,7 +71,6 @@ void PathTracer::updateRendererUniforms(size_t index) {
 }
 
 void PathTracer::parseRendererInput(const InputEntry& inputEntry) {
-	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightRayCount = inputEntry.get<u_int32_t>("lightRayCount");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
@@ -135,8 +134,8 @@ void PathTracer::createDescriptorCollection() {
 
 void PathTracer::createLightGenerationPipeline() {
 	lightGenerationPipeline.raygenShaders.push_back(LIGHT_GEN_RGEN_SHADER);
-	lightGenerationPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	lightGenerationPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	lightGenerationPipeline.missShaders = Renderer::RMISS_SHADERS;
+	lightGenerationPipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	lightGenerationPipeline.pipelineLayout = getPipelineLayout();
 
@@ -155,8 +154,8 @@ void PathTracer::createKDPipeline() {
 
 void PathTracer::createVisionPipeline() {
 	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
-	visionPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	visionPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	visionPipeline.missShaders = Renderer::RMISS_SHADERS;
+	visionPipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	visionPipeline.pipelineLayout = getPipelineLayout();
 

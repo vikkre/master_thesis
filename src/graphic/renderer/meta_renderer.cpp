@@ -53,8 +53,8 @@ void MetaRenderer::createDescriptorCollection() {
 
 void MetaRenderer::createPipeline() {
 	pipeline.raygenShaders.push_back(RGEN_SHADER);
-	pipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	pipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	pipeline.missShaders = Renderer::RMISS_SHADERS;
+	pipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	pipeline.pipelineLayout = getPipelineLayout();
 

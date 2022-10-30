@@ -19,38 +19,32 @@ void main() {
 	uint z = (i % se);
 	
 	ivec3 prepos = ivec3(x, y, z) - ivec3(renderSettings.singleDirectionProbeCount);
-	vec3 origin = renderSettings.betweenProbeDistance * vec3(prepos);
-	vec3 direction = sphericalFibonacci(float(gl_LaunchIDEXT.x), float(renderSettings.perProbeRayCount));
 
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	float tmax = renderSettings.maxProbeRayDistance;
+	RaySendInfo rayInfo;
+	rayInfo.origin = renderSettings.betweenProbeDistance * vec3(prepos);
+	rayInfo.direction = sphericalFibonacci(float(gl_LaunchIDEXT.x), float(renderSettings.perProbeRayCount));
+	rayInfo.backfaceCulling = false;
 
+	RaySendInfo rayInfoCopy = rayInfo;
 	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
-		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, direction, tmax, 0);
+		rayInfoCopy = rayInfo;
+		traceRay(rayInfo);
 
 		if (!rayPayload.hit) break;
 
-		float rayHandlingValue = rand(origin + gl_LaunchIDEXT, i, 0);
+		uint traceValue = handleHit(rayInfo, i);
 
-		if (rayHandlingValue <= rayPayload.diffuseThreshold) {
+		if (traceValue == DIFFUSE_VALUE) {
 			break;
-		} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
-			origin = rayPayload.pos;
-			direction = reflect(direction, rayPayload.normal);
-		} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
-			origin = rayPayload.pos;
-			direction = customRefract(direction, rayPayload.normal, rayPayload.refractionIndex);
 		}
 	}
 
-	surfels.s[surfelIndex].rayDirection = direction;
+	surfels.s[surfelIndex].rayDirection = rayInfoCopy.direction;
 	
 	if (rayPayload.hit) {
 		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getShade(modifiedPos, rayPayload.normal);
-		surfels.s[surfelIndex].hitDistance = length(origin - modifiedPos);
+		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(modifiedPos, rayPayload.normal);
+		surfels.s[surfelIndex].hitDistance = length(rayInfoCopy.origin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;
 	} else {
 		surfels.s[surfelIndex].hitRadiance = vec3(0.0);

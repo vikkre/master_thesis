@@ -29,9 +29,8 @@ void FrameBuffer::recordCommandBuffer(std::function<void(size_t, VkCommandBuffer
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	Vector3f& clearColor = device->renderInfo.backgroundColor;
 	std::vector<VkClearValue> clearValues = {
-		{clearColor[0], clearColor[1], clearColor[2], 1.0f},
+		{0.0f, 0.0f, 0.0f, 1.0f},
 		{1.0f, 0},
 	};
 

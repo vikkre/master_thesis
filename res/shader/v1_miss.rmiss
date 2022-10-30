@@ -6,5 +6,5 @@
 
 void main() {
 	rayPayload.hit = false;
-	rayPayload.color = rtSettings.backgroundColor;
+	rayPayload.color = vec3(0.0);
 }

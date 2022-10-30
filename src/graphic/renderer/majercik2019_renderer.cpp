@@ -67,7 +67,6 @@ void Majercik2019::updateRendererUniforms(size_t index) {
 }
 
 void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
-	renderSettings.lightPosition = inputEntry.getVector<3, float>("lightPosition");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 
@@ -139,8 +138,8 @@ void Majercik2019::createDescriptorCollection() {
 
 void Majercik2019::createProbePipeline() {
 	probePipeline.raygenShaders.push_back(PROBE_RGEN_SHADER);
-	probePipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	probePipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	probePipeline.missShaders = Renderer::RMISS_SHADERS;
+	probePipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	probePipeline.pipelineLayout = getPipelineLayout();
 
@@ -163,8 +162,8 @@ void Majercik2019::createShadingUpdatePipeline() {
 
 void Majercik2019::createFinalPipeline() {
 	finalPipeline.raygenShaders.push_back(FINAL_RGEN_SHADER);
-	finalPipeline.missShaders.push_back(Renderer::RMISS_SHADER);
-	finalPipeline.hitShaders.push_back(Renderer::RCHIT_SHADER);
+	finalPipeline.missShaders = Renderer::RMISS_SHADERS;
+	finalPipeline.hitShaders = Renderer::RCHIT_SHADERS;
 
 	finalPipeline.pipelineLayout = getPipelineLayout();
 

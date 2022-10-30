@@ -32,8 +32,6 @@ class PhongRenderer: public Renderer {
 		virtual void parseRendererInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
-			Vector3f backgroundColor;
-			Vector3f lightPosition;
 			float diffuseConstant;
 			float ambientConstant;
 			float specularConstant;

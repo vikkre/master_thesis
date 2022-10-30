@@ -29,8 +29,6 @@ SCENE_PATH = os.path.join("res", "scene", "cornell_box_with_blocks.scene")
 
 MONTE_CARLO_RENDERER_TEMPLATE = """
 MonteCarloRenderer
-	backgroundColor(0, 0, 0)
-	lightPosition(0, 4.5, 0)
 	lightRayCount({light_ray_count})
 	lightJumpCount({light_jump_count})
 	visionJumpCount({vision_jump_count})

@@ -20,7 +20,6 @@ class Renderer {
 			Matrix4f projInverse;
 			Matrix4f view;
 			Matrix4f proj;
-			Vector3f backgroundColor;
 		} rtData;
 
 		Renderer(Device* device);
@@ -41,8 +40,8 @@ class Renderer {
 
 		static void cmdPipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkCommandBuffer commandBuffer);
 
-		static const std::string RMISS_SHADER;
-		static const std::string RCHIT_SHADER;
+		static const std::vector<std::string> RMISS_SHADERS;
+		static const std::vector<std::string> RCHIT_SHADERS;
 
 	protected:
 		std::vector<GraphicsObject*> objects;

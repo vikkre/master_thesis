@@ -97,8 +97,6 @@ int main(int argc, char* argv[]) {
 	engine->windowSize = windowSize;
 	engine->init();
 
-	engine->device.renderInfo.lightPosition = Vector3f({0.0f, 4.5f, 0.0f});
-
 	MeshManager* meshManager = new MeshManager(&engine->device, basepath);
 
 	meshManager->createObjectsFromFile(scenePath);

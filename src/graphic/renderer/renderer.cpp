@@ -1,8 +1,8 @@
 #include "renderer.h"
 
 
-const std::vector<std::string> Renderer::RMISS_SHADERS = {"v1_miss.spv", "v1_shadow_miss.spv"};
-const std::vector<std::string> Renderer::RCHIT_SHADERS = {"v1_closesthit.spv", "v1_shadow_closesthit.spv"};
+const std::vector<std::string> Renderer::RMISS_SHADERS = {"v1_miss.spv"};
+const std::vector<std::string> Renderer::RCHIT_SHADERS = {"v1_closesthit.spv"};
 
 
 Renderer::Renderer(Device* device)

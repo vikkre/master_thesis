@@ -32,6 +32,8 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	float energyPreservation;
 	float texelGetProbeDirectionFactor;
 	float texelGetNormalFactor;
+	uint shadowCountProbe;
+	uint shadowCountVision;
 } renderSettings;
 layout(set = 0, binding = 1, scalar) buffer SB { Surfel s[]; } surfels;
 layout(set = 0, binding = 2, rgba8) uniform image2D irradianceBuffer;

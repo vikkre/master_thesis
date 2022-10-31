@@ -47,6 +47,8 @@ class Majercik2019: public Renderer {
 			float energyPreservation;
 			float texelGetProbeDirectionFactor;
 			float texelGetNormalFactor;
+			u_int32_t shadowCountProbe;
+			u_int32_t shadowCountVision;
 		} renderSettings;
 
 	private:

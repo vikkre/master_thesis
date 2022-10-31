@@ -152,50 +152,54 @@ uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
 	}
 }
 
-float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal) {
-	uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));
+float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint count) {
+	float illumination = 0.0;
 
-	ObjectProperties obj = lightSources.l[lightIndex];
-	Indices indices      = Indices(obj.indexAddress);
-	Vertices vertices    = Vertices(obj.vertexAddress);
+	for (uint l = 0; l < count; l++) {
+		uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));
 
-	float x = rand(rng);
-	float y = rand(rng);
-	vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
+		ObjectProperties obj = lightSources.l[lightIndex];
+		Indices indices      = Indices(obj.indexAddress);
+		Vertices vertices    = Vertices(obj.vertexAddress);
 
-	uint i = uint(rand(rng) * float(obj.indexCount));
-	ivec3 ind = indices.i[0];
-	Vertex v0 = vertices.v[ind.x];
-	Vertex v1 = vertices.v[ind.y];
-	Vertex v2 = vertices.v[ind.z];
+		float x = rand(rng);
+		float y = rand(rng);
+		vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
 
-	vec3 lpos = v0.pos * barycentricCoords.x + v1.pos * barycentricCoords.y + v2.pos * barycentricCoords.z;
-	lpos = (obj.model * vec4(lpos, 1.0)).xyz;
+		uint i = uint(rand(rng) * float(obj.indexCount));
+		ivec3 ind = indices.i[0];
+		Vertex v0 = vertices.v[ind.x];
+		Vertex v1 = vertices.v[ind.y];
+		Vertex v2 = vertices.v[ind.z];
 
-	vec3 lnormal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
-	lnormal = normalize((obj.model * vec4(lnormal, 0.0)).xyz);
+		vec3 lpos = v0.pos * barycentricCoords.x + v1.pos * barycentricCoords.y + v2.pos * barycentricCoords.z;
+		lpos = (obj.model * vec4(lpos, 1.0)).xyz;
 
-	vec3 lightPosition = lpos + (lnormal * 0.1);
+		vec3 lnormal = v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z;
+		lnormal = normalize((obj.model * vec4(lnormal, 0.0)).xyz);
 
-	vec3 toLight = lightPosition - pos;
-	vec3 direction = normalize(toLight);
-	float lightStrength = dot(direction, normal);
-	if (lightStrength <= 0.0) return 0.0;
-	float distToLight = length(toLight);
+		vec3 lightPosition = lpos + (lnormal * 0.1);
 
-	RayPayload tmp = rayPayload;
+		vec3 toLight = lightPosition - pos;
+		vec3 direction = normalize(toLight);
+		float lightStrength = dot(direction, normal);
+		if (lightStrength <= 0.0) continue;
+		float distToLight = length(toLight);
 
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, pos, tmin, direction, distToLight, 0);
+		RayPayload tmp = rayPayload;
 
-	bool hit = rayPayload.hit;
-	rayPayload = tmp;
+		uint rayFlags = gl_RayFlagsOpaqueEXT;
+		uint cullMask = 0xFF;
+		float tmin = 0.001;
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, pos, tmin, direction, distToLight, 0);
 
-	if (hit) return 0.0;
+		bool hit = rayPayload.hit;
+		rayPayload = tmp;
 
-	return lightStrength;
+		if (!hit) illumination += lightStrength;
+	}
+
+	return illumination / float(count);
 }
 
 #endif

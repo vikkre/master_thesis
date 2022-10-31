@@ -37,32 +37,6 @@ vec3 randomNormalDirection(inout RNG rng, vec3 normal) {
 	return randVec;
 }
 
-// float rand(vec3 co, int i, int v) {
-// 	return fract(sin(dot(co, vec3(12.9898, 78.233, 38.4965)) * (v + 1.0) + i) * 43758.5453);
-// }
-
-// vec3 randomNormal(vec3 co, int i, int vStart) {
-// 	float theta = 2.0 * PI * rand(co, i, vStart);
-// 	float u = 2.0 * rand(co, i, vStart+1) - 1.0;
-// 	float suu = sqrt(1 - u*u);
-
-// 	return vec3(
-// 		suu * cos(theta),
-// 		suu * sin(theta),
-// 		u
-// 	);
-// }
-
-// vec3 randomNormalDirection(vec3 co, int i, int vStart, vec3 normal) {
-// 	vec3 randVec = randomNormal(co, i, vStart);
-
-// 	if (dot(randVec, normal) < 0.0) {
-// 		randVec *= -1;
-// 	}
-
-// 	return randVec;
-// }
-
 vec3 customRefract(vec3 direction, vec3 normal, float rIndex) {
 	float ndotd = dot(normal, direction);
 	if (ndotd > 0.0) {

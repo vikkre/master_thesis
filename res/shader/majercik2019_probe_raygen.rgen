@@ -45,7 +45,7 @@ void main() {
 	
 	if (rayPayload.hit) {
 		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal);
+		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal, renderSettings.shadowCountProbe);
 		surfels.s[surfelIndex].hitDistance = length(rayInfoCopy.origin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;
 	} else {

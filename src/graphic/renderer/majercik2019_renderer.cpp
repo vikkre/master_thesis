@@ -85,6 +85,8 @@ void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
 	renderSettings.texelGetProbeDirectionFactor = inputEntry.get<float>("texelGetProbeDirectionFactor");
 	renderSettings.texelGetNormalFactor = inputEntry.get<float>("texelGetNormalFactor");
+	renderSettings.shadowCountProbe = inputEntry.get<u_int32_t>("shadowCountProbe");
+	renderSettings.shadowCountVision = inputEntry.get<u_int32_t>("shadowCountVision");
 }
 
 void Majercik2019::createBuffers() {

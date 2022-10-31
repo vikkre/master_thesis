@@ -13,6 +13,8 @@ Majercik2019
 	energyPreservation(0.6)
 	texelGetProbeDirectionFactor(0.0)
 	texelGetNormalFactor(1.0)
+	shadowCountProbe(1)
+	shadowCountVision(10)
 
 MedianDenoiser
 	kernelSize(7)

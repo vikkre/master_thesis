@@ -5,7 +5,9 @@
 
 
 void main() {
-	RaySendInfo rayInfo = getLightRayRandom(vec3(gl_LaunchIDEXT));
+	RNG rng = initRNG(gl_LaunchIDEXT);
+	
+	RaySendInfo rayInfo = getLightRayRandom(rng);
 
 	vec3 color = vec3(1.0);
 
@@ -14,7 +16,7 @@ void main() {
 
 		if (!rayPayload.hit) break;
 		
-		uint traceValue = handleHit(rayInfo, i);
+		uint traceValue = handleHit(rayInfo, rng);
 
 		color *= rayPayload.color;
 

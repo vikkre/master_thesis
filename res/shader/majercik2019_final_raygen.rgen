@@ -106,6 +106,8 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 
 
 void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
 	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 
 	RaySendInfo rayInfoCopy = rayInfo;
@@ -115,7 +117,7 @@ void main() {
 
 		if (!rayPayload.hit) break;
 
-		uint traceValue = handleHit(rayInfo, i);
+		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
 			break;
@@ -127,7 +129,7 @@ void main() {
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
 		} else {
 			vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-			vec3 color = rayPayload.color * getIlluminationByShadowtrace(vec3(gl_LaunchIDEXT), modifiedPos, rayPayload.normal);
+			vec3 color = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal);
 			vec3 irradiance = getIrradiance(rayInfoCopy.origin, rayInfoCopy.direction, modifiedPos, rayPayload.normal);
 
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));

@@ -130,6 +130,8 @@ vec3 getClosestNeighboursColorByDistance(vec3 refPoint, vec3 normal) {
 }
 
 void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
 	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 
 	vec3 rayColor = vec3(1.0);
@@ -145,7 +147,7 @@ void main() {
 			break;
 		}
 
-		uint traceValue = handleHit(rayInfo, i);
+		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
 			if (renderSettings.useCountLightCollecton == 1) {

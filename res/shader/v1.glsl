@@ -67,18 +67,18 @@ struct RaySendInfo {
 	bool backfaceCulling;
 };
 
-RaySendInfo getLightRayRandom(vec3 seed) {
-	uint lightIndex = uint(rand(seed, 0, 1) * float(rtSettings.lightSourceCount));
+RaySendInfo getLightRayRandom(inout RNG rng) {
+	uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));
 
 	ObjectProperties obj = lightSources.l[lightIndex];
 	Indices indices      = Indices(obj.indexAddress);
 	Vertices vertices    = Vertices(obj.vertexAddress);
 
-	float x = rand(seed, 1, 1);
-	float y = rand(seed, 2, 1);
+	float x = rand(rng);
+	float y = rand(rng);
 	vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
 
-	uint i = uint(rand(seed, 3, 1) * float(obj.indexCount));
+	uint i = uint(rand(rng) * float(obj.indexCount));
 	ivec3 ind = indices.i[0];
 	Vertex v0 = vertices.v[ind.x];
 	Vertex v1 = vertices.v[ind.y];
@@ -92,7 +92,7 @@ RaySendInfo getLightRayRandom(vec3 seed) {
 
 	RaySendInfo rayInfo;
 	rayInfo.origin = pos;
-	rayInfo.direction = randomNormalDirection(seed, 4, 1, normal);
+	rayInfo.direction = randomNormalDirection(rng, normal);
 	rayInfo.backfaceCulling = false;
 	return rayInfo;
 }
@@ -131,14 +131,14 @@ void traceRay(RaySendInfo rayInfo) {
 	}
 }
 
-uint handleHit(inout RaySendInfo rayInfo, int i) {
-	float rayHandlingValue = rand(rayInfo.origin, i, 0);
+uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
+	float rayHandlingValue = rand(rng);
 
 	rayInfo.origin = rayPayload.pos;
 	rayInfo.backfaceCulling = false;
 
 	if (rayHandlingValue <= rayPayload.diffuseThreshold) {
-		rayInfo.direction = randomNormalDirection(rayInfo.origin, i, 1, rayPayload.normal);
+		rayInfo.direction = randomNormalDirection(rng, rayPayload.normal);
 		return DIFFUSE_VALUE;
 
 	} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
@@ -152,18 +152,18 @@ uint handleHit(inout RaySendInfo rayInfo, int i) {
 	}
 }
 
-float getIlluminationByShadowtrace(vec3 seed, vec3 pos, vec3 normal) {
-	uint lightIndex = uint(rand(seed, 0, 1) * float(rtSettings.lightSourceCount));
+float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal) {
+	uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));
 
 	ObjectProperties obj = lightSources.l[lightIndex];
 	Indices indices      = Indices(obj.indexAddress);
 	Vertices vertices    = Vertices(obj.vertexAddress);
 
-	float x = rand(seed, 1, 1);
-	float y = rand(seed, 2, 1);
+	float x = rand(rng);
+	float y = rand(rng);
 	vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
 
-	uint i = uint(rand(seed, 3, 1) * float(obj.indexCount));
+	uint i = uint(rand(rng) * float(obj.indexCount));
 	ivec3 ind = indices.i[0];
 	Vertex v0 = vertices.v[ind.x];
 	Vertex v1 = vertices.v[ind.y];

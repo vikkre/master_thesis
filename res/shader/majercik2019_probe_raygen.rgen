@@ -5,6 +5,8 @@
 
 
 void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
 	uint surfelIndex = uint(gl_LaunchIDEXT.y) * renderSettings.perProbeRayCount + uint(gl_LaunchIDEXT.x);
 
 	uint se = 2 * renderSettings.singleDirectionProbeCount + 1;
@@ -32,7 +34,7 @@ void main() {
 
 		if (!rayPayload.hit) break;
 
-		uint traceValue = handleHit(rayInfo, i);
+		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
 			break;
@@ -43,7 +45,7 @@ void main() {
 	
 	if (rayPayload.hit) {
 		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
-		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(vec3(gl_LaunchIDEXT), modifiedPos, rayPayload.normal);
+		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal);
 		surfels.s[surfelIndex].hitDistance = length(rayInfoCopy.origin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;
 	} else {

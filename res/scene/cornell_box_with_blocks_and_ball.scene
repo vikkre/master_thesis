@@ -29,10 +29,10 @@ panel.obj
 	rotation(0, 1, 0, 1.57079)
 	color(1, 0, 0)
 
-panel.obj
-	position(0, 4.9, 0)
-	rotation(0, 0, 1, -1.57079)
-	lightSource()
+#panel.obj
+#	position(0, 4.9, 0)
+#	rotation(0, 0, 1, -1.57079)
+#	lightSource()
 
 
 block.obj
@@ -55,8 +55,5 @@ block.obj
 
 ball.obj
 	position(0, 0, 0)
-	scale(2, 2, 2)
-	diffuse(0)
-	reflect(0)
-	transparent(1)
-	refractionIndex(1.5)
+	scale(0.5, 0.5, 0.5)
+	lightSource()

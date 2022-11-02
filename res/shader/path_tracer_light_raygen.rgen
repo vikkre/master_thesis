@@ -9,7 +9,7 @@ void main() {
 	
 	RaySendInfo rayInfo = getLightRayRandom(rng);
 
-	vec3 color = vec3(1.0);
+	vec3 color = rayInfo.startColor;
 
 	for (int i = 0; i < renderSettings.lightJumpCount; i++) {
 		traceRay(rayInfo);
@@ -18,9 +18,9 @@ void main() {
 		
 		uint traceValue = handleHit(rayInfo, rng);
 
-		color *= rayPayload.color;
-
 		if (traceValue == DIFFUSE_VALUE) {
+			color *= rayPayload.color * dot(-rayInfo.prevDirection, rayPayload.normal);
+
 			uint index = atomicAdd(count.c, 1);
 			pointData.d[index].pos = rayPayload.pos;
 			pointData.d[index].color = color;

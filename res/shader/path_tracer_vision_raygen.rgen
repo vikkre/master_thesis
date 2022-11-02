@@ -134,33 +134,37 @@ void main() {
 
 	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 
-	vec3 rayColor = vec3(1.0);
-	vec3 outColor = vec3(0.0);
+	vec3 color = vec3(0.0);
+	float illumination = 1.0;
 
-	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+	for (int i = 0; i < renderSettings.visionJumpCount;) {
 		traceRay(rayInfo);
 
 		if (!rayPayload.hit) break;
 
 		if (rayPayload.lightSource) {
-			outColor = rayPayload.color;
+			color += illumination * rayPayload.color;
 			break;
 		}
 
 		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
+			vec3 ncolor;
 			if (renderSettings.useCountLightCollecton == 1) {
-				outColor += rayColor * getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
+				ncolor = getClosestNeighboursColorByCount(rayPayload.pos, rayPayload.normal);
 			} else {
-				outColor += rayColor * getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);
+				ncolor = getClosestNeighboursColorByDistance(rayPayload.pos, rayPayload.normal);
 			}
-			
-			rayColor *= rayPayload.color;
+
+			color += illumination * ncolor;
+			illumination *= dot(rayInfo.direction, rayPayload.normal);
+
+			i++;
 		}
 	}
 
-	uvec3 intColor = uvec3(outColor * 255);
+	uvec3 intColor = uvec3(color * 255);
 	imageAtomicAdd(rawImageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
 	imageAtomicAdd(rawImageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);
 	imageAtomicAdd(rawImageBlue, ivec2(gl_LaunchIDEXT.xy), intColor.z);

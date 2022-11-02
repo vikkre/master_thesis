@@ -64,6 +64,9 @@ layout(location = 0) rayPayloadEXT RayPayload rayPayload;
 struct RaySendInfo {
 	vec3 origin;
 	vec3 direction;
+	vec3 prevOrigin;
+	vec3 prevDirection;
+	vec3 startColor;
 	bool backfaceCulling;
 };
 
@@ -94,6 +97,7 @@ RaySendInfo getLightRayRandom(inout RNG rng) {
 	rayInfo.origin = pos;
 	rayInfo.direction = randomNormalDirection(rng, normal);
 	rayInfo.backfaceCulling = false;
+	rayInfo.startColor = obj.color;
 	return rayInfo;
 }
 
@@ -107,6 +111,7 @@ RaySendInfo getVisionRay(uvec2 launchPoint, uvec2 launchSize) {
 	vec3 target = (rtSettings.projInverse * vec4(d.x, d.y, 1, 1)).xyz;
 	rayInfo.direction = normalize((rtSettings.viewInverse * vec4(normalize(target), 0)).xyz);
 	rayInfo.backfaceCulling = true;
+	rayInfo.startColor = vec3(1.0);
 	return rayInfo;
 }
 
@@ -132,6 +137,9 @@ void traceRay(RaySendInfo rayInfo) {
 }
 
 uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
+	rayInfo.prevOrigin = rayInfo.origin;
+	rayInfo.prevDirection = rayInfo.direction;
+
 	float rayHandlingValue = rand(rng);
 
 	rayInfo.origin = rayPayload.pos;

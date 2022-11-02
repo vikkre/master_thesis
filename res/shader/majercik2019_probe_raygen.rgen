@@ -27,9 +27,7 @@ void main() {
 	rayInfo.direction = sphericalFibonacci(float(gl_LaunchIDEXT.x), float(renderSettings.perProbeRayCount));
 	rayInfo.backfaceCulling = false;
 
-	RaySendInfo rayInfoCopy = rayInfo;
 	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
-		rayInfoCopy = rayInfo;
 		traceRay(rayInfo);
 
 		if (!rayPayload.hit) break;
@@ -41,12 +39,12 @@ void main() {
 		}
 	}
 
-	surfels.s[surfelIndex].rayDirection = rayInfoCopy.direction;
+	surfels.s[surfelIndex].rayDirection = rayInfo.prevDirection;
 	
 	if (rayPayload.hit) {
 		vec3 modifiedPos = rayPayload.pos + renderSettings.normalBias * rayPayload.normal;
 		surfels.s[surfelIndex].hitRadiance = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal, renderSettings.shadowCountProbe);
-		surfels.s[surfelIndex].hitDistance = length(rayInfoCopy.origin - modifiedPos);
+		surfels.s[surfelIndex].hitDistance = length(rayInfo.prevOrigin - modifiedPos);
 		surfels.s[surfelIndex].hit = true;
 	} else {
 		surfels.s[surfelIndex].hitRadiance = vec3(0.0);

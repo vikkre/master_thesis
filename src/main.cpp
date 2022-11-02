@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
+#include <filesystem>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -65,6 +66,15 @@ Denoiser* getDenoiser(const std::string& name, Device* device) {
 }
 
 
+void screenshot(GraphicsEngine* engine, const std::string& rendererName) {
+	std::string path = std::string("out/") + rendererName + "_0.ppm";
+	for (unsigned int i = 1; std::filesystem::exists(path); ++i) {
+		path = std::string("out/") + rendererName + "_" + std::to_string(i) + ".ppm";
+	}
+	engine->saveLatestImage(path);
+	std::cout << "Saved screenshot " << path << std::endl;
+}
+
 int main(int argc, char* argv[]) {
 	if (argc != 5 && argc != 7) {
 		std::cout << "Error: wrong paramter count!" << std::endl;
@@ -86,6 +96,10 @@ int main(int argc, char* argv[]) {
 		resultImagePath = argv[5];
 		maxRenderCount = std::atoi(argv[6]);
 	}
+
+	size_t start = rendererPath.find_last_of('/') + 1;
+	size_t finish = rendererPath.find_last_of('.') - start;
+	std::string rendererName = rendererPath.substr(start, finish);
 
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -148,7 +162,10 @@ int main(int argc, char* argv[]) {
 		while(SDL_PollEvent(&event)) {
 			bool sdl_quit = event.type == SDL_QUIT;
 			bool window_quit = event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE;
+			bool button_screenshot = event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_i;
+
 			if (sdl_quit || window_quit) run = false;
+			else if (button_screenshot) screenshot(engine, rendererName);
 			else input->handleEvents(event);
 		}
 

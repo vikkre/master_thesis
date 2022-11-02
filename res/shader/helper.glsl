@@ -2,21 +2,24 @@
 
 
 struct RNG {
-	float seed;
-	float i;
+	uint seed;
+	uint a;
+	uint c;
+	uint m;
 };
 
 RNG initRNG(uvec3 seed) {
 	RNG rng;
-	rng.seed = dot(vec3(seed), vec3(12.9898, 78.233, 38.4965));
-	rng.i = 0.0;
+	rng.a = 6237;
+	rng.c = 10697;
+	rng.m = 21023;
+	rng.seed = uint(dot(vec3(12.9898, 78.233, 38.4965), vec3(seed)) * float(rng.m));
 	return rng;
 }
 
 float rand(inout RNG rng) {
-	float value = fract(sin(rng.seed + rng.i) * 43758.5453);
-	rng.i += 1.0;
-	return value;
+	rng.seed = (rng.a * rng.seed + rng.c) % rng.m;
+	return float(rng.seed) / float(rng.m);
 }
 
 vec3 randomNormal(inout RNG rng) {

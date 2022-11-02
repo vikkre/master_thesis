@@ -14,4 +14,4 @@ Majercik2019
 	texelGetProbeDirectionFactor(0.0)
 	texelGetNormalFactor(1.0)
 	shadowCountProbe(1)
-	shadowCountVision(10)
+	shadowCountVision(50)

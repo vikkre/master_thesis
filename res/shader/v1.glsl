@@ -173,13 +173,9 @@ vec3 getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint cou
 		Indices indices      = Indices(obj.indexAddress);
 		Vertices vertices    = Vertices(obj.vertexAddress);
 
-		float x = rand(rng);
-		float y = rand(rng);
-		if (x + y > 1.0) {
-			x = 1.0 - x;
-			y = 1.0 - y;
-		}
-		vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
+		float sqrtr1 = sqrt(rand(rng));
+		float r2 = rand(rng);
+		vec3 barycentricCoords = vec3(1.0 - sqrtr1, sqrtr1 * (1.0 - r2), sqrtr1 * r2);
 
 		uint i = uint(rand(rng) * float(obj.indexCount));
 		ivec3 ind = indices.i[i];

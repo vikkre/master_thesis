@@ -16,7 +16,7 @@ panel.obj
 	position(0,  5,  0)
 	scale(1.0, 5.0, 5.0)
 	rotation(0, 0, 1, -1.57079)
-	lightSource()
+	lightSource(1.5)
 
 panel.obj
 	position(0,  0, -5)

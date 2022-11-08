@@ -69,6 +69,7 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 
 		if (entry.keyExists("lightSource")) {
 			obj->rtData.lightSource = true;
+			obj->rtData.lightStrength = entry.get<float>("lightSource", 0);
 			createdLightSources.push_back(obj);
 		} else {
 			obj->rtData.lightSource = false;

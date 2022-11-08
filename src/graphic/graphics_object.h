@@ -25,6 +25,7 @@ class GraphicsObject {
 			float refractionIndex;
 			u_int32_t lightSource;
 			u_int32_t indexCount;
+			float lightStrength;
 		};
 
 		struct ObjectInfo {

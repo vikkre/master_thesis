@@ -27,11 +27,16 @@ void main() {
 	rayPayload.hit = true;
 	rayPayload.pos = pos;
 	rayPayload.normal = normal;
-	rayPayload.color = obj.color;
 
 	rayPayload.diffuseThreshold = obj.diffuseThreshold;
 	rayPayload.reflectThreshold = obj.reflectThreshold;
 	rayPayload.transparentThreshold = obj.transparentThreshold;
 	rayPayload.refractionIndex = obj.refractionIndex;
-	rayPayload.lightSource = obj.lightSource == 1;
+	if (obj.lightSource == 1) {
+		rayPayload.lightSource = true;
+		rayPayload.color = clamp(obj.color * obj.lightStrength, vec3(0.0), vec3(1.0));
+	} else {
+		rayPayload.lightSource = false;
+		rayPayload.color = obj.color;
+	}
 }

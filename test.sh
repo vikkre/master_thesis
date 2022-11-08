@@ -33,6 +33,9 @@ build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blo
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 
+# build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/bitterli2020_small.ppm 5
+# build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720 out/bitterli2020_big.ppm 5
+
 # build/RayTrace res/renderer/meta_normal_vector.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/meta_normal_vector.ppm 5
 # build/RayTrace res/renderer/meta_position.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/meta_position.ppm 5
 # build/RayTrace res/renderer/meta_distance.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/meta_distance.ppm 5

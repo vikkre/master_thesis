@@ -21,6 +21,7 @@ struct ObjectProperties {
 	float refractionIndex;
 	uint lightSource;
 	uint indexCount;
+	float lightStrength;
 };
 
 struct Vertex {
@@ -160,8 +161,8 @@ uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
 	}
 }
 
-float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint count) {
-	float illumination = 0.0;
+vec3 getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint count) {
+	vec3 illumination = vec3(0.0);
 
 	for (uint l = 0; l < count; l++) {
 		uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));
@@ -208,7 +209,7 @@ float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint co
 		bool hit = rayPayload.hit;
 		rayPayload = tmp;
 
-		if (!hit) illumination += lightStrength;
+		if (!hit) illumination += lightStrength * obj.lightStrength * obj.color;
 	}
 
 	return illumination / float(count);

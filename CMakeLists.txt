@@ -36,6 +36,7 @@ endmacro()
 
 set(SHADER_INCLUDES helper.glsl v1.glsl)
 add_shader(v1_miss.spv       v1_miss.rmiss       v1.glsl )
+add_shader(v1_shadow.spv     v1_shadow.rmiss     v1.glsl )
 add_shader(v1_closesthit.spv v1_closesthit.rchit v1.glsl )
 
 set(PATH_TRACER_INCLUDES ${SHADER_INCLUDES} path_tracer.glsl)

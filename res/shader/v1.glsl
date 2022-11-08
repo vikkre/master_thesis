@@ -58,8 +58,10 @@ struct RayPayload {
 
 #ifdef HIT_OR_MISS_SHADER
 layout(location = 0) rayPayloadInEXT RayPayload rayPayload;
+layout(location = 1) rayPayloadInEXT bool shadowed;
 #else
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
+layout(location = 1) rayPayloadEXT bool shadowed;
 #endif
 
 struct RaySendInfo {
@@ -199,17 +201,14 @@ vec3 getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint cou
 		if (lightStrength <= 0.0) continue;
 		float distToLight = length(toLight);
 
-		RayPayload tmp = rayPayload;
-
 		uint rayFlags = gl_RayFlagsOpaqueEXT;
 		uint cullMask = 0xFF;
 		float tmin = 0.001;
-		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, pos, tmin, direction, distToLight, 0);
+		shadowed = true;
 
-		bool hit = rayPayload.hit;
-		rayPayload = tmp;
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, pos, tmin, direction, distToLight, 1);
 
-		if (!hit) illumination += lightStrength * obj.lightStrength * obj.color;
+		if (!shadowed) illumination += lightStrength * obj.lightStrength * obj.color;
 	}
 
 	return illumination / float(count);

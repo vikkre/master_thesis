@@ -172,6 +172,10 @@ float getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint co
 
 		float x = rand(rng);
 		float y = rand(rng);
+		if (x + y > 1.0) {
+			x = 1.0 - x;
+			y = 1.0 - y;
+		}
 		vec3 barycentricCoords = vec3(1.0 - x - y, x, y);
 
 		uint i = uint(rand(rng) * float(obj.indexCount));

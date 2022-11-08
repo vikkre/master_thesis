@@ -1,0 +1,34 @@
+#version 460
+
+
+#include "bitterli2020.glsl"
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) break;
+
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			break;
+		}
+	}
+
+	if (rayPayload.hit) {
+		if (rayPayload.lightSource) {
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
+		} else {
+			float illumination =  getIlluminationByShadowtrace(rng, rayPayload.pos, rayPayload.normal, renderSettings.shadowTraceCount);
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color * illumination, 0.0));
+		}
+	} else {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+	}
+}

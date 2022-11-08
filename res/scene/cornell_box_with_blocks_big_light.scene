@@ -1,0 +1,50 @@
+panel.obj
+	position(-5,  0,  0)
+	scale(1.0, 5.0, 5.0)
+
+panel.obj
+	position(5,  0,  0)
+	scale(1.0, 5.0, 5.0)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -5,  0)
+	scale(1.0, 5.0, 5.0)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  5,  0)
+	scale(1.0, 5.0, 5.0)
+	rotation(0, 0, 1, -1.57079)
+	lightSource()
+
+panel.obj
+	position(0,  0, -5)
+	scale(1.0, 5.0, 5.0)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0,  5)
+	scale(1.0, 5.0, 5.0)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+
+block.obj
+	position(2, -3.5, -2)
+	scale(1.5, 1.5, 1.5)
+	rotation(0, 1, 0, 1)
+	diffuse(1)
+	reflect(0)
+	transparent(0)
+	refractionIndex(1.5)
+
+block.obj
+	position(-2, -2, 2)
+	scale(1.5, 3, 1.5)
+	rotation(0, 1, 0, -1)
+	diffuse(0)
+	reflect(1)
+	transparent(0)
+	refractionIndex(1.5)

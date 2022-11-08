@@ -55,6 +55,9 @@ add_shader(meta_renderer_raygen.spv meta_renderer_raygen.rgen ${META_RENDERER_IN
 set(PHONG_RENDERER_INCLUDES ${SHADER_INCLUDES} phong_renderer.glsl)
 add_shader(phong_renderer_raygen.spv phong_renderer_raygen.rgen ${PHONG_RENDERER_INCLUDES} )
 
+set(BITTERLI2020_RENDERER_INCLUDES ${SHADER_INCLUDES} bitterli2020.glsl)
+add_shader(bitterli2020_vision_raygen.spv bitterli2020_vision_raygen.rgen ${BITTERLI2020_RENDERER_INCLUDES} )
+
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )
 

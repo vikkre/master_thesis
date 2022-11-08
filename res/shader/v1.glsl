@@ -208,7 +208,11 @@ vec3 getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint cou
 
 		traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, pos, tmin, direction, distToLight, 1);
 
-		if (!shadowed) illumination += lightStrength * obj.lightStrength * obj.color;
+		if (!shadowed) {
+			lightStrength *= obj.lightStrength;
+			lightStrength *= 1.0 / length(toLight);
+			illumination += lightStrength * obj.color;
+		}
 	}
 
 	return illumination / float(count);

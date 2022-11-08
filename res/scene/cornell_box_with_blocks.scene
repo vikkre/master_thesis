@@ -32,7 +32,7 @@ panel.obj
 panel.obj
 	position(0, 4.9, 0)
 	rotation(0, 0, 1, -1.57079)
-	lightSource(1.0)
+	lightSource(10.0)
 
 
 block.obj

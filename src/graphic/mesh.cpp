@@ -79,16 +79,7 @@ void Mesh::calcWeight() {
 		Vertex& v2 = vertices[indices[i + 1]];
 		Vertex& v3 = vertices[indices[i + 2]];
 
-		// Vector3f ab = v2.point - v1.point;
-		// Vector3f ac = v3.point - v1.point;
-		// Vector3f cp = cross(ab, ac);
-		// weight += cp.magnitude() / 2.0f;
-
-		float a = (v1.point - v2.point).magnitude();
-		float b = (v2.point - v3.point).magnitude();
-		float c = (v3.point - v1.point).magnitude();
-		float s = (a + b + c) / 2.0f;
-		weight += sqrt(s * (s - a) * (s - b) * (s - c));
+		weight += getTriangleArea(v1.point, v2.point, v3.point);
 	}
 }
 

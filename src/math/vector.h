@@ -208,8 +208,8 @@ Vector<s, T> operator/(const S scalar, const Vector<s, T>& vector) {
 
 // Cross Product
 
-template<typename T, typename S>
-Vector<3, T> cross(const Vector<3, T>& a, const Vector<3, S>& b) {
+template<typename T>
+Vector<3, T> cross(const Vector<3, T>& a, const Vector<3, T>& b) {
 	Vector<3, T> ret;
 
 	ret[0] = a[1] * b[2] - a[2] * b[1];
@@ -235,6 +235,16 @@ Vector<s, T> lerp(const Vector<s, T>& v0, const Vector<s, T>& v1, float t) {
 	}
 
 	return res;
+}
+
+// Triangle Area
+
+template<typename T>
+float getTriangleArea(const Vector<3, T>& v1, const Vector<3, T>& v2, const Vector<3, T>& v3) {
+	Vector<3, T> ab = v2 - v1;
+	Vector<3, T> ac = v3 - v1;
+	Vector<3, T> cp = cross(ab, ac);
+	return 0.5f * cp.magnitude();
 }
 
 // Compares

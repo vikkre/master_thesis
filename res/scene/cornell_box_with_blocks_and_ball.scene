@@ -54,6 +54,7 @@ block.obj
 	refractionIndex(1.5)
 
 ball.obj
-	position(0, 0, 0)
+	position(0, 2.5, 0)
 	scale(0.5, 0.5, 0.5)
-	lightSource(15.0)
+	lightSource(5.0)
+	move(0, -2.5, 0, 2.0)

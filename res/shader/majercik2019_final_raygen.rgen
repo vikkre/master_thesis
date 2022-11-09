@@ -130,7 +130,7 @@ void main() {
 			vec3 color = rayPayload.color * getIlluminationByShadowtrace(rng, modifiedPos, rayPayload.normal, renderSettings.shadowCountVision);
 			vec3 irradiance = getIrradiance(rayInfo.prevOrigin, rayInfo.prevDirection, modifiedPos, rayPayload.normal);
 
-			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + irradiance, 0.0));
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color + rayPayload.color * irradiance, 0.0));
 		}
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));

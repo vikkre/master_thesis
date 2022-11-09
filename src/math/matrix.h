@@ -266,6 +266,26 @@ Matrix<s, T> operator*(const S scalar, const Matrix<s, T>& matrix) {
 	return ret;
 }
 
+// ostream
+
+template<size_t s, typename T>
+std::ostream& operator<<(std::ostream& out, const Matrix<s, T>& m) {
+	out << "m" << s << "(\n";
+
+	for (size_t i = 0; i < s; ++i) {
+		out << "\t";
+		for (size_t j = 0; j < s; ++j) {
+			if (j > 0) out << " ";
+			out << m.m[i][j];
+		}
+		out << "\n";
+	}
+
+	out << ")";
+
+	return out;
+}
+
 // Typedefs
 
 template <typename T>

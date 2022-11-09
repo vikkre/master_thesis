@@ -59,6 +59,7 @@ class GraphicsObject {
 
 		bool move;
 		bool rotate;
+		bool weightDone;
 
 		Vector3f moveStartPos;
 		Vector3f moveStopPos;

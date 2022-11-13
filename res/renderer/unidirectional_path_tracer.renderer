@@ -1,0 +1,3 @@
+UnidirectionalPathTracer
+	visionJumpCount(5)
+	visionRayPerPixelCount(45)

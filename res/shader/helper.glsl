@@ -13,7 +13,7 @@ RNG initRNG(uvec3 seed) {
 	rng.a = 6237;
 	rng.c = 10697;
 	rng.m = 21023;
-	rng.seed = uint(dot(vec3(12.9898, 78.233, 38.4965), vec3(seed)) * float(rng.m));
+	rng.seed = (625 + seed.x * 7444 + seed.y * 1045 + seed.z * 13336) % rng.m;
 	return rng;
 }
 

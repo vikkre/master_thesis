@@ -7,16 +7,23 @@ popd
 
 
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/cornell_box_blocks.ppm 30
-build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box.scene 1280 720
+# build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 
-
 # build/RayTrace res/renderer/photon_mapper_gauss.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper_median.renderer res/scene/cornell_box_with_ball.scene 1280 720
+
+
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box.scene 1280 720
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
+build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 
 
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks.scene 1280 720 out/ddgi.ppm 5

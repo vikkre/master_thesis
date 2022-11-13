@@ -1,0 +1,43 @@
+#version 460
+
+
+#include "unidirectional_path_tracer.glsl"
+
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	vec3 color = vec3(1.0);
+	bool lightHit = false;
+
+	for (int i = 0; i < renderSettings.visionJumpCount; ++i) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) {
+			color = vec3(0.0);
+			break;
+		}
+
+		if (rayPayload.lightSource) {
+			color *= rayPayload.color;
+			lightHit = true;
+			break;
+		}
+
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			color *= rayPayload.color;
+		}
+	}
+
+	if (lightHit) {
+		uvec3 intColor = uvec3(color * 255);
+		imageAtomicAdd(rawImageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
+		imageAtomicAdd(rawImageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);
+		imageAtomicAdd(rawImageBlue, ivec2(gl_LaunchIDEXT.xy), intColor.z);
+	}
+}

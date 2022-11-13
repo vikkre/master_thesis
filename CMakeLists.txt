@@ -45,6 +45,10 @@ add_shader(photon_mapper_kd_comp.spv       photon_mapper_kd_comp.comp       ${PH
 add_shader(photon_mapper_vision_raygen.spv photon_mapper_vision_raygen.rgen ${PHOTON_MAPPER_INCLUDES} )
 add_shader(photon_mapper_final_comp.spv    photon_mapper_final_comp.comp    ${PHOTON_MAPPER_INCLUDES} )
 
+set(UNIDIRECTIONAL_PATH_TRACER_INCLUDES ${SHADER_INCLUDES} unidirectional_path_tracer.glsl)
+add_shader(unidirectional_path_tracer_vision_raygen.spv unidirectional_path_tracer_vision_raygen.rgen ${UNIDIRECTIONAL_PATH_TRACER_INCLUDES} )
+add_shader(unidirectional_path_tracer_final_comp.spv    unidirectional_path_tracer_final_comp.comp    ${UNIDIRECTIONAL_PATH_TRACER_INCLUDES} )
+
 set(MAJERCIK2019_INCLUDES ${SHADER_INCLUDES} majercik2019.glsl)
 add_shader(majercik2019_probe_raygen.spv        majercik2019_probe_raygen.rgen        ${MAJERCIK2019_INCLUDES} )
 add_shader(majercik2019_shading_update_comp.spv majercik2019_shading_update_comp.comp ${MAJERCIK2019_INCLUDES} )

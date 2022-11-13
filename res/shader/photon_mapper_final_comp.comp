@@ -1,7 +1,7 @@
 #version 460
 
 #define COMPUTE_SHADER
-#include "path_tracer.glsl"
+#include "photon_mapper.glsl"
 
 
 void main() {

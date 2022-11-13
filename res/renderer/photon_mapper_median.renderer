@@ -1,4 +1,4 @@
-PathTracer
+PhotonMapper
 	lightRayCount(250)
 	lightJumpCount(3)
 	visionJumpCount(3)

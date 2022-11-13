@@ -1,10 +1,10 @@
-#include "path_tracer.h"
+#include "photon_mapper.h"
 
 
-#define LIGHT_GEN_RGEN_SHADER "path_tracer_light_raygen.spv"
-#define KD_COMP_SHADER        "path_tracer_kd_comp.spv"
-#define VISION_RGEN_SHADER    "path_tracer_vision_raygen.spv"
-#define FINAL_COMP_SHADER     "path_tracer_final_comp.spv"
+#define LIGHT_GEN_RGEN_SHADER "photon_mapper_light_raygen.spv"
+#define KD_COMP_SHADER        "photon_mapper_kd_comp.spv"
+#define VISION_RGEN_SHADER    "photon_mapper_vision_raygen.spv"
+#define FINAL_COMP_SHADER     "photon_mapper_final_comp.spv"
 
 
 struct LightPoint {
@@ -21,7 +21,7 @@ struct KDData {
 };
 
 
-PathTracer::PathTracer(Device* device)
+PhotonMapper::PhotonMapper(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 lightGenerationPipeline(device), kdPipeline(device), visionPipeline(device), finalRenderPipeline(device),
 storageImagesRed(device), storageImagesGreen(device), storageImagesBlue(device),
@@ -29,9 +29,9 @@ renderSettingsBuffers(device), countBuffers(device),
 lightPointBuffers(device), kdBuffers(device)
 {}
 
-PathTracer::~PathTracer() {}
+PhotonMapper::~PhotonMapper() {}
 
-void PathTracer::initRenderer() {
+void PhotonMapper::initRenderer() {
 	createBuffers();
 	createDescriptorCollection();
 	createPipelineLayout();
@@ -41,7 +41,7 @@ void PathTracer::initRenderer() {
 	createFinalRenderPipeline();
 }
 
-void PathTracer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
+void PhotonMapper::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	storageImagesRed.at(index).cmdClear(commandBuffer);
 	storageImagesGreen.at(index).cmdClear(commandBuffer);
 	storageImagesBlue.at(index).cmdClear(commandBuffer);
@@ -63,14 +63,14 @@ void PathTracer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	finalRenderPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void PathTracer::updateRendererUniforms(size_t index) {
+void PhotonMapper::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
 	uint32_t count = 0;
 	countBuffers.at(index).passData((void*) &count);
 }
 
-void PathTracer::parseRendererInput(const InputEntry& inputEntry) {
+void PhotonMapper::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.lightRayCount = inputEntry.get<u_int32_t>("lightRayCount");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
@@ -81,7 +81,7 @@ void PathTracer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.useCountLightCollecton = inputEntry.get<u_int32_t>("useCountLightCollecton");
 }
 
-void PathTracer::createBuffers() {
+void PhotonMapper::createBuffers() {
 	ImageBuffer::Properties singleColorBufferProperties = outputImages->bufferProperties;
 	singleColorBufferProperties.format = VK_FORMAT_R32_UINT;
 	singleColorBufferProperties.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
@@ -94,7 +94,7 @@ void PathTracer::createBuffers() {
 	storageImagesGreen.init();
 	storageImagesBlue.init();
 
-	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(PathTracer::RenderSettings);
+	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(PhotonMapper::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
@@ -115,7 +115,7 @@ void PathTracer::createBuffers() {
 	kdBuffers.init();
 }
 
-void PathTracer::createDescriptorCollection() {
+void PhotonMapper::createDescriptorCollection() {
 	descriptorCollection.bufferDescriptors.resize(8);
 
 	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
@@ -132,7 +132,7 @@ void PathTracer::createDescriptorCollection() {
 	descriptors.push_back(&descriptorCollection);
 }
 
-void PathTracer::createLightGenerationPipeline() {
+void PhotonMapper::createLightGenerationPipeline() {
 	lightGenerationPipeline.raygenShaders.push_back(LIGHT_GEN_RGEN_SHADER);
 	lightGenerationPipeline.missShaders = Renderer::RMISS_SHADERS;
 	lightGenerationPipeline.hitShaders = Renderer::RCHIT_SHADERS;
@@ -144,7 +144,7 @@ void PathTracer::createLightGenerationPipeline() {
 	lightGenerationPipeline.init();
 }
 
-void PathTracer::createKDPipeline() {
+void PhotonMapper::createKDPipeline() {
 	kdPipeline.shaderPath = KD_COMP_SHADER;
 	
 	kdPipeline.pipelineLayout = getPipelineLayout();
@@ -152,7 +152,7 @@ void PathTracer::createKDPipeline() {
 	kdPipeline.init();
 }
 
-void PathTracer::createVisionPipeline() {
+void PhotonMapper::createVisionPipeline() {
 	visionPipeline.raygenShaders.push_back(VISION_RGEN_SHADER);
 	visionPipeline.missShaders = Renderer::RMISS_SHADERS;
 	visionPipeline.hitShaders = Renderer::RCHIT_SHADERS;
@@ -166,7 +166,7 @@ void PathTracer::createVisionPipeline() {
 	visionPipeline.init();
 }
 
-void PathTracer::createFinalRenderPipeline() {
+void PhotonMapper::createFinalRenderPipeline() {
 	finalRenderPipeline.shaderPath = FINAL_COMP_SHADER;
 	
 	finalRenderPipeline.pipelineLayout = getPipelineLayout();

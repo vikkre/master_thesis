@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class PathTracer: public Renderer {
+class PhotonMapper: public Renderer {
 	public:
-		PathTracer(Device* device);
-		~PathTracer();
+		PhotonMapper(Device* device);
+		~PhotonMapper();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;

@@ -31,6 +31,7 @@ void Bitterli2020::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 	renderSettings.shadowTraceCount = inputEntry.get<u_int32_t>("shadowTraceCount");
 	renderSettings.candidateCount = inputEntry.get<u_int32_t>("candidateCount");
+	renderSettings.usePrimitiveShadowTrace = inputEntry.get<u_int32_t>("usePrimitiveShadowTrace");
 }
 
 void Bitterli2020::createBuffers() {

@@ -35,6 +35,7 @@ class Bitterli2020: public Renderer {
 			u_int32_t visionJumpCount;
 			u_int32_t shadowTraceCount;
 			u_int32_t candidateCount;
+			u_int32_t usePrimitiveShadowTrace;
 		} renderSettings;
 
 	private:

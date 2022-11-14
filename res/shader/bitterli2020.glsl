@@ -12,6 +12,7 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	uint visionJumpCount;
 	uint shadowTraceCount;
 	uint candidateCount;
+	uint usePrimitiveShadowTrace;
 } renderSettings;
 layout(set = 0, binding = 1, rgba8) uniform image2D finalImage;
 

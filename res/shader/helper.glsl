@@ -8,6 +8,11 @@ struct RNG {
 	uint m;
 };
 
+float rand(inout RNG rng) {
+	rng.seed = (rng.a * rng.seed + rng.c) % rng.m;
+	return float(rng.seed) / float(rng.m);
+}
+
 RNG initRNG(uvec3 seed) {
 	RNG rng;
 	rng.a = 6237;
@@ -15,11 +20,6 @@ RNG initRNG(uvec3 seed) {
 	rng.m = 21023;
 	rng.seed = (625 + seed.x * 7444 + seed.y * 1045 + seed.z * 13336) % rng.m;
 	return rng;
-}
-
-float rand(inout RNG rng) {
-	rng.seed = (rng.a * rng.seed + rng.c) % rng.m;
-	return float(rng.seed) / float(rng.m);
 }
 
 vec3 randomNormal(inout RNG rng) {
@@ -94,4 +94,12 @@ vec3 octDecode(vec2 o) {
 
 vec3 lerp(vec3 v0, vec3 v1, vec3 t) {
 	return v0 + t * (v1 - v0);
+}
+
+float square_length(vec3 v1, vec3 v2) {
+	float x = v1.x - v2.x;
+	float y = v1.y - v2.y;
+	float z = v1.z - v2.z;
+
+	return x*x + y*y + z*z;
 }

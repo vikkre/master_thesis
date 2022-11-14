@@ -30,6 +30,7 @@ void Bitterli2020::updateRendererUniforms(size_t index) {
 void Bitterli2020::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 	renderSettings.shadowTraceCount = inputEntry.get<u_int32_t>("shadowTraceCount");
+	renderSettings.candidateCount = inputEntry.get<u_int32_t>("candidateCount");
 }
 
 void Bitterli2020::createBuffers() {

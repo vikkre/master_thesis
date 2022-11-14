@@ -34,6 +34,7 @@ class Bitterli2020: public Renderer {
 		struct RenderSettings {
 			u_int32_t visionJumpCount;
 			u_int32_t shadowTraceCount;
+			u_int32_t candidateCount;
 		} renderSettings;
 
 	private:

@@ -4,6 +4,25 @@
 #include "bitterli2020.glsl"
 
 
+vec3 getIllumination(inout RNG rng, vec3 hitPos, vec3 hitNormal) {
+	Reservoir r = createReservoir();
+
+	for (uint i = 0; i < renderSettings.candidateCount; ++i) {
+		Sample s;
+		s.lsp = getRandomLightSourcePoint(rng);
+		float inv_sqrt = 1.0 / square_length(hitPos, s.lsp.pos);
+		s.weight = s.lsp.lightStrength * inv_sqrt * dot(-hitNormal, s.lsp.normal);
+		if (s.weight <= 0.0) continue;
+
+		updateReservoir(r, rng, s, s.weight);
+	}
+
+	LightSourcePoint lsp = r.y.lsp;
+	vec3 W = (shadowTrace(lsp, hitPos, hitNormal) / r.y.weight) * (1.0 / float(r.M)) * r.w_sum;
+	return W;
+}
+
+
 void main() {
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
@@ -25,7 +44,7 @@ void main() {
 		if (rayPayload.lightSource) {
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
 		} else {
-			vec3 illumination =  getIlluminationByShadowtrace(rng, rayPayload.pos, rayPayload.normal, renderSettings.shadowTraceCount);
+			vec3 illumination = getIllumination(rng, rayPayload.pos, rayPayload.normal);
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color * illumination, 0.0));
 		}
 	} else {

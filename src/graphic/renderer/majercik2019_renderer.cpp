@@ -49,8 +49,8 @@ void Majercik2019::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 void Majercik2019::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
-	std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
-	surfelBuffer.at(index).getData((void*) surfels.data());
+	// std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
+	// surfelBuffer.at(index).getData((void*) surfels.data());
 
 	// std::ofstream file("surfels.csv");
 	// file << "rayDirection;hitRadiance;hitDistance;hit" << std::endl;
@@ -118,7 +118,7 @@ void Majercik2019::createBuffers() {
 
 	surfelBuffer.bufferProperties.bufferSize = sizeof(Surfel) * renderSettings.totalProbeCount * renderSettings.perProbeRayCount;
 	surfelBuffer.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	surfelBuffer.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	surfelBuffer.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	surfelBuffer.init();
 }
 

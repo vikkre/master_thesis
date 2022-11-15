@@ -10,8 +10,8 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/build/RayTrace",
 			"args": [
-				"res/renderer/Majercik2019_median.renderer",
-				"res/scene/cornell_box_with_blocks.scene",
+				"res/renderer/Bitterli2020.renderer",
+				"res/scene/labyrinth.scene",
 				"1280", "720",
 			],
 			"stopAtEntry": false,

@@ -1,0 +1,2796 @@
+panel.obj
+	position(0, -5,  0)
+	scale(1.0, 125.0, 125.0)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  5,  0)
+	scale(1.0, 125.0, 125.0)
+	rotation(0, 0, 1, -1.57079)
+
+block.obj
+	position(-120, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-120, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-110, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-110, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-110, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-110, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-110, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-110, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-110, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-110, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-110, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-110, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-110, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-110, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-100, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-100, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-100, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-90, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, -40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-90, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-90, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-90, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-80, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-80, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-80, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-70, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-70, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-70, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-70, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-60, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-60, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-60, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-60, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-60, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-60, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-60, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-60, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-60, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-60, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-60, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-50, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-50, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-50, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-50, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-40, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-40, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-40, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-30, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-30, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-30, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-30, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-20, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-20, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-20, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(-10, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, -40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(-10, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(-10, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(-10, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(0, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(0, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(0, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(0, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(0, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(0, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(0, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(0, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(0, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(0, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(0, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(10, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, -100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(10, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(10, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(10, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, -110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(20, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(20, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(20, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(30, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, -40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(30, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(30, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(30, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(40, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(40, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(40, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(50, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, -20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(50, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(50, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(50, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(60, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(60, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(60, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(70, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, -20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(70, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(70, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(70, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(80, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(80, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(80, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(80, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(80, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(80, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(80, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(80, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(80, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(90, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(90, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(90, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(90, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(90, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(90, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(90, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(90, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(90, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(90, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(90, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(90, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(100, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(100, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(100, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(110, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(110, 0, -110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -80)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(110, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(110, 0, -30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, -10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 0)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 10)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 20)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 30)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 40)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 50)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 60)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 70)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(110, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+ball.obj
+	position(110, 0, 90)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 100)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+ball.obj
+	position(110, 0, 110)
+	scale(0.5, 0.5, 0.5)
+	lightSource(5.0)
+
+block.obj
+	position(110, 0, 120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -120)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, -10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 0)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 10)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 20)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 30)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 40)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 50)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 60)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 70)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 80)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 90)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 100)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 110)
+	scale(5.0, 5.0, 5.0)
+
+block.obj
+	position(120, 0, 120)
+	scale(5.0, 5.0, 5.0)

@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class Bitterli2020: public Renderer {
+class ShadowTracer: public Renderer {
 	public:
-		Bitterli2020(Device* device);
-		~Bitterli2020();
+		ShadowTracer(Device* device);
+		~ShadowTracer();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
@@ -33,24 +33,18 @@ class Bitterli2020: public Renderer {
 
 		struct RenderSettings {
 			u_int32_t visionJumpCount;
-			u_int32_t candidateCount;
-			u_int32_t sampleCount;
+			u_int32_t shadowTraceCount;
 		} renderSettings;
 
 	private:
 		void createBuffers();
 		void createDescriptorCollection();
-		void createReservoirPipeline();
-		void createResultPipeline();
-
-		Vector2u getIrradianceFieldSurfaceExtend() const;
+		void createVisionPipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
-		RayTracingPipeline reservoirPipeline;
-		RayTracingPipeline resultPipeline;
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+		RayTracingPipeline visionPipeline;
 
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
-		MultiBufferDescriptor<DataBuffer> rayPayloadsBuffers;
-		MultiBufferDescriptor<DataBuffer> reservoirsBuffers;
 };

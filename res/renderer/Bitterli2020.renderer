@@ -1,5 +1,4 @@
 Bitterli2020
 	visionJumpCount(3)
-	shadowTraceCount(100)
-	candidateCount(256)
-	usePrimitiveShadowTrace(0)
+	candidateCount(128)
+	sampleCount(8)

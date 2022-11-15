@@ -106,12 +106,12 @@ void PhotonMapper::createBuffers() {
 
 	lightPointBuffers.bufferProperties.bufferSize = sizeof(LightPoint) * renderSettings.lightRayCount * renderSettings.lightJumpCount;
 	lightPointBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	lightPointBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	lightPointBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	lightPointBuffers.init();
 
 	kdBuffers.bufferProperties.bufferSize = sizeof(KDData) * renderSettings.lightRayCount * renderSettings.lightJumpCount;
 	kdBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	kdBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	kdBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	kdBuffers.init();
 }
 

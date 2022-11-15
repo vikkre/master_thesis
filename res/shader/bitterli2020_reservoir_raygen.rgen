@@ -1,0 +1,60 @@
+#version 460
+
+
+#include "bitterli2020.glsl"
+
+
+void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
+	for (uint i = 0; i < renderSettings.candidateCount / renderSettings.sampleCount; ++i) {
+		Sample s;
+		s.lsp = getRandomLightSourcePoint(rng);
+		vec3 direction = hitPos - s.lsp.pos;
+		s.weight = s.lsp.lightStrength * (5.0 / square_length(direction)) * dot(normalize(direction), s.lsp.normal);
+		if (s.weight <= -0.01) continue;
+
+		updateReservoir(r, rng, s, s.weight);
+	}
+	r.W = r.w_sum / (r.y.weight * float(r.M));
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) break;
+
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			break;
+		}
+	}
+
+	BitterliRayPayload p;
+	if (rayPayload.hit) {
+		p.pos = rayPayload.pos;
+		p.normal = rayPayload.normal;
+		p.color = rayPayload.color;
+		p.hit = true;
+
+		if (rayPayload.lightSource) {
+			p.lightSource = true;
+		} else {
+			p.lightSource = false;
+
+			for (uint i = 0; i < renderSettings.sampleCount; i++) {
+				Reservoir r = createReservoir();
+				fillReservoir(rng, r, rayPayload.pos);
+				reservoirs.r[getReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, i)] = r;
+			}
+		}
+	} else {
+		p.hit = false;
+	}
+	rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)] = p;
+}

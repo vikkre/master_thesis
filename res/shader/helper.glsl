@@ -96,10 +96,6 @@ vec3 lerp(vec3 v0, vec3 v1, vec3 t) {
 	return v0 + t * (v1 - v0);
 }
 
-float square_length(vec3 v1, vec3 v2) {
-	float x = v1.x - v2.x;
-	float y = v1.y - v2.y;
-	float z = v1.z - v2.z;
-
-	return x*x + y*y + z*z;
+float square_length(vec3 v) {
+	return v.x*v.x + v.y*v.y + v.z*v.z;
 }

@@ -1,0 +1,50 @@
+#version 460
+
+
+#include "bitterli2020.glsl"
+
+
+vec3 getIllumination(inout Reservoir r, vec3 hitPos, vec3 hitNormal) {
+	return shadowTrace(r.y.lsp, hitPos, hitNormal);
+	// if (isShadowed(r.y.lsp, hitPos)) return vec3(0.0);
+	// else return vec3(r.W);
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	BitterliRayPayload p = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
+
+	if (p.hit) {
+		if (p.lightSource) {
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color, 0.0));
+		} else {
+			vec3 illumination = vec3(0.0);
+
+			for (uint i = 0; i < renderSettings.sampleCount; i++) {
+				Reservoir r = createReservoir();
+				
+				uint M_sum = 0;
+				for (uint d = 0; d < DIRECTION_COUNT; ++d) {
+					ivec2 p = ivec2(gl_LaunchIDEXT) + DIRECTIONS[d];
+					if (0 <= p.x && p.x < gl_LaunchSizeEXT.x && 0 <= p.y && p.y < gl_LaunchSizeEXT.y) {
+						Reservoir rt = reservoirs.r[getReservoirIndex(uvec2(p), gl_LaunchSizeEXT.xy, i)];
+						rt.y.weight *= rt.W * float(rt.M);
+						updateReservoir(r, rng, rt.y, rt.y.weight);
+						M_sum += rt.M;
+					}
+				}
+				
+				r.M = M_sum;
+				r.W = r.w_sum / (r.y.weight * float(r.M));
+
+				illumination += getIllumination(r, p.pos, p.normal);
+			}
+			illumination /= float(renderSettings.sampleCount);
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color * illumination, 0.0));
+		}
+	} else {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+	}
+}

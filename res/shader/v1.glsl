@@ -185,6 +185,22 @@ uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
 	}
 }
 
+bool isShadowed(LightSourcePoint lsp, vec3 pos) {
+	vec3 lightPosition = lsp.pos + (lsp.normal * 0.1);
+	vec3 toLight = lightPosition - pos;
+	vec3 direction = normalize(toLight);
+	float distToLight = length(toLight);
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	shadowed = true;
+
+	traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, pos, tmin, direction, distToLight, 1);
+
+	return shadowed;
+}
+
 vec3 shadowTrace(LightSourcePoint lsp, vec3 pos, vec3 normal) {
 	vec3 lightPosition = lsp.pos + (lsp.normal * 0.1);
 
@@ -203,7 +219,7 @@ vec3 shadowTrace(LightSourcePoint lsp, vec3 pos, vec3 normal) {
 
 	if (!shadowed) {
 		lightStrength *= lsp.lightStrength;
-		lightStrength *= 1.0 / length(toLight);
+		lightStrength *= 5.0 / square_length(toLight);
 		return lightStrength * lsp.color;
 	} else {
 		return vec3(0.0);

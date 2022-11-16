@@ -75,7 +75,7 @@ void Bitterli2020::createBuffers() {
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
 
-	unsigned int bufferSize = device->renderInfo.swapchainExtend.width * device->renderInfo.swapchainExtend.height;
+	unsigned int bufferSize = device->renderInfo.swapchainExtend.width * device->renderInfo.swapchainExtend.height * 1.1;
 
 	rayPayloadsBuffers.bufferProperties.bufferSize = sizeof(RayPayload) * bufferSize;
 	rayPayloadsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
@@ -92,10 +92,7 @@ void Bitterli2020::createBuffers() {
 	prevTemporalReservoirs.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	prevTemporalReservoirs.init();
 
-	Reservoir defaultReservoir;
-	defaultReservoir.w_sum = 0.0;
-	defaultReservoir.M = 0;
-	defaultReservoir.W = 0.0;
+	Reservoir defaultReservoir = {};
 	std::vector<Reservoir> reservoirs(renderSettings.sampleCount * bufferSize, defaultReservoir);
 
 	prevTemporalReservoirs.forEach([&reservoirs](DataBuffer& buffer){

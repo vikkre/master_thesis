@@ -1,0 +1,4 @@
+Camera
+	position(22, 0, 0)
+#	theta (left, right), phi (up, down)
+	angle(1, 0)

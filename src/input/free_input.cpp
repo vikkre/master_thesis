@@ -10,14 +10,16 @@
 #define THETA_CHANGE  M_PI * 2.0f
 
 
-FreeInput::FreeInput()
+FreeInput::FreeInput(bool disableControl)
 :Input(), theta(M_PI), phi(M_PI_2),
-position({22.0f, 0.0f, 0.0f}), checkMouseMotion(false),
+position({22.0f, 0.0f, 0.0f}), disableControl(disableControl), checkMouseMotion(false),
 forward(false), backward(false), left(false), right(false), up(false), down(false) {}
 
 FreeInput::~FreeInput() {}
 
 void FreeInput::handleEvents(const SDL_Event& event) {
+	if (disableControl) return;
+
 	if (event.type == SDL_KEYDOWN) {
 		switch (event.key.keysym.sym) {
 			case SDLK_w:      forward  = true; break;
@@ -56,6 +58,8 @@ void FreeInput::handleEvents(const SDL_Event& event) {
 }
 
 void FreeInput::update(float deltaTime) {
+	if (disableControl) return;
+
 	if (forward)  move(+1.0f,  0.0f, deltaTime);
 	if (backward) move(-1.0f,  0.0f, deltaTime);
 	if (left)     move( 0.0f, +1.0f, deltaTime);
@@ -98,4 +102,18 @@ void FreeInput::move(float direction, float side, float deltaTime) {
 	Vector3f sideDirection = Vector3f({lookDirection[2], 0.0f, -lookDirection[0]});
 	Vector3f moveDirection = (direction * lookDirection) + (side * sideDirection);
 	position += MOVE_SPEED * deltaTime * moveDirection;
+}
+
+void FreeInput::parseInput(const InputEntry& inputEntry) {
+	position = inputEntry.getVector<3, float>("position");
+	theta = inputEntry.get<float>("angle", 0);
+	phi = inputEntry.get<float>("angle", 1);
+
+	theta *= M_PI;
+	phi = phi * -M_PI_2 + M_PI_2;
+
+	if (phi < PHI_MIN) phi = PHI_MIN;
+	if (phi > PHI_MAX) phi = PHI_MAX;
+	if (theta < THETA_MIN) theta += THETA_CHANGE;
+	if (theta > THETA_MAX) theta -= THETA_CHANGE;
 }

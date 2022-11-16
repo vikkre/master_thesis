@@ -1,6 +1,7 @@
 #pragma once
 
 #include "input.h"
+#include "../input_parser.h"
 
 #include "../math/matrix.h"
 #include "../math/rotation.h"
@@ -8,7 +9,7 @@
 
 class FreeInput: public Input {
 	public:
-		FreeInput();
+		FreeInput(bool disableControl);
 		~FreeInput();
 
 		virtual void handleEvents(const SDL_Event& event) override;
@@ -21,6 +22,7 @@ class FreeInput: public Input {
 		Vector3f getLookDirection() const;
 		void toggleMouse(bool escape);
 		void move(float direction, float side, float deltaTime);
+		void parseInput(const InputEntry& inputEntry);
 
 		float theta;
 		float phi;
@@ -28,6 +30,7 @@ class FreeInput: public Input {
 		Vector3f position;
 
 	private:
+		bool disableControl;
 		bool checkMouseMotion;
 
 		bool forward, backward;

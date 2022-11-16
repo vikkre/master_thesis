@@ -82,9 +82,9 @@ void screenshot(GraphicsEngine* engine, const std::string& rendererName) {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc != 5 && argc != 7) {
+	if (argc != 5 && argc != 6 && argc != 8) {
 		std::cout << "Error: wrong paramter count!" << std::endl;
-		std::cout << "Usage: RayTrace renderer scene image_width image_height [resultimage renderrounds]" << std::endl;
+		std::cout << "Usage: RayTrace renderer scene image_width image_height [camera] [resultimage renderrounds]" << std::endl;
 		return -1;
 	}
 
@@ -94,13 +94,19 @@ int main(int argc, char* argv[]) {
 	std::string rendererPath = argv[1];
 	std::string scenePath = argv[2];
 	Vector2i windowSize = Vector2i({std::atoi(argv[3]), std::atoi(argv[4])});
+	std::string cameraFilePath;
 	std::string resultImagePath;
 	unsigned int maxRenderCount;
 
-	bool renderLimit = argc == 7;
+	bool hasCamera = argc == 6 || argc == 8;
+	if (hasCamera) {
+		cameraFilePath = argv[5];
+	}
+
+	bool renderLimit = argc == 8;
 	if (renderLimit) {
-		resultImagePath = argv[5];
-		maxRenderCount = std::atoi(argv[6]);
+		resultImagePath = argv[6];
+		maxRenderCount = std::atoi(argv[7]);
 	}
 
 	size_t start = rendererPath.find_last_of('/') + 1;
@@ -140,18 +146,11 @@ int main(int argc, char* argv[]) {
 
 	engine->initTlas();
 
-	const bool useSphericalCamera = false;
-	Input* input = nullptr;
-	if (renderLimit) {
-		FakeInput* nInput = new FakeInput(Vector3f({22.0f, 0.0f, 0.0f}));
-		input = nInput;
-	} else if (useSphericalCamera) {
-		SphericalInput* rInput = new SphericalInput();
-		rInput->r = 15.0f;
-		input = rInput;
-	} else {
-		FreeInput* fInput = new FreeInput();
-		input = fInput;
+	FreeInput* input = new FreeInput(renderLimit);
+	if (hasCamera) {
+		InputParser cameraParser(cameraFilePath);
+		cameraParser.parse();
+		input->parseInput(cameraParser.getInputEntry(0));
 	}
 	engine->device.renderInfo.camera.input = input;
 

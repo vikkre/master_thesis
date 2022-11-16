@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <functional>
 
 #include "../device.h"
 #include "buffer.h"
@@ -56,6 +57,16 @@ class MultiBufferDescriptor: public BufferDescriptor {
 		BufferType& at(unsigned int index) {
 			return buffers.at(index);
 		}
+		
+		size_t size() const {
+			return buffers.size();
+		}
+
+		void forEach(std::function<void(BufferType&)> func) {
+			for (size_t i = 0; i < device->renderInfo.swapchainImageCount; ++i) {
+				func(buffers[i]);
+			}
+		}
 
 		typename BufferType::Properties bufferProperties;
 	
@@ -99,4 +110,34 @@ class MultiSamplerDescriptor: public BufferDescriptor {
 	
 	private:
 		MultiBufferDescriptor<ImageBuffer>* imageBuffers;
+};
+
+template<typename BufferType>
+class MultiBufferDescriptorOffset: public BufferDescriptor {
+	public:
+		MultiBufferDescriptorOffset(Device* device, MultiBufferDescriptor<BufferType>* bufferDescriptor, unsigned int offset)
+		:BufferDescriptor(), device(device), bufferDescriptor(bufferDescriptor), offset(offset) {}
+
+		virtual void getWriteDescriptorSets(std::vector<VkWriteDescriptorSet>& writeDescriptorSets, const std::vector<VkDescriptorSet>& descriptorSets, uint32_t binding) const override {
+			if (descriptorSets.size() != bufferDescriptor->size()) {
+				throw InitException("MultiBufferDescriptor::getWriteDescriptorSets", "descriptorSets.size() and buffers.size() are unequal!");
+			}
+			
+			for (unsigned int i = 0; i < bufferDescriptor->size(); ++i) {
+				unsigned int ii = (i + offset) % device->renderInfo.swapchainImageCount;
+				writeDescriptorSets.push_back(bufferDescriptor->at(ii).getWriteDescriptorSet(descriptorSets[i], binding));
+			}
+		}
+
+		virtual VkDescriptorSetLayoutBinding getLayoutBinding(uint32_t binding) const override {
+			return bufferDescriptor->getLayoutBinding(binding);
+		}
+
+		virtual const Buffer* getBuffer() const override {
+			return bufferDescriptor->getBuffer();
+		}
+	private:
+		Device* device;
+		MultiBufferDescriptor<BufferType>* bufferDescriptor;
+		unsigned int offset;
 };

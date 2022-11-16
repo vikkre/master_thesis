@@ -14,7 +14,11 @@ void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
 
 		updateReservoir(r, rng, s, s.weight);
 	}
-	r.W = r.w_sum / (r.y.weight * float(r.M));
+	if (isShadowed(r.y.lsp, hitPos)) {
+		r.W = 0.0;
+	}	else {
+		r.W = r.w_sum / (r.y.weight * float(r.M));
+	}
 }
 
 
@@ -35,6 +39,7 @@ void main() {
 		}
 	}
 
+	uint payloadIndex = getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 	BitterliRayPayload p;
 	if (rayPayload.hit) {
 		p.pos = rayPayload.pos;
@@ -50,11 +55,11 @@ void main() {
 			for (uint i = 0; i < renderSettings.sampleCount; i++) {
 				Reservoir r = createReservoir();
 				fillReservoir(rng, r, rayPayload.pos);
-				reservoirs.r[getReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, i)] = r;
+				spatialReservoirs.r[getReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, i)] = r;
 			}
 		}
 	} else {
 		p.hit = false;
 	}
-	rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)] = p;
+	rayPayloads.r[payloadIndex] = p;
 }

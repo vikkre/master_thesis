@@ -36,7 +36,8 @@ struct RayPayload {
 Bitterli2020::Bitterli2020(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 reservoirPipeline(device), resultPipeline(device),
-renderSettingsBuffers(device), rayPayloadsBuffers(device), reservoirsBuffers(device) {}
+renderSettingsBuffers(device), rayPayloadsBuffers(device),
+spatialReservoirsBuffers(device), prevTemporalReservoirs(device), nextTemporalReservoirs(device, &prevTemporalReservoirs, 1) {}
 
 Bitterli2020::~Bitterli2020() {}
 
@@ -81,19 +82,36 @@ void Bitterli2020::createBuffers() {
 	rayPayloadsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	rayPayloadsBuffers.init();
 
-	reservoirsBuffers.bufferProperties.bufferSize = sizeof(Reservoir) * renderSettings.sampleCount * bufferSize;
-	reservoirsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	reservoirsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	reservoirsBuffers.init();
+	spatialReservoirsBuffers.bufferProperties.bufferSize = sizeof(Reservoir) * renderSettings.sampleCount * bufferSize;
+	spatialReservoirsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	spatialReservoirsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	spatialReservoirsBuffers.init();
+
+	prevTemporalReservoirs.bufferProperties.bufferSize = sizeof(Reservoir) * renderSettings.sampleCount * bufferSize;
+	prevTemporalReservoirs.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	prevTemporalReservoirs.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	prevTemporalReservoirs.init();
+
+	Reservoir defaultReservoir;
+	defaultReservoir.w_sum = 0.0;
+	defaultReservoir.M = 0;
+	defaultReservoir.W = 0.0;
+	std::vector<Reservoir> reservoirs(renderSettings.sampleCount * bufferSize, defaultReservoir);
+
+	prevTemporalReservoirs.forEach([&reservoirs](DataBuffer& buffer){
+		buffer.passData((void*) reservoirs.data());
+	});
 }
 
 void Bitterli2020::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(4);
+	descriptorCollection.bufferDescriptors.resize(6);
 
 	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
 	descriptorCollection.bufferDescriptors.at(1) = outputImages;
 	descriptorCollection.bufferDescriptors.at(2) = &rayPayloadsBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &reservoirsBuffers;
+	descriptorCollection.bufferDescriptors.at(3) = &spatialReservoirsBuffers;
+	descriptorCollection.bufferDescriptors.at(4) = &prevTemporalReservoirs;
+	descriptorCollection.bufferDescriptors.at(5) = &nextTemporalReservoirs;
 
 	descriptorCollection.init();
 

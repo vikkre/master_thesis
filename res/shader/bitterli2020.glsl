@@ -49,7 +49,9 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 } renderSettings;
 layout(set = 0, binding = 1, rgba8) uniform image2D finalImage;
 layout(set = 0, binding = 2, scalar) buffer BitterliRayPayloads_ { BitterliRayPayload r[]; } rayPayloads;
-layout(set = 0, binding = 3, scalar) buffer Reservoirs_ { Reservoir r[]; } reservoirs;
+layout(set = 0, binding = 3, scalar) buffer spatialReservoirs_ { Reservoir r[]; } spatialReservoirs;
+layout(set = 0, binding = 4, scalar) buffer prevTemporalReservoirs_ { Reservoir r[]; } prevTemporalReservoirs;
+layout(set = 0, binding = 5, scalar) buffer nextTemporalReservoirs_ { Reservoir r[]; } nextTemporalReservoirs;
 
 Reservoir createReservoir() {
 	Reservoir r;

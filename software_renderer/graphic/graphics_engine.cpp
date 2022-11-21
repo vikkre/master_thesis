@@ -1,6 +1,11 @@
 #include "graphics_engine.h"
 
 
+void threadRender(GraphicsEngine* graphicsEngine, unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
+	graphicsEngine->render(t, startY, endY, viewInverse, projInverse, origin);
+}
+
+
 GraphicsEngine::GraphicsEngine()
 :imageSize(), image(), camera(nullptr), objects(), scene(), rng() {}
 
@@ -9,6 +14,7 @@ GraphicsEngine::~GraphicsEngine() {}
 void GraphicsEngine::parseInput(const InputEntry& inputEntry) {
 	raysPerPixel = inputEntry.get<unsigned int>("raysPerPixel");
 	visionJumpCount = inputEntry.get<unsigned int>("visionJumpCount");
+	threadCount = inputEntry.get<unsigned int>("threadCount");
 }
 
 void GraphicsEngine::init() {
@@ -35,30 +41,51 @@ void GraphicsEngine::render() {
 
 	Vector3f origin = cutVector(viewInverse * Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
 
+	std::vector<unsigned int> ys(threadCount + 1);
+	for (unsigned int t = 0; t <= threadCount; ++t) {
+		ys[t] = imageSize[1] * float(t) / float(threadCount);
+	}
+
+	std::vector<std::thread> threads;
+	threads.reserve(threadCount);
+
+	for (unsigned int t = 0; t < threadCount; ++t) {
+		threads.push_back(std::thread(threadRender, this, t, ys[t], ys[t + 1], viewInverse, projInverse, origin));
+	}
+
+	for (std::thread& th: threads) th.join();
+}
+
+void GraphicsEngine::render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
 	for (unsigned int x = 0; x < imageSize[0]; ++x) {
-		std::cout << x * imageSize[1] << "/" << imageSize[0] * imageSize[1] << "(" << 100.0f * float(x * imageSize[1]) / float(imageSize[0] * imageSize[1]) << "%) done" << std::endl;
-		for (unsigned int y = 0; y < imageSize[1]; ++y) {
-			Vector2f pixelCenter = Vector2f({x + 0.5f, y + 0.5f});
-			Vector2f inUV = Vector2f({pixelCenter[0] / (float) imageSize[0], pixelCenter[1] / (float) imageSize[1]});
-			Vector2f d = (2.0f * inUV) - Vector2f({1.0f, 1.0f});
-			Vector3f target = cutVector(projInverse * Vector4f({d[0], d[1], 1.0f, 1.0f})).normalize();
-			Vector3f direction = cutVector(viewInverse * expandVector(target, 0.0f)).normalize();
-
-			Vector3f color;
-			for (unsigned int i = 0; i < raysPerPixel; ++i) {
-				color += renderPixel(origin, direction);
-			}
-			color /= float(raysPerPixel);
-
-			unsigned int index = (x + y * imageSize[0]) * 3;
-			image[index + 0] = (char) (color[0] * 255.0f);
-			image[index + 1] = (char) (color[1] * 255.0f);
-			image[index + 2] = (char) (color[2] * 255.0f);
+		if (x % 100 == 0 && x != 0) std::cout << t << " done: " << float(x) / float(imageSize[0]) << std::endl;
+		for (unsigned int y = startY; y < endY; ++y) {
+			renderPixel(x, y, viewInverse, projInverse, origin);
 		}
 	}
 }
 
-Vector3f GraphicsEngine::renderPixel(Vector3f origin, Vector3f direction) {
+void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
+	Vector2f pixelCenter = Vector2f({x + 0.5f, y + 0.5f});
+	Vector2f inUV = Vector2f({pixelCenter[0] / (float) imageSize[0], pixelCenter[1] / (float) imageSize[1]});
+	Vector2f d = (2.0f * inUV) - Vector2f({1.0f, 1.0f});
+	Vector3f target = cutVector(projInverse * Vector4f({d[0], d[1], 1.0f, 1.0f})).normalize();
+	Vector3f direction = cutVector(viewInverse * expandVector(target, 0.0f)).normalize();
+
+	Vector3f color;
+	for (unsigned int i = 0; i < raysPerPixel; ++i) {
+		color += renderRay(origin, direction);
+	}
+	color /= float(raysPerPixel);
+	color *= 5.0f;
+
+	unsigned int index = (x + y * imageSize[0]) * 3;
+	image[index + 0] = (char) (color[0] * 255.0f);
+	image[index + 1] = (char) (color[1] * 255.0f);
+	image[index + 2] = (char) (color[2] * 255.0f);
+}
+
+Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 	Mesh::Vertex hitVertex;
 	const GraphicsObject* obj;
 
@@ -74,7 +101,6 @@ Vector3f GraphicsEngine::renderPixel(Vector3f origin, Vector3f direction) {
 				origin = hitVertex.pos + 0.01f * direction;
 				continue;
 			}
-			// return 0.5f * (rng.randomNormalDirection(hitVertex.normal) + Vector3f({1.0f, 1.0f, 1.0f}));
 			backfaceCulling = false;
 
 			if (obj->lightSource) {
@@ -89,7 +115,7 @@ Vector3f GraphicsEngine::renderPixel(Vector3f origin, Vector3f direction) {
 				color[2] *= obj->color[2];
 				float rayHandlingValue = rng.rand();
 
-				origin = hitVertex.pos;
+				origin = hitVertex.pos + 0.1f * hitVertex.normal;
 
 				if (rayHandlingValue <= obj->diffuseThreshold) {
 					direction = rng.randomNormalDirection(hitVertex.normal);

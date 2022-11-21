@@ -2,7 +2,7 @@
 
 pushd build
 cmake ..
-make -j 8
+make -j 12
 popd
 
 
@@ -64,4 +64,5 @@ popd
 # build/RayTrace res/renderer/phong_shader.renderer res/scene/labyrinth.scene 720 720
 
 # build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm
-build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm
+# build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm
+build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_ball.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm

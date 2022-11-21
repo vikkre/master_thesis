@@ -78,9 +78,13 @@ target_link_libraries(RayTrace ${Vulkan_LIBRARIES})
 
 project(SoftwareRenderer)
 
+find_package(Threads REQUIRED)
+
 file(GLOB_RECURSE SOFTWARE_RENDERER_SRC
 	"./software_renderer/**.h"
 	"./software_renderer/**.cpp"
 )
 
 add_executable(SoftwareRenderer ${SOFTWARE_RENDERER_SRC})
+
+target_link_libraries(SoftwareRenderer Threads::Threads)

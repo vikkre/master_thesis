@@ -1,5 +1,6 @@
 #pragma once
 
+#include <thread>
 
 #include "graphics_object.h"
 #include "scene.h"
@@ -18,7 +19,9 @@ class GraphicsEngine {
 		void saveImage(const std::string path);
 
 		void render();
-		Vector3f renderPixel(Vector3f origin, Vector3f direction);
+		void render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
+		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
+		Vector3f renderRay(Vector3f origin, Vector3f direction);
 
 		Vector2u imageSize;
 		std::vector<char> image;
@@ -29,4 +32,5 @@ class GraphicsEngine {
 
 		unsigned int raysPerPixel;
 		unsigned int visionJumpCount;
+		unsigned int threadCount;
 };

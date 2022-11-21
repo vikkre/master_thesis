@@ -1,23 +1,24 @@
 #pragma once
 
-#include "input.h"
-#include "../input_parser.h"
+#include <SDL2/SDL.h>
 
-#include "../math/matrix.h"
-#include "../math/rotation.h"
+#include "input_parser.h"
+
+#include "math/matrix.h"
+#include "math/rotation.h"
 
 
-class FreeInput: public Input {
+class FreeInput {
 	public:
 		FreeInput(bool disableControl);
 		~FreeInput();
 
-		virtual void handleEvents(const SDL_Event& event) override;
-		virtual void update(float deltaTime) override;
+		void handleEvents(const SDL_Event& event);
+		void update(float deltaTime);
 
-		virtual Vector3f getPosition() const override;
-		virtual Vector3f getLookAt() const override;
-		virtual Vector3f getUp() const override;
+		Vector3f getPosition() const;
+		Vector3f getLookAt() const;
+		Vector3f getUp() const;
 
 		Vector3f getLookDirection() const;
 		void toggleMouse(bool escape);

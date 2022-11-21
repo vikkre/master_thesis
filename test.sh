@@ -48,7 +48,7 @@ popd
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
-build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720
+# build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera out/shadowtracer_labyrinth.ppm 5
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera out/bitterli2020_labyrinth.ppm 5
@@ -62,3 +62,6 @@ build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280
 # build/RayTrace res/renderer/phong_shader.renderer res/scene/cornell_box_with_blocks.scene 720 720
 # build/RayTrace res/renderer/phong_shader.renderer res/scene/cornell_box_with_ball.scene 720 720
 # build/RayTrace res/renderer/phong_shader.renderer res/scene/labyrinth.scene 720 720
+
+# build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm
+build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/sw_renderer.ppm

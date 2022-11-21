@@ -26,6 +26,30 @@
 					"ignoreFailures": true
 				}
 			]
+		},
+		{
+			"name": "(gdb) Launch Software Renderer",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/SoftwareRenderer",
+			"args": [
+				"res/renderer/SoftwareRenderer.renderer",
+				"res/scene/cornell_box.scene",
+				"1280", "720",
+				"res/camera/default.camera", "out/sw_renderer.ppm"
+			],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			]
 		}
 	]
 }

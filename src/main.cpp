@@ -27,10 +27,7 @@
 #include "mesh_manager.h"
 #include "input_parser.h"
 
-#include "input/input.h"
-#include "input/fake_input.h"
-#include "input/spherical_input.h"
-#include "input/free_input.h"
+#include "free_input.h"
 
 #include "math/vector.h"
 #include "math/matrix.h"

@@ -12,7 +12,7 @@ find_package(Vulkan REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
 
-file(GLOB_RECURSE PROJECT_SRC
+file(GLOB_RECURSE RAY_TRACE_SRC
 	"./src/**.h"
 	"./src/**.cpp"
 )
@@ -35,9 +35,9 @@ macro(add_shader output_shader)
 endmacro()
 
 set(SHADER_INCLUDES helper.glsl v1.glsl)
-add_shader(v1_miss.spv       v1_miss.rmiss       v1.glsl )
-add_shader(v1_shadow.spv     v1_shadow.rmiss     v1.glsl )
-add_shader(v1_closesthit.spv v1_closesthit.rchit v1.glsl )
+add_shader(v1_miss.spv       v1_miss.rmiss       ${SHADER_INCLUDES} )
+add_shader(v1_shadow.spv     v1_shadow.rmiss     ${SHADER_INCLUDES} )
+add_shader(v1_closesthit.spv v1_closesthit.rchit ${SHADER_INCLUDES} )
 
 set(PHOTON_MAPPER_INCLUDES ${SHADER_INCLUDES} photon_mapper.glsl)
 add_shader(photon_mapper_light_raygen.spv  photon_mapper_light_raygen.rgen  ${PHOTON_MAPPER_INCLUDES} )
@@ -70,8 +70,17 @@ add_shader(phong_renderer_raygen.spv phong_renderer_raygen.rgen ${PHONG_RENDERER
 add_shader(denoise_gauss_comp.spv  denoise_gauss_comp.comp  )
 add_shader(denoise_median_comp.spv denoise_median_comp.comp )
 
-
-add_executable(RayTrace ${PROJECT_SRC} ${SHADER})
+add_executable(RayTrace ${RAY_TRACE_SRC} ${SHADER})
 
 target_link_libraries(RayTrace ${SDL2_LIBRARIES})
 target_link_libraries(RayTrace ${Vulkan_LIBRARIES})
+
+
+project(SoftwareRenderer)
+
+file(GLOB_RECURSE SOFTWARE_RENDERER_SRC
+	"./software_renderer/**.h"
+	"./software_renderer/**.cpp"
+)
+
+add_executable(SoftwareRenderer ${SOFTWARE_RENDERER_SRC})

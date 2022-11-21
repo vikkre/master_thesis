@@ -1,19 +1,24 @@
 #pragma once
 
-#include "../math/vector.h"
-#include "../math/matrix.h"
+#include "input_parser.h"
 
-#include "../free_input.h"
+#include "math/vector.h"
+#include "math/matrix.h"
 
 
 class Camera {
 	public:
 		Camera();
+		~Camera();
 
+		void parseInput(const InputEntry& inputEntry);
 		Matrix4f getViewMatrix() const;
 		Matrix4f getProjectionMatrix(float aspectRatio) const;
 
-		FreeInput* input;
+		float theta;
+		float phi;
+
+		Vector3f position;
 
 		float fov;
 		float nearZ;

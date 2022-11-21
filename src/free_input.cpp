@@ -11,7 +11,7 @@
 
 
 FreeInput::FreeInput(bool disableControl)
-:Input(), theta(M_PI), phi(M_PI_2),
+:theta(M_PI), phi(M_PI_2),
 position({22.0f, 0.0f, 0.0f}), disableControl(disableControl), checkMouseMotion(false),
 forward(false), backward(false), left(false), right(false), up(false), down(false) {}
 

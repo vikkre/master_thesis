@@ -5,12 +5,11 @@ GraphicsObject::GraphicsObject(const Mesh* mesh, const Vector3f& position)
 :scale({1.0f, 1.0f, 1.0f}), rotation(), position(position),
 color(Vector3f({1.0f, 1.0f, 1.0f})), lightSource(false), lightStrength(0.0f),
 diffuseWeight(1.0f), reflectWeight(0.0f), transparentWeight(0.0f), refractionIndex(1.0f),
-indices(), vertices(), mesh(mesh), objectMatrix() {}
+vertices(), mesh(mesh), objectMatrix(), triangles() {}
 
 GraphicsObject::~GraphicsObject() {}
 
 void GraphicsObject::init() {
-	indices = mesh->indices;
 	vertices.resize(mesh->vertices.size());
 
 	for (size_t i = 0; i < mesh->vertices.size(); ++i) {
@@ -23,6 +22,20 @@ void GraphicsObject::init() {
 
 		vertices[i].pos = cutVector(pos);
 		vertices[i].normal = cutVector(normal);
+	}
+
+	triangles.reserve(mesh->indices.size() / 3);
+	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
+		unsigned int v0 = mesh->indices[i+0];
+		unsigned int v1 = mesh->indices[i+1];
+		unsigned int v2 = mesh->indices[i+2];
+
+		triangles.emplace_back(
+			Vector3u({v0, v1, v2}),
+			vertices[v0].pos,
+			vertices[v1].pos,
+			vertices[v2].pos
+		);
 	}
 
 	float totalWeight = diffuseWeight + reflectWeight + transparentWeight;
@@ -39,4 +52,21 @@ Matrix4f GraphicsObject::getMatrix() const {
 	objectMatrix *= getTranslationMatrix(position);
 
 	return objectMatrix;
+}
+
+bool GraphicsObject::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const {
+	bool hit = false;
+	for (const Triangle& triangle: triangles) {
+		Vector3f currentHitPos;
+		if (triangle.rayIntersects(rayOrigin, rayDirection, currentHitPos)) {
+			float currentDistance = rayOrigin.distanceSquared(currentHitPos);
+			if (currentDistance < minDistance) {
+				hitPos = currentHitPos;
+				minDistance = currentDistance;
+				currentTriangle = &triangle;
+				hit = true;
+			}
+		}
+	}
+	return hit;
 }

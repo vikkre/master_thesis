@@ -10,8 +10,8 @@ class Scene {
 		~Scene();
 
 		void addObject(GraphicsObject* obj);
-		bool traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Mesh::Vertex& hitVertex, const GraphicsObject*& obj) const;
+		bool traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Mesh::Vertex& hitVertex, const GraphicsObject*& currentObj) const;
 	
 	private:
-		std::vector<Triangle> triangles;
+		std::vector<GraphicsObject*> objs;
 };

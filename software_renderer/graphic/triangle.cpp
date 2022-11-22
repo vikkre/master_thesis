@@ -1,10 +1,10 @@
 #include "triangle.h"
 
 
-Triangle::Triangle(const GraphicsObject* obj, size_t v0, size_t v1, size_t v2)
-:obj(obj), v0(v0), v1(v1), v2(v2) {
-	edge0 = obj->vertices[v1].pos - obj->vertices[v0].pos;
-	edge1 = obj->vertices[v2].pos - obj->vertices[v0].pos;
+Triangle::Triangle(const Vector3u& indices, const Vector3f& v0, const Vector3f& v1, const Vector3f& v2)
+:indices(indices), v0(v0), v1(v1), v2(v2) {
+	edge0 = v1 - v0;
+	edge1 = v2 - v0;
 
 	d00 = edge0.dot(edge0);
 	d01 = edge0.dot(edge1);
@@ -22,7 +22,7 @@ bool Triangle::rayIntersects(const Vector3f& rayOrigin, const Vector3f& rayDirec
 	if (a > -EPSILON && a < EPSILON) return false;
 
 	float f = 1.0f / a;
-	Vector3f s = rayOrigin - obj->vertices[v0].pos;
+	Vector3f s = rayOrigin - v0;
 	float u = f * s.dot(h);
 	if (u < 0.0f || u > 1.0f) return false;
 
@@ -41,7 +41,7 @@ bool Triangle::rayIntersects(const Vector3f& rayOrigin, const Vector3f& rayDirec
 }
 
 Vector3f Triangle::getBarycentricCoords(const Vector3f& outIntersectionPoint) const {
-	Vector3f edge2 = outIntersectionPoint - obj->vertices[v0].pos;
+	Vector3f edge2 = outIntersectionPoint - v0;
 	float d20 = edge2.dot(edge0);
 	float d21 = edge2.dot(edge1);
 

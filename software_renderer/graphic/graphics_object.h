@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mesh.h"
+#include "triangle.h"
 
 #include "../math/vector.h"
 #include "../math/matrix.h"
@@ -19,6 +20,7 @@ class GraphicsObject {
 
 		void init();
 		Matrix4f getMatrix() const;
+		bool traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const;
 
 		Vector3f scale;
 		Rotation rotation;
@@ -38,10 +40,10 @@ class GraphicsObject {
 
 		float refractionIndex;
 
-		std::vector<size_t> indices;
 		std::vector<Mesh::Vertex> vertices;
 
 	private:
 		const Mesh* mesh;
 		Matrix4f objectMatrix;
+		std::vector<Triangle> triangles;
 };

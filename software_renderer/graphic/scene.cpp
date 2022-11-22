@@ -2,45 +2,33 @@
 
 
 Scene::Scene()
-:triangles() {}
+:objs() {}
 
 Scene::~Scene() {}
 
 void Scene::addObject(GraphicsObject* obj) {
-	for (size_t i = 0; i < obj->indices.size(); i += 3) {
-		triangles.emplace_back(obj,
-			obj->indices[i+0],
-			obj->indices[i+1],
-			obj->indices[i+2]
-		);
-	}
+	objs.push_back(obj);
 }
 
-bool Scene::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Mesh::Vertex& hitVertex, const GraphicsObject*& obj) const {
+bool Scene::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Mesh::Vertex& hitVertex, const GraphicsObject*& currentObj) const {
 	float minDistance = INFINITY;
 	const Triangle* currentTriangle = nullptr;
+	currentObj = nullptr;
 	Vector3f hitPos;
-	for (const Triangle& triangle: triangles) {
-		Vector3f currentHitPos;
-		if (triangle.rayIntersects(rayOrigin, rayDirection, currentHitPos)) {
-			float currentDistance = rayOrigin.distanceSquared(currentHitPos);
-			if (currentDistance < minDistance) {
-				hitPos = currentHitPos;
-				minDistance = currentDistance;
-				currentTriangle = &triangle;
-			}
+	for (const GraphicsObject* obj: objs) {
+		if (obj->traceRay(rayOrigin, rayDirection, hitPos, currentTriangle, minDistance)) {
+			currentObj = obj;
 		}
 	}
 
-	if (currentTriangle == nullptr) return false;
+	if (currentObj == nullptr) return false;
 
 	Vector3f barycentricCoords = currentTriangle->getBarycentricCoords(hitPos);
 	hitVertex.pos = hitPos;
-	obj = currentTriangle->obj;
 
-	Mesh::Vertex vert0 = obj->vertices[currentTriangle->v0];
-	Mesh::Vertex vert1 = obj->vertices[currentTriangle->v1];
-	Mesh::Vertex vert2 = obj->vertices[currentTriangle->v2];
+	const Mesh::Vertex& vert0 = currentObj->vertices[currentTriangle->indices[0]];
+	const Mesh::Vertex& vert1 = currentObj->vertices[currentTriangle->indices[1]];
+	const Mesh::Vertex& vert2 = currentObj->vertices[currentTriangle->indices[2]];
 	hitVertex.normal = Vector3f({0.0f, 0.0f, 0.0f});
 	hitVertex.normal += barycentricCoords[0] * vert0.normal;
 	hitVertex.normal += barycentricCoords[1] * vert1.normal;

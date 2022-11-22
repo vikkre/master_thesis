@@ -20,7 +20,7 @@ class Vector {
 				this->v[i] = vec[i];
 			}
 		}
-		Vector(const std::vector<T> vec) : v{0} {
+		Vector(const std::vector<T>& vec) : v{0} {
 			for (size_t i = 0; i < s && i < vec.size(); ++i) {
 				this->v[i] = vec[i];
 			}

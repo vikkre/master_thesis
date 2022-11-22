@@ -46,4 +46,6 @@ class GraphicsObject {
 		const Mesh* mesh;
 		Matrix4f objectMatrix;
 		std::vector<Triangle> triangles;
+		Vector3f aabbMin;
+		Vector3f aabbMax;
 };

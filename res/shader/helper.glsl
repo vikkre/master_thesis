@@ -44,11 +44,12 @@ vec3 customRefract(vec3 direction, vec3 normal, float rIndex) {
 	float ndotd = dot(normal, direction);
 	if (ndotd > 0.0) {
 		normal = -normal;
+		ndotd = dot(normal, direction);
 	} else {
 		rIndex = 1.0 / rIndex;
 	}
 
-	float angle = sin(acos(dot(direction, normal))) * rIndex;
+	float angle = sin(acos(ndotd)) * rIndex;
 	if (-1.0 < angle && angle < 1.0)
 		return refract(direction, normal, rIndex);
 	else

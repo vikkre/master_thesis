@@ -27,8 +27,8 @@ void GraphicsObject::init() {
 
 	float totalWeight = diffuseWeight + reflectWeight + transparentWeight;
 	diffuseThreshold = diffuseWeight / totalWeight;
-	reflectThreshold = diffuseThreshold + reflectWeight / totalWeight;
-	transparentThreshold = reflectThreshold + transparentWeight / totalWeight;
+	reflectThreshold = diffuseThreshold + (reflectWeight / totalWeight);
+	transparentThreshold = reflectThreshold + (transparentWeight / totalWeight);
 }
 
 Matrix4f GraphicsObject::getMatrix() const {

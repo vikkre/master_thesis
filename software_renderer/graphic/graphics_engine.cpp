@@ -58,7 +58,7 @@ void GraphicsEngine::render() {
 
 void GraphicsEngine::render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
 	for (unsigned int x = 0; x < imageSize[0]; ++x) {
-		if (x % 100 == 0 && x != 0) std::cout << t << " done: " << float(x) / float(imageSize[0]) << std::endl;
+		if (x % 100 == 0 && x != 0) std::cout << "Thread " << t << ": " << float(x) / float(imageSize[0]) << " done" << std::endl;
 		for (unsigned int y = startY; y < endY; ++y) {
 			renderPixel(x, y, viewInverse, projInverse, origin);
 		}
@@ -93,8 +93,7 @@ Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 	bool lightHit = false;
 	bool backfaceCulling = true;
 
-	unsigned int i = 0;
-	for (; i < visionJumpCount; ++i) {
+	for (unsigned int i = 0; i < visionJumpCount; ++i) {
 		if (scene.traceRay(origin, direction, hitVertex, obj)) {
 			float ndotd = hitVertex.normal.dot(direction);
 			if (backfaceCulling && ndotd > 0.0f) {
@@ -120,23 +119,9 @@ Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 				if (rayHandlingValue <= obj->diffuseThreshold) {
 					direction = rng.randomNormalDirection(hitVertex.normal);
 				} else if (rayHandlingValue <= obj->reflectThreshold) {
-					direction = direction - (2.0f * ndotd * hitVertex.normal);
+					direction = reflect(direction, hitVertex.normal);
 				} else if (rayHandlingValue <= obj->transparentThreshold) {
-					float rIndex = obj->refractionIndex;
-					if (ndotd > 0.0f) {
-						hitVertex.normal *= -1.0f;
-					} else {
-						rIndex = 1.0f / rIndex;
-					}
-
-					float angle = sin(acos(ndotd)) * rIndex;
-					if (-1.0f < angle && angle < 1.0f) {
-						float k = 1.0f - rIndex * rIndex * (1.0f - ndotd * ndotd);
-						if (k < 0.0f) direction = Vector3f({0.0f, 0.0f, 0.0f});
-						else direction = rIndex * direction - (rIndex * ndotd + sqrt(k)) * hitVertex.normal;
-					} else {
-						direction = direction - (2.0f * ndotd * hitVertex.normal);
-					}
+					direction = customRefract(direction, hitVertex.normal, obj->refractionIndex);
 				}
 			}
 

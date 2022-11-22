@@ -40,6 +40,6 @@ ball.obj
 	scale(3, 3, 3)
 	diffuse(0)
 	reflect(0)
-	transparent(2)
+	transparent(1)
 	refractionIndex(1.5)
 

@@ -14,25 +14,25 @@ Triangle::Triangle(const Vector3u& indices, const Vector3f& v0, const Vector3f& 
 
 Triangle::~Triangle() {}
 
-bool Triangle::rayIntersects(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& outIntersectionPoint) const {
+bool Triangle::rayIntersects(const Ray& ray, Vector3f& outIntersectionPoint) const {
 	constexpr float EPSILON = 0.0000001f;
 	
-	Vector3f h = cross(rayDirection, edge1);
+	Vector3f h = cross(ray.direction, edge1);
 	float a = edge0.dot(h);
 	if (a > -EPSILON && a < EPSILON) return false;
 
 	float f = 1.0f / a;
-	Vector3f s = rayOrigin - v0;
+	Vector3f s = ray.origin - v0;
 	float u = f * s.dot(h);
 	if (u < 0.0f || u > 1.0f) return false;
 
 	Vector3f q = cross(s, edge0);
-	float v = f * rayDirection.dot(q);
+	float v = f * ray.direction.dot(q);
 	if (v < 0.0f || u + v > 1.0f) return false;
 
 	float t = f * edge1.dot(q);
 	if (t > EPSILON) {
-		outIntersectionPoint = rayOrigin + (t * rayDirection);
+		outIntersectionPoint = ray.origin + (t * ray.direction);
 		return true;
 
 	} else {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ray.h"
+
 #include "../math/vector.h"
 #include "../math/matrix.h"
 
@@ -9,7 +11,7 @@ class Triangle {
 		Triangle(const Vector3u& indices, const Vector3f& v0, const Vector3f& v1, const Vector3f& v2);
 		~Triangle();
 
-		bool rayIntersects(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& outIntersectionPoint) const;
+		bool rayIntersects(const Ray& ray, Vector3f& outIntersectionPoint) const;
 		Vector3f getBarycentricCoords(const Vector3f& outIntersectionPoint) const;
 
 		const Vector3u indices;

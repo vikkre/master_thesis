@@ -2,6 +2,7 @@
 
 #include "mesh.h"
 #include "triangle.h"
+#include "ray.h"
 
 #include "../math/vector.h"
 #include "../math/matrix.h"
@@ -20,7 +21,7 @@ class GraphicsObject {
 
 		void init();
 		Matrix4f getMatrix() const;
-		bool traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const;
+		bool traceRay(const Ray& ray, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const;
 
 		Vector3f scale;
 		Rotation rotation;

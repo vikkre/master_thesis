@@ -64,13 +64,12 @@ Matrix4f GraphicsObject::getMatrix() const {
 	return objectMatrix;
 }
 
-bool GraphicsObject::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const {
-	Vector3f rayDirectionInv = 1.0f / rayDirection;
+bool GraphicsObject::traceRay(const Ray& ray, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const {
 	float tmin = 0.0, tmax = INFINITY;
 
 	for (size_t a = 0; a < 3; ++a) {
-		float t1 = (aabbMin[a] - rayOrigin[a]) * rayDirectionInv[a];
-		float t2 = (aabbMax[a] - rayOrigin[a]) * rayDirectionInv[a];
+		float t1 = (aabbMin[a] - ray.origin[a]) * ray.directionInv[a];
+		float t2 = (aabbMax[a] - ray.origin[a]) * ray.directionInv[a];
 
 		tmin = std::max(tmin, std::min(t1, t2));
 		tmax = std::min(tmax, std::max(t1, t2));
@@ -80,8 +79,8 @@ bool GraphicsObject::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDire
 	bool hit = false;
 	for (const Triangle& triangle: triangles) {
 		Vector3f currentHitPos;
-		if (triangle.rayIntersects(rayOrigin, rayDirection, currentHitPos)) {
-			float currentDistance = rayOrigin.distanceSquared(currentHitPos);
+		if (triangle.rayIntersects(ray, currentHitPos)) {
+			float currentDistance = ray.origin.distanceSquared(currentHitPos);
 			if (currentDistance < minDistance) {
 				hitPos = currentHitPos;
 				minDistance = currentDistance;

@@ -74,7 +74,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 
 	Vector3f color;
 	for (unsigned int i = 0; i < raysPerPixel; ++i) {
-		color += renderRay(origin, direction);
+		color += traceRay(Ray(origin, direction));
 	}
 	color /= float(raysPerPixel);
 	color *= 5.0f;
@@ -84,7 +84,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		image[index + i] = (char) (color[i] * 255.0f);
 }
 
-Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
+Vector3f GraphicsEngine::traceRay(Ray ray) {
 	Mesh::Vertex hitVertex;
 	const GraphicsObject* obj;
 
@@ -93,10 +93,10 @@ Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 	bool backfaceCulling = true;
 
 	for (unsigned int i = 0; i < visionJumpCount; ++i) {
-		if (scene.traceRay(origin, direction, hitVertex, obj)) {
-			float ndotd = hitVertex.normal.dot(direction);
+		if (scene.traceRay(ray, hitVertex, obj)) {
+			float ndotd = hitVertex.normal.dot(ray.direction);
 			if (backfaceCulling && ndotd > 0.0f) {
-				origin = hitVertex.pos + 0.01f * direction;
+				ray.origin = hitVertex.pos + 0.01f * ray.direction;
 				continue;
 			}
 			backfaceCulling = false;
@@ -109,15 +109,16 @@ Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 				color *= obj->color;
 				float rayHandlingValue = rng.rand();
 
-				origin = hitVertex.pos + 0.1f * hitVertex.normal;
+				ray.origin = hitVertex.pos + 0.1f * hitVertex.normal;
 
 				if (rayHandlingValue <= obj->diffuseThreshold) {
-					direction = rng.randomNormalDirection(hitVertex.normal);
+					ray.direction = rng.randomNormalDirection(hitVertex.normal);
 				} else if (rayHandlingValue <= obj->reflectThreshold) {
-					direction = reflect(direction, hitVertex.normal);
+					ray.direction = reflect(ray.direction, hitVertex.normal);
 				} else if (rayHandlingValue <= obj->transparentThreshold) {
-					direction = customRefract(direction, hitVertex.normal, obj->refractionIndex);
+					ray.direction = customRefract(ray.direction, hitVertex.normal, obj->refractionIndex);
 				}
+				ray.update();
 			}
 
 		} else {

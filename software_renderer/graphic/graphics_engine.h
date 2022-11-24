@@ -5,6 +5,7 @@
 
 #include "graphics_object.h"
 #include "scene.h"
+#include "ray.h"
 
 #include "../camera.h"
 #include "../math/random.h"
@@ -12,6 +13,8 @@
 
 class GraphicsEngine {
 	public:
+		enum class TraceResult {NO_HIT, HIT_DIFFUSE, HIT_REFLECT, HIT_TRANSPARENT};
+
 		GraphicsEngine();
 		~GraphicsEngine();
 
@@ -22,7 +25,7 @@ class GraphicsEngine {
 		void render();
 		void render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
 		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
-		Vector3f renderRay(Vector3f origin, Vector3f direction);
+		Vector3f traceRay(Ray ray);
 
 		Vector2u imageSize;
 		std::vector<char> image;

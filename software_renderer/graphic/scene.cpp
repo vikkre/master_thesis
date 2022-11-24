@@ -10,13 +10,13 @@ void Scene::addObject(GraphicsObject* obj) {
 	objs.push_back(obj);
 }
 
-bool Scene::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Mesh::Vertex& hitVertex, const GraphicsObject*& currentObj) const {
+bool Scene::traceRay(const Ray& ray, Mesh::Vertex& hitVertex, const GraphicsObject*& currentObj) const {
 	float minDistance = INFINITY;
 	const Triangle* currentTriangle = nullptr;
 	currentObj = nullptr;
 	Vector3f hitPos;
 	for (const GraphicsObject* obj: objs) {
-		if (obj->traceRay(rayOrigin, rayDirection, hitPos, currentTriangle, minDistance)) {
+		if (obj->traceRay(ray, hitPos, currentTriangle, minDistance)) {
 			currentObj = obj;
 		}
 	}

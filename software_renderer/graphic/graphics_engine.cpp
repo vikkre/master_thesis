@@ -1,5 +1,7 @@
 #include "graphics_engine.h"
 
+#define SURFACE_DISTANCE_OFFSET 0.001f
+
 
 void threadRender(GraphicsEngine* graphicsEngine, unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
 	graphicsEngine->render(t, startY, endY, viewInverse, projInverse, origin);
@@ -77,7 +79,6 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		color += traceRay(Ray(origin, direction));
 	}
 	color /= float(raysPerPixel);
-	color *= 5.0f;
 
 	unsigned int index = (x + y * imageSize[0]) * 3;
 	for (unsigned int i = 0; i < 3; ++i)
@@ -96,7 +97,7 @@ Vector3f GraphicsEngine::traceRay(Ray ray) {
 		if (scene.traceRay(ray, hitVertex, obj)) {
 			float ndotd = hitVertex.normal.dot(ray.direction);
 			if (backfaceCulling && ndotd > 0.0f) {
-				ray.origin = hitVertex.pos + 0.01f * ray.direction;
+				ray.origin = hitVertex.pos + SURFACE_DISTANCE_OFFSET * ray.direction;
 				continue;
 			}
 			backfaceCulling = false;
@@ -109,7 +110,7 @@ Vector3f GraphicsEngine::traceRay(Ray ray) {
 				color *= obj->color;
 				float rayHandlingValue = rng.rand();
 
-				ray.origin = hitVertex.pos + 0.1f * hitVertex.normal;
+				ray.origin = hitVertex.pos + SURFACE_DISTANCE_OFFSET * hitVertex.normal;
 
 				if (rayHandlingValue <= obj->diffuseThreshold) {
 					ray.direction = rng.randomNormalDirection(hitVertex.normal);

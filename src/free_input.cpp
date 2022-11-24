@@ -1,6 +1,6 @@
 #include "free_input.h"
 
-#define MOVE_SPEED  35.0f
+#define MOVE_SPEED  7.0f
 #define ANGLE_SPEED 0.01f
 
 #define PHI_MIN       0.01f
@@ -12,7 +12,7 @@
 
 FreeInput::FreeInput(bool disableControl)
 :theta(M_PI), phi(M_PI_2),
-position({22.0f, 0.0f, 0.0f}), disableControl(disableControl), checkMouseMotion(false),
+position({5.0f, 0.0f, 0.0f}), disableControl(disableControl), checkMouseMotion(false),
 forward(false), backward(false), left(false), right(false), up(false), down(false) {}
 
 FreeInput::~FreeInput() {}

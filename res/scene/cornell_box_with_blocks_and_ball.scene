@@ -1,43 +1,38 @@
 panel.obj
-	position(-5,  0,  0)
-	scale(1.0, 5.0, 5.0)
+	position(-1,  0,  0)
 
 panel.obj
-	position(5,  0,  0)
-	scale(1.0, 5.0, 5.0)
+	position(1,  0,  0)
 	rotation(0, 1, 0, 3.14159)
 
 panel.obj
-	position(0, -5,  0)
-	scale(1.0, 5.0, 5.0)
+	position(0, -1,  0)
 	rotation(0, 0, 1, 1.57079)
 
 panel.obj
-	position(0,  5,  0)
-	scale(1.0, 5.0, 5.0)
+	position(0,  1,  0)
 	rotation(0, 0, 1, -1.57079)
 
 panel.obj
-	position(0,  0, -5)
-	scale(1.0, 5.0, 5.0)
+	position(0,  0, -1)
 	rotation(0, 1, 0, -1.57079)
 	color(0, 1, 0)
 
 panel.obj
-	position(0,  0,  5)
-	scale(1.0, 5.0, 5.0)
+	position(0,  0,  1)
 	rotation(0, 1, 0, 1.57079)
 	color(1, 0, 0)
 
 #panel.obj
-#	position(0, 4.9, 0)
+#	position(0, 0.99, 0)
+#	scale(0.2, 0.2, 0.2)
 #	rotation(0, 0, 1, -1.57079)
-#	lightSource(10.0)
+#	lightSource(5.0)
 
 
 block.obj
-	position(2, -3.5, -2)
-	scale(1.5, 1.5, 1.5)
+	position(0.4, -0.7, -0.4)
+	scale(0.3, 0.3, 0.3)
 	rotation(0, 1, 0, 1)
 	diffuse(1)
 	reflect(0)
@@ -45,16 +40,16 @@ block.obj
 	refractionIndex(1.5)
 
 block.obj
-	position(-2, -2, 2)
-	scale(1.5, 3, 1.5)
+	position(-0.4, -0.4, 0.4)
+	scale(0.3, 0.6, 0.3)
 	rotation(0, 1, 0, -1)
-	diffuse(1)
-	reflect(0)
+	diffuse(0)
+	reflect(1)
 	transparent(0)
 	refractionIndex(1.5)
 
 ball.obj
-	position(0, 2.5, 0)
-	scale(0.5, 0.5, 0.5)
-	lightSource(5.0)
-	move(0, -2.5, 0, 2.0)
+	position(0, 0.5, 0)
+	scale(0.1, 0.1, 0.1)
+	lightSource(2.5)
+	move(0, -0.5, 0, 0.4)

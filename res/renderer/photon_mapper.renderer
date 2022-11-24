@@ -1,9 +1,9 @@
 PhotonMapper
-	lightRayCount(3000)
+	lightRayCount(150)
 	lightJumpCount(2)
 	visionJumpCount(2)
-	collectionDistance(0.7)
+	collectionDistance(0.2)
 	visionRayPerPixelCount(5)
 	collectionDistanceShrinkFactor(5)
 	lightCollectionCount(5)
-	useCountLightCollecton(0)
+	useCountLightCollecton(1)

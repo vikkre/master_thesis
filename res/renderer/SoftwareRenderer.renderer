@@ -1,4 +1,4 @@
 Bitterli2020
-	raysPerPixel(1)
-	visionJumpCount(5)
+	raysPerPixel(100)
+	visionJumpCount(15)
 	threadCount(12)

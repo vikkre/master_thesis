@@ -1,6 +1,6 @@
 #include "camera.h"
 
-#define MOVE_SPEED  35.0f
+#define MOVE_SPEED  7.0f
 #define ANGLE_SPEED 0.01f
 
 #define PHI_MIN       0.01f
@@ -11,7 +11,7 @@
 
 
 Camera::Camera()
-:theta(M_PI), phi(M_PI_2), position({22.0f, 0.0f, 0.0f}),
+:theta(M_PI), phi(M_PI_2), position({4.0f, 0.0f, 0.0f}),
 fov(M_PI_4), nearZ(0.01f), farZ(1000.0f), invertY(true) {}
 
 Camera::~Camera() {}

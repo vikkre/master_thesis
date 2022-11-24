@@ -219,7 +219,7 @@ vec3 shadowTrace(LightSourcePoint lsp, vec3 pos, vec3 normal) {
 
 	if (!shadowed) {
 		lightStrength *= lsp.lightStrength;
-		lightStrength *= 5.0 / square_length(toLight);
+		lightStrength *= 1.0 / square_length(toLight);
 		return lightStrength * lsp.color;
 	} else {
 		return vec3(0.0);

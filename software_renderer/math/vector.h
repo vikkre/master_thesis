@@ -56,6 +56,42 @@ class Vector {
 		// Math Operators with Scalar
 
 		template<typename S>
+		Vector operator+(const S scalar) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] += scalar;
+			}
+			return ret;
+		}
+
+		template<typename S>
+		Vector operator-(const S scalar) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] -= scalar;
+			}
+			return ret;
+		}
+
+		template<typename S>
+		Vector operator*(const S scalar) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] *= scalar;
+			}
+			return ret;
+		}
+
+		template<typename S>
+		Vector operator/(const S scalar) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] /= scalar;
+			}
+			return ret;
+		}
+
+		template<typename S>
 		Vector& operator+=(const S scalar) {
 			for (size_t i = 0; i < s; ++i) {
 				this->v[i] += scalar;
@@ -105,6 +141,22 @@ class Vector {
 			return ret;
 		}
 
+		Vector operator*(const Vector& other) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] *= other.v[i];
+			}
+			return ret;
+		}
+
+		Vector operator/(const Vector& other) const {
+			Vector ret(*this);
+			for (size_t i = 0; i < s; ++i) {
+				ret.v[i] /= other.v[i];
+			}
+			return ret;
+		}
+
 		Vector& operator+=(const Vector& other) {
 			for (size_t i = 0; i < s; ++i) {
 				this->v[i] += other.v[i];
@@ -115,6 +167,20 @@ class Vector {
 		Vector& operator-=(const Vector& other) {
 			for (size_t i = 0; i < s; ++i) {
 				this->v[i] -= other.v[i];
+			}
+			return *this;
+		}
+
+		Vector& operator*=(const Vector& other) {
+			for (size_t i = 0; i < s; ++i) {
+				this->v[i] *= other.v[i];
+			}
+			return *this;
+		}
+
+		Vector& operator/=(const Vector& other) {
+			for (size_t i = 0; i < s; ++i) {
+				this->v[i] /= other.v[i];
 			}
 			return *this;
 		}

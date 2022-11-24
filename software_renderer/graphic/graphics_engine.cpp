@@ -80,9 +80,8 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 	color *= 5.0f;
 
 	unsigned int index = (x + y * imageSize[0]) * 3;
-	image[index + 0] = (char) (color[0] * 255.0f);
-	image[index + 1] = (char) (color[1] * 255.0f);
-	image[index + 2] = (char) (color[2] * 255.0f);
+	for (unsigned int i = 0; i < 3; ++i)
+		image[index + i] = (char) (color[i] * 255.0f);
 }
 
 Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
@@ -103,15 +102,11 @@ Vector3f GraphicsEngine::renderRay(Vector3f origin, Vector3f direction) {
 			backfaceCulling = false;
 
 			if (obj->lightSource) {
-				color[0] *= obj->color[0] * obj->lightStrength;
-				color[1] *= obj->color[1] * obj->lightStrength;
-				color[2] *= obj->color[2] * obj->lightStrength;
+				color *= obj->color * obj->lightStrength;
 				lightHit = true;
 				break;
 			} else {
-				color[0] *= obj->color[0];
-				color[1] *= obj->color[1];
-				color[2] *= obj->color[2];
+				color *= obj->color;
 				float rayHandlingValue = rng.rand();
 
 				origin = hitVertex.pos + 0.1f * hitVertex.normal;

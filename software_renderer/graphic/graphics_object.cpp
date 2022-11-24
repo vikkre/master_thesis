@@ -25,7 +25,7 @@ void GraphicsObject::init() {
 
 		if (i == 0) {
 			aabbMin = vertices[i].pos;
-			aabbMax = vertices[i].pos;
+			aabbMax = vertices[i].pos + 0.0001f;
 		} else {
 			for (size_t a = 0; a < 3; ++a) {
 				aabbMin[a] = std::min(aabbMin[a], vertices[i].pos[a]);
@@ -65,17 +65,17 @@ Matrix4f GraphicsObject::getMatrix() const {
 }
 
 bool GraphicsObject::traceRay(const Vector3f& rayOrigin, const Vector3f& rayDirection, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const {
-	for (size_t a = 0; a < 3; ++a) {
-		float invD = 1.0f / rayDirection[a];
-		float t0 = (aabbMin[a] - rayOrigin[a]) * invD;
-		float t1 = (aabbMax[a] - rayOrigin[a]) * invD;
+	Vector3f rayDirectionInv = 1.0f / rayDirection;
+	float tmin = 0.0, tmax = INFINITY;
 
-		if (invD < 0.0f) {
-			if (t1 > t0) return false;
-		} else {
-			if (t1 < t0) return false;
-		}
+	for (size_t a = 0; a < 3; ++a) {
+		float t1 = (aabbMin[a] - rayOrigin[a]) * rayDirectionInv[a];
+		float t2 = (aabbMax[a] - rayOrigin[a]) * rayDirectionInv[a];
+
+		tmin = std::max(tmin, std::min(t1, t2));
+		tmax = std::min(tmax, std::max(t1, t2));
 	}
+	if (tmin >= tmax) return false;
 	
 	bool hit = false;
 	for (const Triangle& triangle: triangles) {

@@ -248,7 +248,7 @@ template<size_t s, typename T, typename S>
 Vector<s, T> operator+(const S scalar, const Vector<s, T>& vector) {
 	Vector<s, T> ret(vector);
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] += scalar;
+		ret.v[i] = scalar + ret.v[i];
 	}
 	return ret;
 }
@@ -257,7 +257,7 @@ template<size_t s, typename T, typename S>
 Vector<s, T> operator-(const S scalar, const Vector<s, T>& vector) {
 	Vector<s, T> ret(vector);
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] -= scalar;
+		ret.v[i] = scalar - ret.v[i];
 	}
 	return ret;
 }
@@ -266,7 +266,7 @@ template<size_t s, typename T, typename S>
 Vector<s, T> operator*(const S scalar, const Vector<s, T>& vector) {
 	Vector<s, T> ret(vector);
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] *= scalar;
+		ret.v[i] = scalar * ret.v[i];
 	}
 	return ret;
 }
@@ -275,7 +275,7 @@ template<size_t s, typename T, typename S>
 Vector<s, T> operator/(const S scalar, const Vector<s, T>& vector) {
 	Vector<s, T> ret(vector);
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] /= scalar;
+		ret.v[i] = scalar / ret.v[i];
 	}
 	return ret;
 }

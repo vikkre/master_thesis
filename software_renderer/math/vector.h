@@ -315,7 +315,7 @@ Vector<s, T> lerp(const Vector<s, T>& v0, const Vector<s, T>& v1, float t) {
 
 template<size_t s, typename T>
 Vector<s, T> reflect(const Vector<s, T>& I, const Vector<s, T>& N) {
-	return I - 2.0 * N.dot(I) * N;
+	return I - ((2.0 * N.dot(I)) * N);
 }
 
 template<size_t s, typename T>

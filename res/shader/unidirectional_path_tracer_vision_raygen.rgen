@@ -11,6 +11,7 @@ void main() {
 	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
 
 	vec3 color = vec3(1.0);
+	float lengthSquared = 0.0;
 	bool lightHit = false;
 
 	for (int i = 0; i < renderSettings.visionJumpCount; ++i) {
@@ -35,7 +36,7 @@ void main() {
 	}
 
 	if (lightHit) {
-		uvec3 intColor = uvec3(color * 255);
+		uvec3 intColor = uvec3(color * 255.0 * (1.0 / lengthSquared));
 		imageAtomicAdd(rawImageRed, ivec2(gl_LaunchIDEXT.xy), intColor.x);
 		imageAtomicAdd(rawImageGreen, ivec2(gl_LaunchIDEXT.xy), intColor.y);
 		imageAtomicAdd(rawImageBlue, ivec2(gl_LaunchIDEXT.xy), intColor.z);

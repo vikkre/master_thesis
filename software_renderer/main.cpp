@@ -16,6 +16,17 @@
 
 
 int main(int argc, char* argv[]) {
+	// Vector3f direction({1.0f, -1.0f, 0.0f});
+	// Vector3f normal({0.0f, 1.0f, 0.0f});
+	// Vector3f refl = reflect(direction, normal);
+
+	// std::cout << direction << std::endl;
+	// std::cout << normal << std::endl;
+	// std::cout << refl << std::endl;
+
+	// return 0;
+
+
 	if (argc != 7) {
 		std::cout << "Error: wrong paramter count!" << std::endl;
 		std::cout << "Usage: SoftwareRenderer renderer scene image_width image_height camera resultimage" << std::endl;

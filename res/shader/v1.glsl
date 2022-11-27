@@ -150,14 +150,12 @@ void traceRay(RaySendInfo rayInfo) {
 	float tmin = 0.001;
 	float tmax = 10000.0;
 
-	vec3 origin = rayInfo.origin;
-
 	for (int i = 0; i < 4; i++) {
-		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, origin, tmin, rayInfo.direction, tmax, 0);
+		traceRayEXT(topLevelAS, rayFlags, cullMask, 0, 0, 0, rayInfo.origin, tmin, rayInfo.direction, tmax, 0);
 
 		bool culling = rayPayload.hit && rayInfo.backfaceCulling && dot(rayPayload.normal, rayInfo.direction) > 0;
 		if (!culling) break;
-		else origin = rayPayload.pos;
+		else rayInfo.origin = rayPayload.pos;
 	}
 }
 

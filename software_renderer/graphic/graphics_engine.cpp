@@ -1,6 +1,6 @@
 #include "graphics_engine.h"
 
-#define SURFACE_DISTANCE_OFFSET 0.001f
+#define SURFACE_DISTANCE_OFFSET 0.01f
 
 
 void threadRender(GraphicsEngine* graphicsEngine, unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
@@ -110,8 +110,6 @@ Vector3f GraphicsEngine::traceRay(Ray ray) {
 				color *= obj->color;
 				float rayHandlingValue = rng.rand();
 
-				ray.origin = hitVertex.pos + SURFACE_DISTANCE_OFFSET * hitVertex.normal;
-
 				if (rayHandlingValue <= obj->diffuseThreshold) {
 					ray.direction = rng.randomNormalDirection(hitVertex.normal);
 				} else if (rayHandlingValue <= obj->reflectThreshold) {
@@ -119,6 +117,8 @@ Vector3f GraphicsEngine::traceRay(Ray ray) {
 				} else if (rayHandlingValue <= obj->transparentThreshold) {
 					ray.direction = customRefract(ray.direction, hitVertex.normal, obj->refractionIndex);
 				}
+
+				ray.origin = hitVertex.pos + SURFACE_DISTANCE_OFFSET * ray.direction;
 				ray.update();
 			}
 

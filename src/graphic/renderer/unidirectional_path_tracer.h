@@ -40,16 +40,11 @@ class UnidirectionalPathTracer: public Renderer {
 		void createBuffers();
 		void createDescriptorCollection();
 		void createVisionPipeline();
-		void createFinalRenderPipeline();
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		RayTracingPipeline visionPipeline;
-		ComputePipeline finalRenderPipeline;
 
-		MultiBufferDescriptor<ImageBuffer> storageImagesRed;
-		MultiBufferDescriptor<ImageBuffer> storageImagesGreen;
-		MultiBufferDescriptor<ImageBuffer> storageImagesBlue;
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
 };

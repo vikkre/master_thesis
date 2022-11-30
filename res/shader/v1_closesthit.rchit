@@ -34,7 +34,7 @@ void main() {
 	rayPayload.refractionIndex = obj.refractionIndex;
 	if (obj.lightSource == 1) {
 		rayPayload.lightSource = true;
-		rayPayload.color = clamp(obj.color * obj.lightStrength, vec3(0.0), vec3(1.0));
+		rayPayload.color = obj.color * obj.lightStrength;
 	} else {
 		rayPayload.lightSource = false;
 		rayPayload.color = obj.color;

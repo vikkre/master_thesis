@@ -8,6 +8,7 @@
 
 
 #define LIGHT_POSITION vec3(0, 4.8, 0)
+#define RAY_NORMAL_OFFSET 0.001
 
 
 struct ObjectProperties {
@@ -165,28 +166,32 @@ uint handleHit(inout RaySendInfo rayInfo, inout RNG rng) {
 
 	float rayHandlingValue = rand(rng);
 
-	rayInfo.origin = rayPayload.pos;
 	rayInfo.backfaceCulling = false;
 
+	uint returnValue = 0;
 	if (rayHandlingValue <= rayPayload.diffuseThreshold) {
 		rayInfo.direction = randomNormalDirection(rng, rayPayload.normal);
-		return DIFFUSE_VALUE;
+		returnValue = DIFFUSE_VALUE;
 
 	} else if (rayHandlingValue <= rayPayload.reflectThreshold) {
 		rayInfo.direction = reflect(rayInfo.direction, rayPayload.normal);
-		return REFLECT_VALUE;
+		returnValue = REFLECT_VALUE;
 
 	} else if (rayHandlingValue <= rayPayload.transparentThreshold) {
 		rayInfo.direction = customRefract(rayInfo.direction, rayPayload.normal, rayPayload.refractionIndex);
-		return TRANSPARENT_VALUE;
+		returnValue = TRANSPARENT_VALUE;
 
 	}
+
+	rayInfo.origin = rayPayload.pos + (rayInfo.direction * RAY_NORMAL_OFFSET);
+	return returnValue;
 }
 
 bool isShadowed(LightSourcePoint lsp, vec3 pos) {
-	vec3 lightPosition = lsp.pos + (lsp.normal * 0.1);
+	vec3 lightPosition = lsp.pos + (lsp.normal * RAY_NORMAL_OFFSET);
 	vec3 toLight = lightPosition - pos;
 	vec3 direction = normalize(toLight);
+	if (dot(direction, lsp.normal) >= 0.0) return true;
 	float distToLight = length(toLight);
 
 	uint rayFlags = gl_RayFlagsOpaqueEXT;
@@ -200,10 +205,11 @@ bool isShadowed(LightSourcePoint lsp, vec3 pos) {
 }
 
 vec3 shadowTrace(LightSourcePoint lsp, vec3 pos, vec3 normal) {
-	vec3 lightPosition = lsp.pos + (lsp.normal * 0.1);
+	vec3 lightPosition = lsp.pos + (lsp.normal * RAY_NORMAL_OFFSET);
 
 	vec3 toLight = lightPosition - pos;
 	vec3 direction = normalize(toLight);
+	if (dot(direction, lsp.normal) > 0.0) return vec3(0.0);
 	float lightStrength = dot(direction, normal);
 	if (lightStrength <= 0.0) return vec3(0.0);
 	float distToLight = length(toLight);

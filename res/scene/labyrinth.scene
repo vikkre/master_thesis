@@ -89,6 +89,7 @@ block.obj
 ball.obj
 	position(-22, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -97,26 +98,31 @@ block.obj
 ball.obj
 	position(-22, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -125,46 +131,55 @@ block.obj
 ball.obj
 	position(-22, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -4)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -173,16 +188,19 @@ block.obj
 ball.obj
 	position(-22, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-22, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -191,6 +209,7 @@ block.obj
 ball.obj
 	position(-22, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -202,6 +221,7 @@ block.obj
 ball.obj
 	position(-20, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -210,6 +230,7 @@ block.obj
 ball.obj
 	position(-20, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -218,6 +239,7 @@ block.obj
 ball.obj
 	position(-20, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -232,6 +254,7 @@ block.obj
 ball.obj
 	position(-20, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -246,6 +269,7 @@ block.obj
 ball.obj
 	position(-20, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -260,6 +284,7 @@ block.obj
 ball.obj
 	position(-20, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -268,6 +293,7 @@ block.obj
 ball.obj
 	position(-20, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -276,6 +302,7 @@ block.obj
 ball.obj
 	position(-20, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -284,6 +311,7 @@ block.obj
 ball.obj
 	position(-20, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -295,6 +323,7 @@ block.obj
 ball.obj
 	position(-18, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -303,6 +332,7 @@ block.obj
 ball.obj
 	position(-18, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -311,26 +341,31 @@ block.obj
 ball.obj
 	position(-18, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, -8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -339,16 +374,19 @@ block.obj
 ball.obj
 	position(-18, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -357,16 +395,19 @@ block.obj
 ball.obj
 	position(-18, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -375,6 +416,7 @@ block.obj
 ball.obj
 	position(-18, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -383,16 +425,19 @@ block.obj
 ball.obj
 	position(-18, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-18, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -404,6 +449,7 @@ block.obj
 ball.obj
 	position(-16, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -424,6 +470,7 @@ block.obj
 ball.obj
 	position(-16, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -438,6 +485,7 @@ block.obj
 ball.obj
 	position(-16, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -452,6 +500,7 @@ block.obj
 ball.obj
 	position(-16, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -466,6 +515,7 @@ block.obj
 ball.obj
 	position(-16, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -480,6 +530,7 @@ block.obj
 ball.obj
 	position(-16, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -491,26 +542,31 @@ block.obj
 ball.obj
 	position(-14, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -20)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -519,16 +575,19 @@ block.obj
 ball.obj
 	position(-14, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -537,16 +596,19 @@ block.obj
 ball.obj
 	position(-14, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -555,26 +617,31 @@ block.obj
 ball.obj
 	position(-14, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-14, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -583,6 +650,7 @@ block.obj
 ball.obj
 	position(-14, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -591,6 +659,7 @@ block.obj
 ball.obj
 	position(-14, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -614,6 +683,7 @@ block.obj
 ball.obj
 	position(-12, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -622,6 +692,7 @@ block.obj
 ball.obj
 	position(-12, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -642,6 +713,7 @@ block.obj
 ball.obj
 	position(-12, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -668,6 +740,7 @@ block.obj
 ball.obj
 	position(-12, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -676,6 +749,7 @@ block.obj
 ball.obj
 	position(-12, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -687,26 +761,31 @@ block.obj
 ball.obj
 	position(-10, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -715,6 +794,7 @@ block.obj
 ball.obj
 	position(-10, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -723,26 +803,31 @@ block.obj
 ball.obj
 	position(-10, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -751,26 +836,31 @@ block.obj
 ball.obj
 	position(-10, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-10, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -779,6 +869,7 @@ block.obj
 ball.obj
 	position(-10, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -787,6 +878,7 @@ block.obj
 ball.obj
 	position(-10, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -798,6 +890,7 @@ block.obj
 ball.obj
 	position(-8, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -818,6 +911,7 @@ block.obj
 ball.obj
 	position(-8, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -826,6 +920,7 @@ block.obj
 ball.obj
 	position(-8, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -852,6 +947,7 @@ block.obj
 ball.obj
 	position(-8, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -860,6 +956,7 @@ block.obj
 ball.obj
 	position(-8, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -868,6 +965,7 @@ block.obj
 ball.obj
 	position(-8, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -876,6 +974,7 @@ block.obj
 ball.obj
 	position(-8, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -887,6 +986,7 @@ block.obj
 ball.obj
 	position(-6, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -895,26 +995,31 @@ block.obj
 ball.obj
 	position(-6, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -923,6 +1028,7 @@ block.obj
 ball.obj
 	position(-6, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -931,36 +1037,43 @@ block.obj
 ball.obj
 	position(-6, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-6, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -969,6 +1082,7 @@ block.obj
 ball.obj
 	position(-6, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -977,6 +1091,7 @@ block.obj
 ball.obj
 	position(-6, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -985,6 +1100,7 @@ block.obj
 ball.obj
 	position(-6, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -996,6 +1112,7 @@ block.obj
 ball.obj
 	position(-4, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1004,6 +1121,7 @@ block.obj
 ball.obj
 	position(-4, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1024,6 +1142,7 @@ block.obj
 ball.obj
 	position(-4, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1038,6 +1157,7 @@ block.obj
 ball.obj
 	position(-4, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1058,6 +1178,7 @@ block.obj
 ball.obj
 	position(-4, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1066,6 +1187,7 @@ block.obj
 ball.obj
 	position(-4, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1074,6 +1196,7 @@ block.obj
 ball.obj
 	position(-4, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1085,6 +1208,7 @@ block.obj
 ball.obj
 	position(-2, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1093,16 +1217,19 @@ block.obj
 ball.obj
 	position(-2, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1111,16 +1238,19 @@ block.obj
 ball.obj
 	position(-2, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, -8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1129,16 +1259,19 @@ block.obj
 ball.obj
 	position(-2, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1147,36 +1280,43 @@ block.obj
 ball.obj
 	position(-2, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(-2, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1185,6 +1325,7 @@ block.obj
 ball.obj
 	position(-2, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1196,6 +1337,7 @@ block.obj
 ball.obj
 	position(0, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1216,6 +1358,7 @@ block.obj
 ball.obj
 	position(0, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1230,6 +1373,7 @@ block.obj
 ball.obj
 	position(0, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1250,6 +1394,7 @@ block.obj
 ball.obj
 	position(0, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1270,6 +1415,7 @@ block.obj
 ball.obj
 	position(0, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1281,16 +1427,19 @@ block.obj
 ball.obj
 	position(2, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, -20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1299,16 +1448,19 @@ block.obj
 ball.obj
 	position(2, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1317,6 +1469,7 @@ block.obj
 ball.obj
 	position(2, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1325,26 +1478,31 @@ block.obj
 ball.obj
 	position(2, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1353,16 +1511,19 @@ block.obj
 ball.obj
 	position(2, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1371,16 +1532,19 @@ block.obj
 ball.obj
 	position(2, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 20)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(2, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1398,6 +1562,7 @@ block.obj
 ball.obj
 	position(4, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1406,6 +1571,7 @@ block.obj
 ball.obj
 	position(4, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1420,6 +1586,7 @@ block.obj
 ball.obj
 	position(4, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1428,6 +1595,7 @@ block.obj
 ball.obj
 	position(4, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1442,6 +1610,7 @@ block.obj
 ball.obj
 	position(4, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1462,6 +1631,7 @@ block.obj
 ball.obj
 	position(4, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1479,6 +1649,7 @@ block.obj
 ball.obj
 	position(6, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1487,6 +1658,7 @@ block.obj
 ball.obj
 	position(6, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1495,6 +1667,7 @@ block.obj
 ball.obj
 	position(6, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1503,16 +1676,19 @@ block.obj
 ball.obj
 	position(6, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, -8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1521,6 +1697,7 @@ block.obj
 ball.obj
 	position(6, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1529,6 +1706,7 @@ block.obj
 ball.obj
 	position(6, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1537,36 +1715,43 @@ block.obj
 ball.obj
 	position(6, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(6, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1575,6 +1760,7 @@ block.obj
 ball.obj
 	position(6, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1586,6 +1772,7 @@ block.obj
 ball.obj
 	position(8, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1594,6 +1781,7 @@ block.obj
 ball.obj
 	position(8, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1602,6 +1790,7 @@ block.obj
 ball.obj
 	position(8, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1610,6 +1799,7 @@ block.obj
 ball.obj
 	position(8, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1624,6 +1814,7 @@ block.obj
 ball.obj
 	position(8, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1632,6 +1823,7 @@ block.obj
 ball.obj
 	position(8, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1664,6 +1856,7 @@ block.obj
 ball.obj
 	position(8, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1675,6 +1868,7 @@ block.obj
 ball.obj
 	position(10, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1683,6 +1877,7 @@ block.obj
 ball.obj
 	position(10, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1691,6 +1886,7 @@ block.obj
 ball.obj
 	position(10, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1699,6 +1895,7 @@ block.obj
 ball.obj
 	position(10, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1707,16 +1904,19 @@ block.obj
 ball.obj
 	position(10, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, -4)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1725,36 +1925,43 @@ block.obj
 ball.obj
 	position(10, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1763,16 +1970,19 @@ block.obj
 ball.obj
 	position(10, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(10, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1784,6 +1994,7 @@ block.obj
 ball.obj
 	position(12, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1792,6 +2003,7 @@ block.obj
 ball.obj
 	position(12, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1800,6 +2012,7 @@ block.obj
 ball.obj
 	position(12, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1808,6 +2021,7 @@ block.obj
 ball.obj
 	position(12, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1816,6 +2030,7 @@ block.obj
 ball.obj
 	position(12, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1830,6 +2045,7 @@ block.obj
 ball.obj
 	position(12, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1850,6 +2066,7 @@ block.obj
 ball.obj
 	position(12, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1858,6 +2075,7 @@ block.obj
 ball.obj
 	position(12, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1866,6 +2084,7 @@ block.obj
 ball.obj
 	position(12, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1877,6 +2096,7 @@ block.obj
 ball.obj
 	position(14, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1885,16 +2105,19 @@ block.obj
 ball.obj
 	position(14, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1903,6 +2126,7 @@ block.obj
 ball.obj
 	position(14, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1911,16 +2135,19 @@ block.obj
 ball.obj
 	position(14, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, -4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1929,26 +2156,31 @@ block.obj
 ball.obj
 	position(14, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -1957,16 +2189,19 @@ block.obj
 ball.obj
 	position(14, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 16)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(14, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1975,6 +2210,7 @@ block.obj
 ball.obj
 	position(14, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -1986,6 +2222,7 @@ block.obj
 ball.obj
 	position(16, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2006,6 +2243,7 @@ block.obj
 ball.obj
 	position(16, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2020,6 +2258,7 @@ block.obj
 ball.obj
 	position(16, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2058,6 +2297,7 @@ block.obj
 ball.obj
 	position(16, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2069,16 +2309,19 @@ block.obj
 ball.obj
 	position(18, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2087,26 +2330,31 @@ block.obj
 ball.obj
 	position(18, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -8)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2115,36 +2363,43 @@ block.obj
 ball.obj
 	position(18, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2153,16 +2408,19 @@ block.obj
 ball.obj
 	position(18, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(18, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2171,6 +2429,7 @@ block.obj
 ball.obj
 	position(18, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2182,6 +2441,7 @@ block.obj
 ball.obj
 	position(20, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2196,6 +2456,7 @@ block.obj
 ball.obj
 	position(20, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2210,6 +2471,7 @@ block.obj
 ball.obj
 	position(20, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2236,6 +2498,7 @@ block.obj
 ball.obj
 	position(20, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2244,6 +2507,7 @@ block.obj
 ball.obj
 	position(20, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2252,6 +2516,7 @@ block.obj
 ball.obj
 	position(20, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 block.obj
@@ -2260,6 +2525,7 @@ block.obj
 ball.obj
 	position(20, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2271,36 +2537,43 @@ block.obj
 ball.obj
 	position(22, 0, -22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -20)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -18)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -16)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2309,56 +2582,67 @@ block.obj
 ball.obj
 	position(22, 0, -6)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -4)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, -2)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 0)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 2)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 4)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 6)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 8)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 1)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 10)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 12)
 	scale(0.1, 0.1, 0.1)
+	color(1, 0, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 14)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj
@@ -2367,16 +2651,19 @@ block.obj
 ball.obj
 	position(22, 0, 18)
 	scale(0.1, 0.1, 0.1)
+	color(1, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 20)
 	scale(0.1, 0.1, 0.1)
+	color(0, 1, 0)
 	lightSource(5.0)
 
 ball.obj
 	position(22, 0, 22)
 	scale(0.1, 0.1, 0.1)
+	color(0, 0, 0)
 	lightSource(5.0)
 
 block.obj

@@ -12,7 +12,4 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	uint visionJumpCount;
 	uint visionRayPerPixelCount;
 } renderSettings;
-layout(set = 0, binding = 1, r32ui) uniform uimage2D rawImageRed;
-layout(set = 0, binding = 2, r32ui) uniform uimage2D rawImageGreen;
-layout(set = 0, binding = 3, r32ui) uniform uimage2D rawImageBlue;
-layout(set = 0, binding = 4, rgba8) uniform image2D finalImage;
+layout(set = 0, binding = 1, rgba8) uniform image2D image;

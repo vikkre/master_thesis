@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "vector.h"
 #include "matrix.h"
 
@@ -21,3 +23,6 @@ class Rotation {
 		float s;
 		Vector3f v;
 };
+
+
+std::ostream& operator<<(std::ostream& out, const Rotation& r);

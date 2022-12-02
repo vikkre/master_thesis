@@ -18,15 +18,14 @@ float Rotation::getAngle() const {
 }
 
 Vector3f Rotation::getAxis() const {
-	float angle_sin = sqrt(1 - this->s * this->s);
-	return (1/angle_sin) * this->v;
+	float angle_sin = sqrt(1.0f - this->s * this->s);
+	return (1.0f / angle_sin) * this->v;
 }
 
 Rotation Rotation::apply(const Rotation& other) const {
 	Rotation ret;
 	ret.s = (this->s * other.s) - this->v.dot(other.v);
 	ret.v = (this->s * other.v) + (other.s * this->v) + cross(this->v, other.v);
-
 	return ret;
 }
 
@@ -53,4 +52,18 @@ Matrix4f Rotation::getMatrix() const {
 	}
 
 	return ret;
+}
+
+std::ostream& operator<<(std::ostream& out, const Rotation& r) {
+	out << "rotation" << "(";
+
+	Vector3f axis = r.getAxis();
+	for (size_t i = 0; i < 3; ++i) {
+		if (i > 0) out << ", ";
+		out << axis[i];
+	}
+
+	out << ", " << r.getAngle() << ")";
+
+	return out;
 }

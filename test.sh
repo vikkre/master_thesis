@@ -14,6 +14,7 @@ popd
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper.renderer res/scene/labyrinth.scene 1280 720
+# build/RayTrace res/renderer/photon_mapper.renderer res/scene/red_ball_room.scene 1280 720
 
 # build/RayTrace res/renderer/photon_mapper_gauss.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper_median.renderer res/scene/cornell_box_with_ball.scene 1280 720
@@ -25,6 +26,7 @@ popd
 # build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 # build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/labyrinth.scene 1280 720
+# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/red_ball_room.scene 1280 720
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
@@ -33,22 +35,23 @@ popd
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera
+# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/red_ball_room.scene 1280 720
 
 
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/ddgi.ppm 5
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/labyrinth.scene 1280 720
-# build/RayTrace res/renderer/Majercik2019_median.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_ball.scene 1280 720
-# build/RayTrace res/renderer/Majercik2019_median.renderer res/scene/cornell_box_with_ball.scene 1280 720
+build/RayTrace res/renderer/Majercik2019.renderer res/scene/red_ball_room.scene 1280 720
 
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
-build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera
+# build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera
+# build/RayTrace res/renderer/Bitterli2020.renderer res/scene/red_ball_room.scene 1280 720
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera out/shadowtracer_labyrinth.ppm 5
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera out/bitterli2020_labyrinth.ppm 5
@@ -69,3 +72,4 @@ build/RayTrace res/renderer/Bitterli2020.renderer res/scene/labyrinth.scene 1280
 # build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_ball.scene 1280 720 res/camera/default.camera out/sw_renderer_cornell_box_with_ball.ppm
 # build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720 res/camera/default.camera out/sw_renderer_cornell_box_with_blocks_and_ball.ppm
 # build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera out/sw_renderer_labyrinth.ppm
+# build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/red_ball_room.scene 1280 720 res/camera/default.camera out/sw_renderer_red_ball_room.ppm

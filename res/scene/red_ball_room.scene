@@ -1,0 +1,39 @@
+panel.obj
+	position(-1,  0,  0)
+	scale(1, 1, 1.5)
+
+panel.obj
+	position(1,  0,  0)
+	rotation(0, 1, 0, 3.14159)
+	scale(1, 1, 1.5)
+
+panel.obj
+	position(0, -1,  0)
+	rotation(0, 0, 1, 1.57079)
+	scale(1, 1, 1.5)
+
+panel.obj
+	position(0,  1,  0)
+	rotation(0, 0, 1, -1.57079)
+	scale(1, 1, 1.5)
+
+panel.obj
+	position(0,  0, -1.5)
+	rotation(0, 1, 0, -1.57079)
+
+panel.obj
+	position(0,  0,  1.5)
+	rotation(0, 1, 0, 1.57079)
+
+panel.obj
+	position(0, 0.7, -0.25)
+	scale(0.2, 0.2, 0.2)
+	rotation(0.362875, 0.362875, -0.85828, 1.72303)
+	lightSource(5.0)
+
+
+ball.obj
+	position(0, -0.5, 0.9)
+	scale(0.25, 0.25, 0.25)
+	move(0, -0.5, -0.9, 0.5)
+	color(1, 0, 0)

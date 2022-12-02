@@ -1,0 +1,51 @@
+panel.obj
+	position(-5,  0.75,  1.85)
+	scale(1, 1.75, 3.15)
+
+panel.obj
+	position(-5,  1.75,  -2)
+	scale(1, 0.75, 0.7)
+
+panel.obj
+	position(-5,  0.75, -3.85)
+	scale(1, 1.75, 1.15)
+
+block.obj
+	position(-4.7, 0, -2.1)
+	rotation(0, 1, 0, 0.5)
+	scale(0.1, 1, 0.7)
+
+panel.obj
+	position(-7,  0.75,  0)
+	scale(1, 1.75, 5)
+
+panel.obj
+	position(-6,  0.5, -2.1)
+	scale(1, 1.5, 1)
+	lightSource(5.0)
+
+
+panel.obj
+	position(5,  0.75,  0)
+	rotation(0, 1, 0, 3.14159)
+	scale(1, 1.75, 5)
+
+panel.obj
+	position(-1, -1,  0)
+	rotation(0, 0, 1, 1.57079)
+	scale(1, 6, 5)
+
+panel.obj
+	position(-1,  2.5,  0)
+	rotation(0, 0, 1, -1.57079)
+	scale(1, 6, 5)
+
+panel.obj
+	position(-1,  0.75, -5)
+	rotation(0, 1, 0, -1.57079)
+	scale(1, 1.75, 6)
+
+panel.obj
+	position(-1,  0.75,  5)
+	rotation(0, 1, 0, 1.57079)
+	scale(1, 1.75, 6)

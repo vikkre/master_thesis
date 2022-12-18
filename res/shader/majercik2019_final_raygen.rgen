@@ -5,22 +5,19 @@
 
 
 ivec3 baseGridCoord(vec3 X) {
-	vec3 probeStartPos = -vec3(renderSettings.singleDirectionProbeCount * renderSettings.betweenProbeDistance);
 	return clamp(
-		ivec3((X - probeStartPos) / renderSettings.betweenProbeDistance),
+		ivec3((X - renderSettings.probeStartCorner) / renderSettings.betweenProbeDistance),
 		ivec3(0),
-		ivec3(2 * renderSettings.singleDirectionProbeCount)
+		ivec3(renderSettings.probeCount) - ivec3(1)
 	);
 }
 
 vec3 gridCoordToPosition(ivec3 c) {
-	vec3 probeStartPos = -vec3(renderSettings.singleDirectionProbeCount * renderSettings.betweenProbeDistance);
-	return renderSettings.betweenProbeDistance * vec3(c) + probeStartPos;
+	return renderSettings.betweenProbeDistance * vec3(c) + renderSettings.probeStartCorner;
 }
 
 uint gridCoordToProbeIndex(vec3 probeCoords) {
-	uint probeCounts = 2 * renderSettings.singleDirectionProbeCount + 1;
-	return uint(probeCoords.x + probeCoords.y * probeCounts + probeCoords.z * probeCounts * probeCounts);
+	return uint(probeCoords.x + probeCoords.y * renderSettings.probeCount.x + probeCoords.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
 }
 
 vec2 textureCoordFromDirection(vec3 dir, uint probeIndex) {
@@ -55,7 +52,7 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 
 	for (uint i = 0; i < 8; ++i) {
 		ivec3 offset = ivec3(i, i >> 1, i >> 2) & ivec3(1);
-		ivec3 probeGridCoord = clamp(baseGridCoord + offset, ivec3(0), ivec3(2 * renderSettings.singleDirectionProbeCount));
+		ivec3 probeGridCoord = clamp(baseGridCoord + offset, ivec3(0), ivec3(renderSettings.probeCount) - ivec3(1));
 		uint probeIndex = gridCoordToProbeIndex(probeGridCoord);
 		vec3 probePos = gridCoordToPosition(probeGridCoord);
 		vec3 probeToPoint = hitPos - probePos + (hitNormal + 3.0 * originDirection) * renderSettings.normalBias;
@@ -67,7 +64,8 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		float trueDirectionToProbeWeight = max(0.0001, (dot(trueDirectionToProbe, hitNormal) + 1.0) * 0.5);
 		weight *= trueDirectionToProbeWeight * trueDirectionToProbeWeight + 0.2;
 
-		vec3 modifiedDirection = normalize((renderSettings.texelGetProbeDirectionFactor * probeDirection) + (renderSettings.texelGetNormalFactor * hitNormal));
+		// vec3 modifiedDirection = normalize((renderSettings.texelGetProbeDirectionFactor * probeDirection) + (renderSettings.texelGetNormalFactor * hitNormal));
+		vec3 modifiedDirection = probeDirection;
 		vec2 texCoord = textureCoordFromDirection(modifiedDirection, probeIndex);
 
 		float distToProbe = length(probeToPoint);
@@ -83,7 +81,8 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 
 		weight = max(0.0001, weight);
 		vec3 irradianceDirection = hitNormal;
-		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz;
+		float probeContribution = dot(irradianceDirection, probeDirection);
+		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz * probeContribution;
 
 		float crushThreshold = renderSettings.crushThreshold;
 		if (weight < crushThreshold) weight *= weight * weight * (1.0 / (crushThreshold*crushThreshold));

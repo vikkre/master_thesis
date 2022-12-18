@@ -27,7 +27,7 @@ panel.obj
 	position(0, 0.99, 0)
 	scale(0.2, 0.2, 0.2)
 	rotation(0, 0, 1, -1.57079)
-	lightSource(5.0)
+	lightSource(1.0)
 
 
 block.obj

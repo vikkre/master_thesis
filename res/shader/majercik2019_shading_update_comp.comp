@@ -7,8 +7,7 @@
 
 uint getProbeID(ivec2 texelCoord) {
 	uint probeSampleSideLengthWBorder = renderSettings.probeSampleSideLength + 2;
-	uint singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
-	uint probeCountSideX = singleExtend * singleExtend;
+	uint probeCountSideX = renderSettings.probeCount.x * renderSettings.probeCount.y;
 	return uint(texelCoord.x / probeSampleSideLengthWBorder) + probeCountSideX * uint(texelCoord.y / probeSampleSideLengthWBorder);
 }
 
@@ -23,6 +22,10 @@ vec2 normalizedOctCoord(ivec2 texelCoord) {
 
 void main() {
 	ivec2 bufferPos = ivec2(gl_GlobalInvocationID.xy);
+
+	imageStore(irradianceBuffer, bufferPos, vec4(vec3(1.0), 0.0));
+	return;
+
 	ivec2 pos = bufferPos;
 	ivec2 bufferSize = imageSize(irradianceBuffer);
 	int sideLenght = int(renderSettings.probeSampleSideLength);
@@ -71,6 +74,8 @@ void main() {
 		vec3 hitRadiance = surfels.s[surfelIndex].hitRadiance;
 		float hitDistance = surfels.s[surfelIndex].hitDistance;
 		bool hit = surfels.s[surfelIndex].hit;
+
+		// if (!hit) continue;
 
 		float rayProbeDistance = renderSettings.maxProbeRayDistance;
 		if (hit) rayProbeDistance = min(rayProbeDistance, hitDistance);

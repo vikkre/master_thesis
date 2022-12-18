@@ -49,10 +49,14 @@ void Majercik2019::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 void Majercik2019::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 
+	static unsigned int num = 0;
+	if (num > 10) return;
+
 	// std::vector<Surfel> surfels(renderSettings.totalProbeCount * renderSettings.perProbeRayCount);
 	// surfelBuffer.at(index).getData((void*) surfels.data());
 
 	// std::ofstream file("surfels.csv");
+	// std::ofstream file(std::string("surfels.csv") + std::to_string(num));
 	// file << "rayDirection;hitRadiance;hitDistance;hit" << std::endl;
 	// for (const Surfel& surfel: surfels) {
 	// 	file << surfel.rayDirection << ";";
@@ -62,20 +66,19 @@ void Majercik2019::updateRendererUniforms(size_t index) {
 	// }
 	// file.close();
 
-	// irradianceBuffer.at(index).saveImageAsNetpbm("irradiance.ppm");
+	irradianceBuffer.at(index).saveImageAsNetpbm(std::string("irradiance.ppm") + std::to_string(num));
+	num++;
 	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
 }
 
 void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
-
-	renderSettings.betweenProbeDistance = inputEntry.get<float>("betweenProbeDistance");
-	renderSettings.singleDirectionProbeCount = inputEntry.get<u_int32_t>("singleDirectionProbeCount");
+	renderSettings.probeCount = inputEntry.getVector<3, unsigned int>("probeCount");
+	renderSettings.totalProbeCount = renderSettings.probeCount[0] * renderSettings.probeCount[1] * renderSettings.probeCount[2];
+	renderSettings.probeStartCorner = inputEntry.getVector<3, float>("probeStartCorner");
+	renderSettings.betweenProbeDistance = inputEntry.getVector<3, float>("betweenProbeDistance");
 	renderSettings.perProbeRayCount = inputEntry.get<u_int32_t>("perProbeRayCount");
-	u_int32_t singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
-	renderSettings.totalProbeCount = singleExtend*singleExtend*singleExtend;
-
 	renderSettings.maxProbeRayDistance = inputEntry.get<float>("maxProbeRayDistance");
 	renderSettings.probeSampleSideLength = inputEntry.get<u_int32_t>("probeSampleSideLength");
 	renderSettings.depthSharpness = inputEntry.get<float>("depthSharpness");
@@ -83,8 +86,6 @@ void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.crushThreshold = inputEntry.get<float>("crushThreshold");
 	renderSettings.linearBlending = inputEntry.get<u_int32_t>("linearBlending");
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
-	renderSettings.texelGetProbeDirectionFactor = inputEntry.get<float>("texelGetProbeDirectionFactor");
-	renderSettings.texelGetNormalFactor = inputEntry.get<float>("texelGetNormalFactor");
 	renderSettings.shadowCountProbe = inputEntry.get<u_int32_t>("shadowCountProbe");
 	renderSettings.shadowCountVision = inputEntry.get<u_int32_t>("shadowCountVision");
 }
@@ -117,7 +118,7 @@ void Majercik2019::createBuffers() {
 	renderSettingsBuffers.init();
 
 	surfelBuffer.bufferProperties.bufferSize = sizeof(Surfel) * renderSettings.totalProbeCount * renderSettings.perProbeRayCount;
-	surfelBuffer.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	surfelBuffer.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	surfelBuffer.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	surfelBuffer.init();
 }
@@ -145,8 +146,8 @@ void Majercik2019::createProbePipeline() {
 
 	probePipeline.pipelineLayout = getPipelineLayout();
 
-	probePipeline.width = renderSettings.perProbeRayCount;
-	probePipeline.height = renderSettings.totalProbeCount;
+	probePipeline.width = renderSettings.totalProbeCount;
+	probePipeline.height = renderSettings.perProbeRayCount;
 
 	probePipeline.init();
 }
@@ -177,9 +178,8 @@ void Majercik2019::createFinalPipeline() {
 
 Vector2u Majercik2019::getIrradianceFieldSurfaceExtend() const {
 	unsigned int probeExtendWBorder = renderSettings.probeSampleSideLength + 2;
-	unsigned int singleExtend = 2 * renderSettings.singleDirectionProbeCount + 1;
 	return Vector2u({
-		probeExtendWBorder * singleExtend * singleExtend + 2,
-		probeExtendWBorder * singleExtend + 2
+		probeExtendWBorder * renderSettings.probeCount[0] * renderSettings.probeCount[1] + 2,
+		probeExtendWBorder * renderSettings.probeCount[2] + 2
 	});
 }

@@ -34,9 +34,10 @@ class Majercik2019: public Renderer {
 		struct RenderSettings {
 			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
-			float betweenProbeDistance;
-			u_int32_t singleDirectionProbeCount;
+			Vector3u probeCount;
 			u_int32_t totalProbeCount;
+			Vector3f probeStartCorner;
+			Vector3f betweenProbeDistance;
 			u_int32_t perProbeRayCount;
 			float maxProbeRayDistance;
 			u_int32_t probeSampleSideLength;
@@ -45,8 +46,6 @@ class Majercik2019: public Renderer {
 			float crushThreshold;
 			u_int32_t linearBlending;
 			float energyPreservation;
-			float texelGetProbeDirectionFactor;
-			float texelGetNormalFactor;
 			u_int32_t shadowCountProbe;
 			u_int32_t shadowCountVision;
 		} renderSettings;

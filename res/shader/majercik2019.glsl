@@ -19,9 +19,10 @@ struct Surfel {
 layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	uint lightJumpCount;
 	uint visionJumpCount;
-	float betweenProbeDistance;
-	uint singleDirectionProbeCount;
+	uvec3 probeCount;
 	uint totalProbeCount;
+	vec3 probeStartCorner;
+	vec3 betweenProbeDistance;
 	uint perProbeRayCount;
 	float maxProbeRayDistance;
 	uint probeSampleSideLength;
@@ -30,8 +31,6 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	float crushThreshold;
 	uint linearBlending;
 	float energyPreservation;
-	float texelGetProbeDirectionFactor;
-	float texelGetNormalFactor;
 	uint shadowCountProbe;
 	uint shadowCountVision;
 } renderSettings;

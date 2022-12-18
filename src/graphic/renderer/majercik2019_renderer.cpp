@@ -66,9 +66,10 @@ void Majercik2019::updateRendererUniforms(size_t index) {
 	// }
 	// file.close();
 
-	irradianceBuffer.at(index).saveImageAsNetpbm(std::string("irradiance.ppm") + std::to_string(num));
-	num++;
+	// irradianceBuffer.at(index).saveImageAsNetpbm(std::string("irradiance.ppm") + std::to_string(num));
 	// depthBuffer.at(index).saveImageAsNetpbm("depth.ppm");
+
+	num++;
 }
 
 void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {

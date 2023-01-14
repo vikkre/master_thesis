@@ -12,7 +12,7 @@ panel.obj
 panel.obj
 	position(0,  1,  0)
 	rotation(0, 0, 1, -1.57079)
-	lightSource(7.5)
+	lightSource(1.0)
 
 panel.obj
 	position(0,  0, -1)

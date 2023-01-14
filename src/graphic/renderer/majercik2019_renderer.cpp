@@ -73,7 +73,6 @@ void Majercik2019::updateRendererUniforms(size_t index) {
 }
 
 void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
-	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 	renderSettings.probeCount = inputEntry.getVector<3, unsigned int>("probeCount");
 	renderSettings.totalProbeCount = renderSettings.probeCount[0] * renderSettings.probeCount[1] * renderSettings.probeCount[2];
@@ -84,7 +83,6 @@ void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.probeSampleSideLength = inputEntry.get<u_int32_t>("probeSampleSideLength");
 	renderSettings.depthSharpness = inputEntry.get<float>("depthSharpness");
 	renderSettings.normalBias = inputEntry.get<float>("normalBias");
-	renderSettings.crushThreshold = inputEntry.get<float>("crushThreshold");
 	renderSettings.linearBlending = inputEntry.get<u_int32_t>("linearBlending");
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
 	renderSettings.shadowCountProbe = inputEntry.get<u_int32_t>("shadowCountProbe");
@@ -110,7 +108,7 @@ void Majercik2019::createBuffers() {
 	irradianceBuffer.init();
 
 	depthBuffer.bufferProperties = shadingBufferProperties;
-	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16B16A16_SFLOAT;
+	depthBuffer.bufferProperties.format = VK_FORMAT_R16G16_SFLOAT;
 	depthBuffer.init();
 
 	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(Majercik2019::RenderSettings);

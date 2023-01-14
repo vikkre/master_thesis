@@ -23,9 +23,6 @@ vec2 normalizedOctCoord(ivec2 texelCoord) {
 void main() {
 	ivec2 bufferPos = ivec2(gl_GlobalInvocationID.xy);
 
-	imageStore(irradianceBuffer, bufferPos, vec4(vec3(1.0), 0.0));
-	return;
-
 	ivec2 pos = bufferPos;
 	ivec2 bufferSize = imageSize(irradianceBuffer);
 	int sideLenght = int(renderSettings.probeSampleSideLength);
@@ -74,8 +71,6 @@ void main() {
 		vec3 hitRadiance = surfels.s[surfelIndex].hitRadiance;
 		float hitDistance = surfels.s[surfelIndex].hitDistance;
 		bool hit = surfels.s[surfelIndex].hit;
-
-		// if (!hit) continue;
 
 		float rayProbeDistance = renderSettings.maxProbeRayDistance;
 		if (hit) rayProbeDistance = min(rayProbeDistance, hitDistance);

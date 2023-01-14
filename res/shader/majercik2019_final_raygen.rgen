@@ -4,20 +4,20 @@
 #include "majercik2019.glsl"
 
 
-ivec3 baseGridCoord(vec3 X) {
+uvec3 getBaseGridCoord(vec3 X) {
 	return clamp(
-		ivec3((X - renderSettings.probeStartCorner) / renderSettings.betweenProbeDistance),
-		ivec3(0),
-		ivec3(renderSettings.probeCount) - ivec3(1)
+		uvec3((X - renderSettings.probeStartCorner) / renderSettings.betweenProbeDistance),
+		uvec3(0),
+		renderSettings.probeCount - uvec3(1)
 	);
 }
 
-vec3 gridCoordToPosition(ivec3 c) {
+vec3 getGridCoordToPosition(uvec3 c) {
 	return renderSettings.betweenProbeDistance * vec3(c) + renderSettings.probeStartCorner;
 }
 
-uint gridCoordToProbeIndex(vec3 probeCoords) {
-	return uint(probeCoords.x + probeCoords.y * renderSettings.probeCount.x + probeCoords.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
+uint gridCoordToProbeIndex(uvec3 c) {
+	return uint(c.x + c.y * renderSettings.probeCount.x + c.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
 }
 
 vec2 textureCoordFromDirection(vec3 dir, uint probeIndex) {
@@ -26,11 +26,10 @@ vec2 textureCoordFromDirection(vec3 dir, uint probeIndex) {
 
 	vec2 normalizedOctCoord = octEncode(normalize(dir));
 	vec2 normalizedOctCoordZeroOne = (normalizedOctCoord + vec2(1.0)) * 0.5;
+	vec2 octCoordNormalizedToTextureDimensions = (normalizedOctCoordZeroOne * probeSideLength) / vec2(fullTextureSize);
 
 	float probeWithBorderSide = probeSideLength + 2.0;
-	vec2 octCoordNormalizedToTextureDimensions = (normalizedOctCoordZeroOne * probeSideLength) / vec2(fullTextureSize);
 	int probesPerRow = (fullTextureSize.x - 2) / int(probeWithBorderSide);
-
 	vec2 probeTopLeftPosition = vec2(
 		float(probeIndex % probesPerRow) * probeWithBorderSide,
 		float(probeIndex / probesPerRow) * probeWithBorderSide
@@ -43,30 +42,24 @@ vec2 textureCoordFromDirection(vec3 dir, uint probeIndex) {
 
 vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNormal) {
 	vec3 originDirection = -viewDirection;
-	ivec3 baseGridCoord = baseGridCoord(hitPos);
-	vec3 baseProbePos = gridCoordToPosition(baseGridCoord);
+	uvec3 baseGridCoord = getBaseGridCoord(hitPos);
+	vec3 baseProbePos = getGridCoordToPosition(baseGridCoord);
 	vec3 alpha = clamp((hitPos - baseProbePos) / renderSettings.betweenProbeDistance, vec3(0.0), vec3(1.0));
 
 	vec3 sumIrradiance = vec3(0.0);
 	float sumWeight = 0.0;
 
 	for (uint i = 0; i < 8; ++i) {
-		ivec3 offset = ivec3(i, i >> 1, i >> 2) & ivec3(1);
-		ivec3 probeGridCoord = clamp(baseGridCoord + offset, ivec3(0), ivec3(renderSettings.probeCount) - ivec3(1));
+		uvec3 offset = uvec3(i, i >> 1, i >> 2) & uvec3(1);
+		uvec3 probeGridCoord = clamp(baseGridCoord + offset, uvec3(0), renderSettings.probeCount - uvec3(1));
 		uint probeIndex = gridCoordToProbeIndex(probeGridCoord);
-		vec3 probePos = gridCoordToPosition(probeGridCoord);
+		vec3 probePos = getGridCoordToPosition(probeGridCoord);
 		vec3 probeToPoint = hitPos - probePos + (hitNormal + 3.0 * originDirection) * renderSettings.normalBias;
-		vec3 probeDirection = normalize(-probeToPoint);
 
-		float weight = 1.0;
+		vec3 trilinear = lerp(vec3(1.0) - alpha, alpha, vec3(offset));
+		float weight = trilinear.x * trilinear.y * trilinear.z;
 
-		vec3 trueDirectionToProbe = normalize(probePos - hitPos);
-		float trueDirectionToProbeWeight = max(0.0001, (dot(trueDirectionToProbe, hitNormal) + 1.0) * 0.5);
-		weight *= trueDirectionToProbeWeight * trueDirectionToProbeWeight + 0.2;
-
-		// vec3 modifiedDirection = normalize((renderSettings.texelGetProbeDirectionFactor * probeDirection) + (renderSettings.texelGetNormalFactor * hitNormal));
-		vec3 modifiedDirection = probeDirection;
-		vec2 texCoord = textureCoordFromDirection(modifiedDirection, probeIndex);
+		vec2 texCoord = textureCoordFromDirection(hitNormal, probeIndex);
 
 		float distToProbe = length(probeToPoint);
 		vec2 depthTemp = texture(depthSampler, texCoord).xy;
@@ -76,19 +69,11 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		float depthMeanDistToProbe = max(distToProbe - depthMean, 0.0);
 		float chebyshevWeight = depthVariance / (depthVariance + depthMeanDistToProbe * depthMeanDistToProbe);
 		chebyshevWeight = max(pow(chebyshevWeight, 3), 0.0);
-
 		if (distToProbe <= depthMean) weight *= chebyshevWeight;
+		weight *= chebyshevWeight;
 
 		weight = max(0.0001, weight);
-		vec3 irradianceDirection = hitNormal;
-		float probeContribution = dot(irradianceDirection, probeDirection);
-		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz * probeContribution;
-
-		float crushThreshold = renderSettings.crushThreshold;
-		if (weight < crushThreshold) weight *= weight * weight * (1.0 / (crushThreshold*crushThreshold));
-
-		vec3 trilinear = lerp(vec3(1.0) - alpha, alpha, vec3(offset));
-		weight *= trilinear.x * trilinear.y * trilinear.z;
+		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz;
 
 		if (renderSettings.linearBlending == 0) probeIrradiance = sqrt(probeIrradiance);
 

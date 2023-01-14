@@ -32,7 +32,6 @@ class Majercik2019: public Renderer {
 		virtual void parseRendererInput(const InputEntry& inputEntry) override;
 
 		struct RenderSettings {
-			u_int32_t lightJumpCount;
 			u_int32_t visionJumpCount;
 			Vector3u probeCount;
 			u_int32_t totalProbeCount;
@@ -43,7 +42,6 @@ class Majercik2019: public Renderer {
 			u_int32_t probeSampleSideLength;
 			float depthSharpness;
 			float normalBias;
-			float crushThreshold;
 			u_int32_t linearBlending;
 			float energyPreservation;
 			u_int32_t shadowCountProbe;

@@ -12,12 +12,12 @@ uvec3 getBaseGridCoord(vec3 X) {
 	);
 }
 
-vec3 getGridCoordToPosition(uvec3 c) {
-	return renderSettings.betweenProbeDistance * vec3(c) + renderSettings.probeStartCorner;
+uint getGridCoordToProbeIndex(uvec3 c) {
+	return uint(c.x + c.y * renderSettings.probeCount.x + c.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
 }
 
-uint gridCoordToProbeIndex(uvec3 c) {
-	return uint(c.x + c.y * renderSettings.probeCount.x + c.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
+vec3 getGridCoordToPosition(uvec3 c) {
+	return renderSettings.betweenProbeDistance * vec3(c) + renderSettings.probeStartCorner;
 }
 
 vec2 textureCoordFromDirection(vec3 dir, uint probeIndex) {
@@ -52,14 +52,17 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 	for (uint i = 0; i < 8; ++i) {
 		uvec3 offset = uvec3(i, i >> 1, i >> 2) & uvec3(1);
 		uvec3 probeGridCoord = clamp(baseGridCoord + offset, uvec3(0), renderSettings.probeCount - uvec3(1));
-		uint probeIndex = gridCoordToProbeIndex(probeGridCoord);
+		uint probeIndex = getGridCoordToProbeIndex(probeGridCoord);
 		vec3 probePos = getGridCoordToPosition(probeGridCoord);
 		vec3 probeToPoint = hitPos - probePos + (hitNormal + 3.0 * originDirection) * renderSettings.normalBias;
+		vec3 directionToProbe = normalize(-probeToPoint);
+
+		float weight = (dot(directionToProbe, hitNormal) + 1.0) * 0.5;
 
 		vec3 trilinear = lerp(vec3(1.0) - alpha, alpha, vec3(offset));
-		float weight = trilinear.x * trilinear.y * trilinear.z;
+		weight *= trilinear.x * trilinear.y * trilinear.z;
 
-		vec2 texCoord = textureCoordFromDirection(hitNormal, probeIndex);
+		vec2 texCoord = textureCoordFromDirection(-directionToProbe, probeIndex);
 
 		float distToProbe = length(probeToPoint);
 		vec2 depthTemp = texture(depthSampler, texCoord).xy;
@@ -70,7 +73,6 @@ vec3 getIrradiance(vec3 originPos, vec3 viewDirection, vec3 hitPos, vec3 hitNorm
 		float chebyshevWeight = depthVariance / (depthVariance + depthMeanDistToProbe * depthMeanDistToProbe);
 		chebyshevWeight = max(pow(chebyshevWeight, 3), 0.0);
 		if (distToProbe <= depthMean) weight *= chebyshevWeight;
-		weight *= chebyshevWeight;
 
 		weight = max(0.0001, weight);
 		vec3 probeIrradiance = texture(irradianceSampler, texCoord).xyz;

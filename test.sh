@@ -48,10 +48,10 @@ popd
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box.scene 1280 720
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
-# build/RayTrace res/renderer/Majercik2019.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera
+# build/RayTrace res/renderer/Majercik2019_labyrinth.renderer res/scene/labyrinth.scene 1280 720 res/camera/labyrinth.camera
 # build/RayTrace res/renderer/Majercik2019.renderer res/scene/cornell_box_with_ball.scene 1280 720
 build/RayTrace res/renderer/Majercik2019.renderer res/scene/red_ball_room.scene 1280 720
-# build/RayTrace res/renderer/Majercik2019.renderer res/scene/white_room.scene 1280 720
+# build/RayTrace res/renderer/Majercik2019_white_room.renderer res/scene/white_room.scene 1280 720
 
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/Bitterli2020.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720

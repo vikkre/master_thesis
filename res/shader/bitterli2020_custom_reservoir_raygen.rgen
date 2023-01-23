@@ -1,0 +1,45 @@
+#version 460
+
+
+#include "bitterli2020_custom.glsl"
+
+
+void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
+	for (uint i = 0; i < renderSettings.candidateCount; ++i) {
+		Sample s;
+		s.lsp = getRandomLightSourcePoint(rng);
+		vec3 direction = hitPos - s.lsp.pos;
+		s.weight = s.lsp.lightStrength * (5.0 / square_length(direction)) * dot(normalize(direction), s.lsp.normal);
+		if (s.weight <= -0.01) continue;
+
+		updateReservoir(r, rng, s, s.weight);
+	}
+	if (isShadowed(r.y.lsp, hitPos)) {
+		r.W = 0.0;
+	}	else {
+		r.W = r.w_sum / (r.y.weight * float(r.M));
+	}
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	uint probeIndex = gl_LaunchIDEXT.x;
+
+	uint i = probeIndex;
+
+	uint x = (i % renderSettings.probeCount.x);
+	i = (i - x) / renderSettings.probeCount.x;
+
+	uint y = (i % renderSettings.probeCount.y);
+	i = (i - y) / renderSettings.probeCount.y;
+
+	uint z = (i % renderSettings.probeCount.z);
+	
+	vec3 probePos = vec3(x, y, z) * renderSettings.betweenProbeDistance + renderSettings.probeStartCorner;
+
+	Reservoir r = probeReservoirs.r[probeIndex];
+	fillReservoir(rng, r, probePos);
+	probeReservoirs.r[probeIndex] = r;
+}

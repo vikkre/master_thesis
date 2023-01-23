@@ -1,0 +1,7 @@
+Bitterli2020Custom
+	visionJumpCount(3)
+	candidateCount(128)
+	sampleCount(8)
+	probeCount(2, 2, 2)
+	probeStartCorner(-0.5, -0.5, -0.5)
+	betweenProbeDistance(1, 1, 1)

@@ -18,6 +18,7 @@
 #include "graphic/renderer/shadow_tracer.h"
 #include "graphic/renderer/majercik2019_renderer.h"
 #include "graphic/renderer/bitterli2020_renderer.h"
+#include "graphic/renderer/bitterli2020_custom_renderer.h"
 #include "graphic/renderer/meta_renderer.h"
 #include "graphic/renderer/phong_renderer.h"
 #include "graphic/denoiser/gauss_denoiser.h"
@@ -57,6 +58,7 @@ Renderer* getRenderer(const std::string& name, Device* device) {
 	if (name == "ShadowTracer")             return new ShadowTracer(device);
 	if (name == "Majercik2019")             return new Majercik2019(device);
 	if (name == "Bitterli2020")             return new Bitterli2020(device);
+	if (name == "Bitterli2020Custom")       return new Bitterli2020Custom(device);
 	if (name == "MetaRenderer")             return new MetaRenderer(device);
 	if (name == "PhongShader")              return new PhongRenderer(device);
 	else return nullptr;

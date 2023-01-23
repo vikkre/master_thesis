@@ -1,0 +1,65 @@
+#version 460
+
+
+#include "bitterli2020_custom.glsl"
+
+
+uvec3 getBaseGridCoord(vec3 X) {
+	return clamp(
+		uvec3((X - renderSettings.probeStartCorner) / renderSettings.betweenProbeDistance),
+		uvec3(0),
+		renderSettings.probeCount - uvec3(1)
+	);
+}
+
+uint getGridCoordToProbeIndex(uvec3 c) {
+	return uint(c.x + c.y * renderSettings.probeCount.x + c.z * renderSettings.probeCount.x * renderSettings.probeCount.y);
+}
+
+vec3 getIllumination(vec3 hitPos, vec3 hitNormal) {
+	vec3 illumination = vec3(0.0);
+
+	uvec3 baseGridCoord = getBaseGridCoord(hitPos);
+
+	for (uint i = 0; i < 8; ++i) {
+		uvec3 offset = uvec3(i, i >> 1, i >> 2) & uvec3(1);
+		uvec3 probeGridCoord = clamp(baseGridCoord + offset, uvec3(0), renderSettings.probeCount - uvec3(1));
+		uint probeIndex = getGridCoordToProbeIndex(probeGridCoord);
+
+		Reservoir r = probeReservoirs.r[probeIndex];
+		illumination += shadowTrace(r.y.lsp, hitPos, hitNormal);
+	}
+
+	return illumination / 8;
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	RaySendInfo rayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) break;
+
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			break;
+		}
+	}
+
+	if (rayPayload.hit) {
+		if (rayPayload.lightSource) {
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
+		} else {
+			vec3 color = rayPayload.color * getIllumination(rayPayload.pos, rayPayload.normal);
+
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color, 0.0));
+		}
+	} else {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+	}
+}

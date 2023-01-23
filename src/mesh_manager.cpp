@@ -33,6 +33,33 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 	for (unsigned int i = 0; i < parser.size(); ++i) {
 		const InputEntry& entry = parser.getInputEntry(i);
 
+		if (entry.name == "Probes") {
+			probeData.probeCount = entry.getVector<3, unsigned int>("probeCount");
+			probeData.totalProbeCount = probeData.probeCount[0] * probeData.probeCount[1] * probeData.probeCount[2];
+			probeData.probeStartCorner = entry.getVector<3, float>("probeStartCorner");
+			probeData.betweenProbeDistance = entry.getVector<3, float>("betweenProbeDistance");
+
+			// for (unsigned int x = 0; x < probeData.probeCount[0]; ++x) {
+			// 	for (unsigned int y = 0; y < probeData.probeCount[1]; ++y) {
+			// 		for (unsigned int z = 0; z < probeData.probeCount[2]; ++z) {
+			// 			Vector3f xyz = Vector3f({(float) x, (float) y, (float) z});
+			// 			Vector3f pos;
+			// 			for (unsigned int vi = 0; vi < 3; ++vi) {
+			// 				pos[vi] = xyz[vi] * probeData.betweenProbeDistance[vi] + probeData.probeStartCorner[vi];
+			// 			}
+
+			// 			Mesh* mesh = getMesh("ball.obj");
+			// 			GraphicsObject* obj = new GraphicsObject(device, mesh, pos);
+			// 			constexpr float s = 0.02f;
+			// 			obj->scale = Vector3f({s, s, s});
+			// 			createdObjects.push_back(obj);
+			// 		}
+			// 	}
+			// }
+
+			continue;
+		}
+
 		Mesh* mesh = getMesh(entry.name);
 		Vector3f pos = entry.getVector<3, float>("position");
 		GraphicsObject* obj = new GraphicsObject(device, mesh, pos);

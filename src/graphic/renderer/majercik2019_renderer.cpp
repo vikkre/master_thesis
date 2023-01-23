@@ -74,10 +74,6 @@ void Majercik2019::updateRendererUniforms(size_t index) {
 
 void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
-	renderSettings.probeCount = inputEntry.getVector<3, unsigned int>("probeCount");
-	renderSettings.totalProbeCount = renderSettings.probeCount[0] * renderSettings.probeCount[1] * renderSettings.probeCount[2];
-	renderSettings.probeStartCorner = inputEntry.getVector<3, float>("probeStartCorner");
-	renderSettings.betweenProbeDistance = inputEntry.getVector<3, float>("betweenProbeDistance");
 	renderSettings.perProbeRayCount = inputEntry.get<u_int32_t>("perProbeRayCount");
 	renderSettings.maxProbeRayDistance = inputEntry.get<float>("maxProbeRayDistance");
 	renderSettings.probeSampleSideLength = inputEntry.get<u_int32_t>("probeSampleSideLength");
@@ -87,6 +83,11 @@ void Majercik2019::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.energyPreservation = inputEntry.get<float>("energyPreservation");
 	renderSettings.shadowCountProbe = inputEntry.get<u_int32_t>("shadowCountProbe");
 	renderSettings.shadowCountVision = inputEntry.get<u_int32_t>("shadowCountVision");
+
+	renderSettings.probeCount = probeData.probeCount;
+	renderSettings.totalProbeCount = probeData.totalProbeCount;
+	renderSettings.probeStartCorner = probeData.probeStartCorner;
+	renderSettings.betweenProbeDistance = probeData.betweenProbeDistance;
 }
 
 void Majercik2019::createBuffers() {

@@ -5,8 +5,13 @@ panel.obj
 
 #panel.obj
 #	position(0,  1,  0)
-#	scale(1.0, 25.0, 25.0)
+#	scale(1.0, 125.0, 125.0)
 #	rotation(0, 0, 1, -1.57079)
+
+Probes
+	probeCount(26, 2, 26)
+	probeStartCorner(-25, -1, -25)
+	betweenProbeDistance(2, 2, 2)
 
 block.obj
 	position(-24, 0, -24)

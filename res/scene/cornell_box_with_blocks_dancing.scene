@@ -29,6 +29,11 @@ panel.obj
 	rotation(0, 0, 1, -1.57079)
 	lightSource(1.0)
 
+Probes
+	probeCount(2, 2, 2)
+	probeStartCorner(-0.95, -0.95, -0.95)
+	betweenProbeDistance(1.9, 1.9, 1.9)
+
 
 block.obj
 	position(0.4, -0.7, -0.4)

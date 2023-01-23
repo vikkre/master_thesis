@@ -25,9 +25,9 @@ void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
 void main() {
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
-	uint probeIndex = gl_LaunchIDEXT.x;
+	uint probeDataIndex = gl_LaunchIDEXT.x * renderSettings.sampleCount + gl_LaunchIDEXT.y;
 
-	uint i = probeIndex;
+	uint i = gl_LaunchIDEXT.x;
 
 	uint x = (i % renderSettings.probeCount.x);
 	i = (i - x) / renderSettings.probeCount.x;
@@ -39,7 +39,7 @@ void main() {
 	
 	vec3 probePos = vec3(x, y, z) * renderSettings.betweenProbeDistance + renderSettings.probeStartCorner;
 
-	Reservoir r = probeReservoirs.r[probeIndex];
+	Reservoir r = probeReservoirs.r[probeDataIndex];
 	fillReservoir(rng, r, probePos);
-	probeReservoirs.r[probeIndex] = r;
+	probeReservoirs.r[probeDataIndex] = r;
 }

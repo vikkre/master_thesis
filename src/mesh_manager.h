@@ -18,6 +18,13 @@
 #include "math/rotation.h"
 
 
+struct ProbeData {
+	Vector3u probeCount;
+	u_int32_t totalProbeCount;
+	Vector3f probeStartCorner;
+	Vector3f betweenProbeDistance;
+};
+
 class MeshManager {
 	public:
 		MeshManager(Device* device, const std::string& basepath);
@@ -30,6 +37,8 @@ class MeshManager {
 
 		std::vector<GraphicsObject*> getCreatedObjects() const { return createdObjects; }
 		std::vector<GraphicsObject*> getCreatedLightSources() const { return createdLightSources; }
+
+		ProbeData probeData;
 
 	private:
 		Mesh* loadObj(const std::string& filename);

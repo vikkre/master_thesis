@@ -130,6 +130,7 @@ int main(int argc, char* argv[]) {
 	rendererParser.parse();
 
 	engine->renderer = getRenderer(rendererParser.getInputEntry(0).name, &engine->device);
+	engine->renderer->passProbeData(meshManager->probeData);
 	engine->renderer->parseInput(rendererParser.getInputEntry(0));
 	std::vector<GraphicsObject*> objs = meshManager->getCreatedObjects();
 	engine->renderer->passObjects(objs);

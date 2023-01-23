@@ -28,3 +28,8 @@ panel.obj
 	scale(0.2, 0.2, 0.2)
 	rotation(0, 0, 1, -1.57079)
 	lightSource(1.0)
+
+Probes
+	probeCount(2, 2, 2)
+	probeStartCorner(-0.95, -0.95, -0.95)
+	betweenProbeDistance(1.9, 1.9, 1.9)

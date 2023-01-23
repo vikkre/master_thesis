@@ -9,6 +9,7 @@
 #include "../graphics_object.h"
 
 #include "../../input_parser.h"
+#include "../../mesh_manager.h"
 
 
 class GraphicsObject;
@@ -36,6 +37,7 @@ class Renderer {
 		virtual void updateRendererUniforms(size_t index)=0;
 		virtual void parseRendererInput(const InputEntry& inputEntry)=0;
 
+		void passProbeData(const ProbeData& probeData);
 		void passObjects(const std::vector<GraphicsObject*>& objects);
 		void passLightSources(const std::vector<GraphicsObject*>& lightSources);
 		void setOutputImageBuffer(MultiBufferDescriptor<ImageBuffer>* outputImageBuffer);
@@ -46,6 +48,7 @@ class Renderer {
 		static const std::vector<std::string> RCHIT_SHADERS;
 
 	protected:
+		ProbeData probeData;
 		std::vector<GraphicsObject*> objects;
 		std::vector<GraphicsObject*> lightSources;
 		MultiBufferDescriptor<ImageBuffer>* outputImages;

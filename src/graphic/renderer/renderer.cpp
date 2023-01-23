@@ -61,6 +61,10 @@ void Renderer::parseInput(const InputEntry& inputEntry) {
 	parseRendererInput(inputEntry);
 }
 
+void Renderer::passProbeData(const ProbeData& probeData) {
+	this->probeData = probeData;
+}
+
 void Renderer::passObjects(const std::vector<GraphicsObject*>& objects) {
 	this->objects = objects;
 }

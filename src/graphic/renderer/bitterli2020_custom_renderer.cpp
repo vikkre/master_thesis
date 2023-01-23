@@ -66,10 +66,11 @@ void Bitterli2020Custom::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 	renderSettings.candidateCount = inputEntry.get<u_int32_t>("candidateCount");
 	renderSettings.sampleCount = inputEntry.get<u_int32_t>("sampleCount");
-	renderSettings.probeCount = inputEntry.getVector<3, unsigned int>("probeCount");
-	renderSettings.totalProbeCount = renderSettings.probeCount[0] * renderSettings.probeCount[1] * renderSettings.probeCount[2];
-	renderSettings.probeStartCorner = inputEntry.getVector<3, float>("probeStartCorner");
-	renderSettings.betweenProbeDistance = inputEntry.getVector<3, float>("betweenProbeDistance");
+	
+	renderSettings.probeCount = probeData.probeCount;
+	renderSettings.totalProbeCount = probeData.totalProbeCount;
+	renderSettings.probeStartCorner = probeData.probeStartCorner;
+	renderSettings.betweenProbeDistance = probeData.betweenProbeDistance;
 }
 
 void Bitterli2020Custom::createBuffers() {
@@ -78,13 +79,14 @@ void Bitterli2020Custom::createBuffers() {
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
 
-	probeReservoirs.bufferProperties.bufferSize = sizeof(Reservoir) * renderSettings.totalProbeCount;
+	unsigned int probeDataCount = renderSettings.totalProbeCount * renderSettings.sampleCount;
+	probeReservoirs.bufferProperties.bufferSize = sizeof(Reservoir) * probeDataCount;
 	probeReservoirs.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 	probeReservoirs.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	probeReservoirs.init();
 
 	Reservoir emptryProbeReservoir = {};
-	std::vector<Reservoir> emptryProbeReservoirs(renderSettings.totalProbeCount, emptryProbeReservoir);
+	std::vector<Reservoir> emptryProbeReservoirs(probeDataCount, emptryProbeReservoir);
 
 	probeReservoirs.forEach([&emptryProbeReservoirs](DataBuffer& buffer){
 		buffer.passData((void*) emptryProbeReservoirs.data());
@@ -111,7 +113,7 @@ void Bitterli2020Custom::createReservoirPipeline() {
 	reservoirPipeline.pipelineLayout = getPipelineLayout();
 
 	reservoirPipeline.width = renderSettings.totalProbeCount;
-	reservoirPipeline.height = 1; // renderSettings.perProbeRayCount
+	reservoirPipeline.height = renderSettings.sampleCount;
 
 	reservoirPipeline.init();
 }

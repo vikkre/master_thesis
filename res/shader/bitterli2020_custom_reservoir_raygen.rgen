@@ -39,7 +39,8 @@ void main() {
 	
 	vec3 probePos = vec3(x, y, z) * renderSettings.betweenProbeDistance + renderSettings.probeStartCorner;
 
-	Reservoir r = probeReservoirs.r[probeDataIndex];
+	// Reservoir r = probeReservoirs.r[probeDataIndex];
+	Reservoir r;
 	fillReservoir(rng, r, probePos);
 	probeReservoirs.r[probeDataIndex] = r;
 }

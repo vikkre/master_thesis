@@ -5,7 +5,7 @@ GraphicsObject::GraphicsObject(const Mesh* mesh, const Vector3f& position)
 :scale({1.0f, 1.0f, 1.0f}), rotation(), position(position),
 color(Vector3f({1.0f, 1.0f, 1.0f})), lightSource(false), lightStrength(0.0f),
 diffuseWeight(1.0f), reflectWeight(0.0f), transparentWeight(0.0f), refractionIndex(1.0f),
-vertices(), mesh(mesh), objectMatrix(), triangles(), aabbMin(), aabbMax() {}
+vertices(), mesh(mesh), objectMatrix(), triangles(), aabb() {}
 
 GraphicsObject::~GraphicsObject() {}
 
@@ -23,15 +23,7 @@ void GraphicsObject::init() {
 		vertices[i].pos = cutVector(pos);
 		vertices[i].normal = cutVector(normal);
 
-		if (i == 0) {
-			aabbMin = vertices[i].pos;
-			aabbMax = vertices[i].pos + 0.0001f;
-		} else {
-			for (size_t a = 0; a < 3; ++a) {
-				aabbMin[a] = std::min(aabbMin[a], vertices[i].pos[a]);
-				aabbMax[a] = std::max(aabbMax[a], vertices[i].pos[a]);
-			}
-		}
+		aabb.addPoint(vertices[i].pos);
 	}
 
 	triangles.reserve(mesh->indices.size() / 3);
@@ -65,16 +57,7 @@ Matrix4f GraphicsObject::getMatrix() const {
 }
 
 bool GraphicsObject::traceRay(const Ray& ray, Vector3f& hitPos, const Triangle*& currentTriangle, float& minDistance) const {
-	float tmin = 0.0, tmax = INFINITY;
-
-	for (size_t a = 0; a < 3; ++a) {
-		float t1 = (aabbMin[a] - ray.origin[a]) * ray.directionInv[a];
-		float t2 = (aabbMax[a] - ray.origin[a]) * ray.directionInv[a];
-
-		tmin = std::max(tmin, std::min(t1, t2));
-		tmax = std::min(tmax, std::max(t1, t2));
-	}
-	if (tmin >= tmax) return false;
+	if (!aabb.doesRayIntersect(ray)) return false;
 	
 	bool hit = false;
 	for (const Triangle& triangle: triangles) {

@@ -7,6 +7,7 @@
 #include "../math/vector.h"
 #include "../math/matrix.h"
 #include "../math/rotation.h"
+#include "../math/aabb.h"
 
 #include <vector>
 
@@ -47,6 +48,5 @@ class GraphicsObject {
 		const Mesh* mesh;
 		Matrix4f objectMatrix;
 		std::vector<Triangle> triangles;
-		Vector3f aabbMin;
-		Vector3f aabbMax;
+		AABB aabb;
 };

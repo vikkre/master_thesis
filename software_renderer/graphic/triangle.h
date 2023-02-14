@@ -4,6 +4,7 @@
 
 #include "../math/vector.h"
 #include "../math/matrix.h"
+#include "../math/aabb.h"
 
 
 class Triangle {
@@ -27,4 +28,6 @@ class Triangle {
 		float d01;
 		float d11;
 		float denom;
+
+		AABB aabb;
 };

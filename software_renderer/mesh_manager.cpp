@@ -33,6 +33,8 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 	for (unsigned int i = 0; i < parser.size(); ++i) {
 		const InputEntry& entry = parser.getInputEntry(i);
 
+		if (entry.name == "Probes") continue;
+
 		Mesh* mesh = getMesh(entry.name);
 		Vector3f pos = entry.getVector<3, float>("position");
 		GraphicsObject* obj = new GraphicsObject(mesh, pos);

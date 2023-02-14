@@ -10,12 +10,18 @@ Triangle::Triangle(const Vector3u& indices, const Vector3f& v0, const Vector3f& 
 	d01 = edge0.dot(edge1);
 	d11 = edge1.dot(edge1);
 	denom = d00 * d11 - d01 * d01;
+
+	aabb.addPoint(v0);
+	aabb.addPoint(v1);
+	aabb.addPoint(v2);
 }
 
 Triangle::~Triangle() {}
 
 bool Triangle::rayIntersects(const Ray& ray, Vector3f& outIntersectionPoint) const {
 	constexpr float EPSILON = 0.0000001f;
+
+	if (!aabb.doesRayIntersect(ray)) return false;
 	
 	Vector3f h = cross(ray.direction, edge1);
 	float a = edge0.dot(h);

@@ -79,6 +79,9 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		color += traceRay(Ray(origin, direction));
 	}
 	color /= float(raysPerPixel);
+	color *= 2.0f * M_PI;
+	for (unsigned int i = 0; i < 3; ++i)
+		color[i] = std::clamp(color[i], 0.0f, 1.0f);
 
 	unsigned int index = (x + y * imageSize[0]) * 3;
 	for (unsigned int i = 0; i < 3; ++i)

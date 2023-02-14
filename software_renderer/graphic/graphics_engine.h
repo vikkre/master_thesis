@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <algorithm>
 #include <thread>
 
 #include "graphics_object.h"

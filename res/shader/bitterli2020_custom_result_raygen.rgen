@@ -29,11 +29,14 @@ vec3 getIllumination(vec3 hitPos, vec3 hitNormal) {
 		for (uint d = 0; d < renderSettings.sampleCount; ++d) {
 			uint probeDataIndex = probeIndex * renderSettings.sampleCount + d;
 			Reservoir r = probeReservoirs.r[probeDataIndex];
-			illumination += shadowTrace(r.y.lsp, hitPos, hitNormal);
+			illumination += shadowTrace(r.y.lsp, hitPos, hitNormal)  / r.y.weight;
 		}
 	}
 
-	return illumination / (8 * renderSettings.sampleCount);
+	// illumination /= 10;
+	// illumination /= renderSettings.sampleCount;
+	illumination /= 8;
+	return illumination;
 }
 
 

@@ -41,10 +41,9 @@ void main() {
 				r.M = M_sum;
 				r.W = r.w_sum / (r.y.weight * float(r.M));
 
-				illumination += getIllumination(r, p.pos, p.normal);
+				illumination += getIllumination(r, p.pos, p.normal) / r.y.weight;
 				nextTemporalReservoirs.r[reservoirIndex] = r;
 			}
-			illumination /= float(renderSettings.sampleCount);
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color * illumination, 0.0));
 		}
 	} else {

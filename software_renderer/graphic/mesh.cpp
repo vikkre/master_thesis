@@ -2,7 +2,7 @@
 
 
 Mesh::Mesh()
-:vertices(), indices() {}
+:vertices(), indices(), bvh() {}
 
 Mesh::~Mesh() {}
 
@@ -19,4 +19,19 @@ void Mesh::addIndex(const Vector3u& index) {
 	indices.push_back(index[0]);
 	indices.push_back(index[1]);
 	indices.push_back(index[2]);
+}
+
+void Mesh::init() {
+	std::vector<BVH::Data> inputs;
+	inputs.reserve((indices.size() / 3));
+	
+	for (size_t i = 0; i < indices.size(); i += 3) {
+		AABB aabb;
+		aabb.addPoint(vertices[indices[i+0]].pos);
+		aabb.addPoint(vertices[indices[i+1]].pos);
+		aabb.addPoint(vertices[indices[i+2]].pos);
+
+		inputs.push_back({aabb, i / 3});
+	}
+	bvh.init(inputs);
 }

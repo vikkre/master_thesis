@@ -21,6 +21,7 @@ Mesh* MeshManager::getMesh(const std::string& name) {
 		Mesh* mesh = nullptr;
 		if      (ends_with(name, ".obj")) mesh = loadObj(name);
 		else if (ends_with(name, ".stl")) mesh = loadStl(name);
+		mesh->init();
 		meshes[name] = mesh;
 		return mesh;
 	}

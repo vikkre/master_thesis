@@ -24,6 +24,7 @@ void GraphicsEngine::init() {
 		obj->init();
 		scene.addObject(obj);
 	}
+	scene.init();
 	image.resize(imageSize[0] * imageSize[1] * 3);
 }
 

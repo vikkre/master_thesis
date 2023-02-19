@@ -21,8 +21,6 @@ Triangle::~Triangle() {}
 bool Triangle::rayIntersects(const Ray& ray, Vector3f& outIntersectionPoint) const {
 	constexpr float EPSILON = 0.0000001f;
 
-	if (!aabb.doesRayIntersect(ray)) return false;
-	
 	Vector3f h = cross(ray.direction, edge1);
 	float a = edge0.dot(h);
 	if (a > -EPSILON && a < EPSILON) return false;

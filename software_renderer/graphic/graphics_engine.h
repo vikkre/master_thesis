@@ -6,9 +6,9 @@
 
 #include "graphics_object.h"
 #include "scene.h"
-#include "ray.h"
 
 #include "../camera.h"
+#include "../math/ray.h"
 #include "../math/random.h"
 
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ray.h"
-
+#include "../math/ray.h"
 #include "../math/vector.h"
 #include "../math/matrix.h"
 #include "../math/aabb.h"
@@ -20,6 +19,8 @@ class Triangle {
 		const Vector3f v1;
 		const Vector3f v2;
 
+		AABB aabb;
+
 	private:
 		Vector3f edge0;
 		Vector3f edge1;
@@ -28,6 +29,4 @@ class Triangle {
 		float d01;
 		float d11;
 		float denom;
-
-		AABB aabb;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vector.h"
-#include "../graphic/ray.h"
+#include "ray.h"
 
 
 class AABB {
@@ -15,6 +15,7 @@ class AABB {
 		void addPoint(const Vector3f& point);
 
 		bool doesRayIntersect(const Ray& ray) const;
+		Vector3f getCenter() const;
 
 	private:
 		bool empty;

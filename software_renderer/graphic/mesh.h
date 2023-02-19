@@ -6,9 +6,8 @@
 
 #include "../init_exception.h"
 #include "../math/vector.h"
+#include "../math/bounding_volume_hierachy.h"
 
-
-class Device;
 
 class Mesh {
 	public:
@@ -22,7 +21,9 @@ class Mesh {
 
 		void addVertex(const Vector3f& pos, const Vector3f& normal);
 		void addIndex(const Vector3u& index);
+		void init();
 
 		std::vector<Vertex> vertices;
 		std::vector<size_t> indices;
+		BVH bvh;
 };

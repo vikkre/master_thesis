@@ -48,3 +48,7 @@ bool AABB::doesRayIntersect(const Ray& ray) const {
 
 	return tmin < tmax;
 }
+
+Vector3f AABB::getCenter() const {
+	return 0.5f * (aabbMin + aabbMax);
+}

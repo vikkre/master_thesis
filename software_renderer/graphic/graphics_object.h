@@ -2,12 +2,13 @@
 
 #include "mesh.h"
 #include "triangle.h"
-#include "ray.h"
 
+#include "../math/ray.h"
 #include "../math/vector.h"
 #include "../math/matrix.h"
 #include "../math/rotation.h"
 #include "../math/aabb.h"
+#include "../math/bounding_volume_hierachy.h"
 
 #include <vector>
 
@@ -43,10 +44,11 @@ class GraphicsObject {
 		float refractionIndex;
 
 		std::vector<Mesh::Vertex> vertices;
+		AABB aabb;
 
 	private:
 		const Mesh* mesh;
 		Matrix4f objectMatrix;
 		std::vector<Triangle> triangles;
-		AABB aabb;
+		BVH bvh;
 };

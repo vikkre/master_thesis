@@ -3,8 +3,8 @@
 #define SURFACE_DISTANCE_OFFSET 0.01f
 
 
-void threadRender(GraphicsEngine* graphicsEngine, unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
-	graphicsEngine->render(t, startY, endY, viewInverse, projInverse, origin);
+void threadRender(GraphicsEngine* graphicsEngine, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
+	graphicsEngine->render(viewInverse, projInverse, origin);
 }
 
 
@@ -44,27 +44,36 @@ void GraphicsEngine::render() {
 
 	Vector3f origin = cutVector(viewInverse * Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
 
-	std::vector<unsigned int> ys(threadCount + 1);
-	for (unsigned int t = 0; t <= threadCount; ++t) {
-		ys[t] = imageSize[1] * float(t) / float(threadCount);
-	}
-
+	pixelCounter = 0;
 	std::vector<std::thread> threads;
 	threads.reserve(threadCount);
 
 	for (unsigned int t = 0; t < threadCount; ++t) {
-		threads.push_back(std::thread(threadRender, this, t, ys[t], ys[t + 1], viewInverse, projInverse, origin));
+		threads.push_back(std::thread(threadRender, this, viewInverse, projInverse, origin));
 	}
 
 	for (std::thread& th: threads) th.join();
 }
 
-void GraphicsEngine::render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
-	for (unsigned int x = 0; x < imageSize[0]; ++x) {
-		if (x % 100 == 0 && x != 0) std::cout << "Thread " << t << ": " << float(x) / float(imageSize[0]) << " done" << std::endl;
-		for (unsigned int y = startY; y < endY; ++y) {
-			renderPixel(x, y, viewInverse, projInverse, origin);
+void GraphicsEngine::render(const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin) {
+	uint32_t fullSize = imageSize[0] * imageSize[1];
+	uint32_t fullStep = fullSize / 100;
+	while (true) {
+		uint32_t currentPixel = pixelCounter.fetch_add(1);
+
+		if (currentPixel >= fullSize) {
+			if (currentPixel == fullSize) std::cout << "100% done" << std::endl;
+			break;
 		}
+
+		if (currentPixel % fullStep == 0 && currentPixel != 0) {
+			unsigned int done = (unsigned int)(100.0f * (float(currentPixel) / float(fullSize)));
+			std::cout << done << "% done" << std::endl;
+		}
+
+		unsigned int x = currentPixel % imageSize[0];
+		unsigned int y = currentPixel / imageSize[0];
+		renderPixel(x, y, viewInverse, projInverse, origin);
 	}
 }
 

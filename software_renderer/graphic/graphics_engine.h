@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <thread>
+#include <atomic>
 
 #include "graphics_object.h"
 #include "scene.h"
@@ -24,7 +25,7 @@ class GraphicsEngine {
 		void saveImage(const std::string path);
 
 		void render();
-		void render(unsigned int t, unsigned int startY, unsigned int endY, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
+		void render(const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
 		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
 		Vector3f traceRay(Ray ray);
 
@@ -38,4 +39,5 @@ class GraphicsEngine {
 		unsigned int raysPerPixel;
 		unsigned int visionJumpCount;
 		unsigned int threadCount;
+		std::atomic_uint32_t pixelCounter;
 };

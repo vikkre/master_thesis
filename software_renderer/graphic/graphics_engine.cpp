@@ -107,6 +107,7 @@ Vector3f GraphicsEngine::traceRay(Ray ray) {
 			backfaceCulling = false;
 
 			if (obj->lightSource) {
+				if (hitVertex.normal.dot(ray.direction) > 0.0f) break;
 				color *= obj->color * obj->lightStrength;
 				lightHit = true;
 				break;

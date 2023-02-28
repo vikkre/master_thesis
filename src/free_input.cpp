@@ -69,6 +69,21 @@ void FreeInput::update(float deltaTime) {
 	if (down) position[1] -= MOVE_SPEED * deltaTime;
 }
 
+void FreeInput::saveCamera(const std::string& path) const {
+	float tmpTheta = theta / M_PI;
+	float tmpPhi = (phi - M_PI_2) / -M_PI_2;
+	// phi = phi * -M_PI_2 + M_PI_2;
+
+	std::ofstream file(path, std::ios::out);
+
+	file << "Camera" << std::endl;
+	file << "\tposition(" << position[0] << ", " << position[1] << ", " << position[2] << ")" << std::endl;
+	file << "#\ttheta (left, right), phi (up, down)" << std::endl;
+	file << "\tangle(" << tmpTheta << ", " << tmpPhi << ")" << std::endl;
+
+	file.close();
+}
+
 Vector3f FreeInput::getPosition() const {
 	return position;
 }

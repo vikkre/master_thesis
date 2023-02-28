@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+#include <string>
 #include <SDL2/SDL.h>
 
 #include "input_parser.h"
@@ -15,6 +17,7 @@ class FreeInput {
 
 		void handleEvents(const SDL_Event& event);
 		void update(float deltaTime);
+		void saveCamera(const std::string& path) const;
 
 		Vector3f getPosition() const;
 		Vector3f getLookAt() const;

@@ -37,7 +37,7 @@ Bitterli2020::Bitterli2020(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 reservoirPipeline(device), resultPipeline(device),
 renderSettingsBuffers(device), rayPayloadsBuffers(device),
-spatialReservoirsBuffers(device), prevTemporalReservoirs(device), nextTemporalReservoirs(device, &prevTemporalReservoirs, 1) {}
+spatialReservoirsBuffers(device) {}
 
 Bitterli2020::~Bitterli2020() {}
 
@@ -75,7 +75,7 @@ void Bitterli2020::createBuffers() {
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
 
-	unsigned int bufferSize = device->renderInfo.swapchainExtend.width * device->renderInfo.swapchainExtend.height * 1.1;
+	unsigned int bufferSize = device->renderInfo.swapchainExtend.width * device->renderInfo.swapchainExtend.height;
 
 	rayPayloadsBuffers.bufferProperties.bufferSize = sizeof(RayPayload) * bufferSize;
 	rayPayloadsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
@@ -86,29 +86,15 @@ void Bitterli2020::createBuffers() {
 	spatialReservoirsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 	spatialReservoirsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	spatialReservoirsBuffers.init();
-
-	prevTemporalReservoirs.bufferProperties.bufferSize = sizeof(Reservoir) * renderSettings.sampleCount * bufferSize;
-	prevTemporalReservoirs.bufferProperties.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-	prevTemporalReservoirs.bufferProperties.properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	prevTemporalReservoirs.init();
-
-	Reservoir defaultReservoir = {};
-	std::vector<Reservoir> reservoirs(renderSettings.sampleCount * bufferSize, defaultReservoir);
-
-	prevTemporalReservoirs.forEach([&reservoirs](DataBuffer& buffer){
-		buffer.passData((void*) reservoirs.data());
-	});
 }
 
 void Bitterli2020::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(6);
+	descriptorCollection.bufferDescriptors.resize(4);
 
 	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
 	descriptorCollection.bufferDescriptors.at(1) = outputImages;
 	descriptorCollection.bufferDescriptors.at(2) = &rayPayloadsBuffers;
 	descriptorCollection.bufferDescriptors.at(3) = &spatialReservoirsBuffers;
-	descriptorCollection.bufferDescriptors.at(4) = &prevTemporalReservoirs;
-	descriptorCollection.bufferDescriptors.at(5) = &nextTemporalReservoirs;
 
 	descriptorCollection.init();
 

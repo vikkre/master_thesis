@@ -15,6 +15,7 @@
 #include "graphic/helper/top_acceleration_structure_buffer.h"
 #include "graphic/renderer/photon_mapper.h"
 #include "graphic/renderer/path_tracer.h"
+#include "graphic/renderer/bidirectional_path_tracer.h"
 #include "graphic/renderer/shadow_tracer.h"
 #include "graphic/renderer/majercik2019_renderer.h"
 #include "graphic/renderer/bitterli2020_renderer.h"
@@ -55,6 +56,7 @@ float microsecondsToSeconds(int64_t microseconds) {
 Renderer* getRenderer(const std::string& name, Device* device) {
 	if (name == "PhotonMapper")             return new PhotonMapper(device);
 	if (name == "PathTracer")               return new PathTracer(device);
+	if (name == "BidirectionalPathTracer")  return new BidirectionalPathTracer(device);
 	if (name == "ShadowTracer")             return new ShadowTracer(device);
 	if (name == "Majercik2019")             return new Majercik2019(device);
 	if (name == "Bitterli2020")             return new Bitterli2020(device);

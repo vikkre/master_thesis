@@ -1,0 +1,93 @@
+#version 460
+
+
+#include "bidirectional_path_tracer.glsl"
+
+#define MAX_PATH_LENGTH 20
+#define VISION_HP_INDEX 0
+#define LIGHT_HP_INDEX 1
+
+HitPoint hitPoints[2][MAX_PATH_LENGTH];
+
+
+uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth, uint startDepth) {
+	vec3 color = vec3(1.0);
+	uint pathDepth = startDepth;
+
+	for (uint i = startDepth; i < maxDepth; ++i) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) {
+			break;
+		}
+
+		pathDepth = i + 1;
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			color *= rayPayload.color;
+			hitPoints[hp_index][i].diffuse = true;
+		} else {
+			hitPoints[hp_index][i].diffuse = false;
+		}
+
+		hitPoints[hp_index][i].pos = rayPayload.pos;
+		hitPoints[hp_index][i].cumulativeColor = color;
+		hitPoints[hp_index][i].lightHit = false;
+
+		if (rayPayload.lightSource) {
+			if (dot(rayInfo.prevDirection, rayPayload.normal) <= 0.0) {
+				hitPoints[hp_index][i].lightHit = true;
+				break;
+			}
+		}
+	}
+
+	return pathDepth;
+}
+
+void main() {
+	if (gl_LaunchIDEXT.z > 0) return;
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	RaySendInfo startVisionRayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	vec3 finalColor = vec3(0.0);
+
+	for (uint visionRayIndex = 0; visionRayIndex < renderSettings.raysPerPixelCount; ++visionRayIndex) {
+		RaySendInfo startLightRayInfo = getLightRayRandom(rng);
+		hitPoints[LIGHT_HP_INDEX][0].pos = startLightRayInfo.origin;
+		hitPoints[LIGHT_HP_INDEX][0].cumulativeColor = startLightRayInfo.startColor;
+		hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
+
+		uint visionPathDepth = tracePath(rng, VISION_HP_INDEX, startVisionRayInfo, renderSettings.visionJumpCount, 0);
+		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1);
+
+		uint done = 0;
+		vec3 color = vec3(0.0);
+
+		for (uint vi = 0; vi < visionPathDepth; ++vi) {
+			if (!hitPoints[VISION_HP_INDEX][vi].diffuse) continue;
+
+			for (uint li = 0; li < lightPathDepth; ++li) {
+				if (!hitPoints[LIGHT_HP_INDEX][li].diffuse) continue;
+
+				vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos;
+				vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos;
+				bool occluded = isOccluded(startPos, endPos);
+				if (!occluded) {
+					vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
+					vec3 lightColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
+					color += visionColor * lightColor;
+					++done;
+				}
+			}
+		}
+
+		if (done > 0) finalColor += color / done;
+	}
+	
+	finalColor *= 1 / float(renderSettings.raysPerPixelCount);
+
+	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(finalColor, 0.0));
+}

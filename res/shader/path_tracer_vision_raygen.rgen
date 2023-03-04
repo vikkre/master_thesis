@@ -25,7 +25,6 @@ void main() {
 			RaySendInfo rayInfo = startRayInfo;
 			rayPayload = defaultRayPayload;
 			vec3 color = vec3(1.0);
-			float lengthSquared = 0.0;
 			bool lightHit = false;
 
 			for (uint i = 1; i < renderSettings.visionJumpCount; ++i) {
@@ -42,8 +41,6 @@ void main() {
 					break;
 				}
 
-				lengthSquared += square_length(rayPayload.pos - rayInfo.origin);
-
 				if (rayPayload.lightSource) {
 					if (dot(rayInfo.direction, rayPayload.normal) <= 0.0) {
 						color *= rayPayload.color;
@@ -53,7 +50,7 @@ void main() {
 				}
 			}
 
-			if (lightHit) finalColor += color / lengthSquared;
+			if (lightHit) finalColor += color;
 		}
 
 		finalColor *= (2*PI) / float(renderSettings.visionRayPerPixelCount);

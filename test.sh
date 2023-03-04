@@ -22,19 +22,19 @@ popd
 # build/RayTrace res/renderer/photon_mapper_gauss.renderer res/scene/cornell_box_with_ball.scene 1280 720
 # build/RayTrace res/renderer/photon_mapper_median.renderer res/scene/cornell_box_with_ball.scene 1280 720
 
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/labyrinth.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/red_ball_room.scene 1280 720
-# build/RayTrace res/renderer/unidirectional_path_tracer.renderer res/scene/white_room.scene 1280 720
+build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_ball.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/cornell_box_with_blocks_and_ball.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/labyrinth.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/red_ball_room.scene 1280 720
+# build/RayTrace res/renderer/path_tracer.renderer res/scene/white_room.scene 1280 720
 
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/shadow_tracer_cornell_box.ppm 30
-build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1280 720
+# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_blocks_big_light.scene 1280 720
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1280 720

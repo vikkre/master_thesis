@@ -45,8 +45,8 @@ add_shader(photon_mapper_kd_comp.spv       photon_mapper_kd_comp.comp       ${PH
 add_shader(photon_mapper_vision_raygen.spv photon_mapper_vision_raygen.rgen ${PHOTON_MAPPER_INCLUDES} )
 add_shader(photon_mapper_final_comp.spv    photon_mapper_final_comp.comp    ${PHOTON_MAPPER_INCLUDES} )
 
-set(UNIDIRECTIONAL_PATH_TRACER_INCLUDES ${SHADER_INCLUDES} unidirectional_path_tracer.glsl)
-add_shader(unidirectional_path_tracer_vision_raygen.spv unidirectional_path_tracer_vision_raygen.rgen ${UNIDIRECTIONAL_PATH_TRACER_INCLUDES} )
+set(PATH_TRACER_INCLUDES ${SHADER_INCLUDES} path_tracer.glsl)
+add_shader(path_tracer_vision_raygen.spv path_tracer_vision_raygen.rgen ${PATH_TRACER_INCLUDES} )
 
 set(SHADOW_TRACER_INCLUDES ${SHADER_INCLUDES} shadow_tracer.glsl)
 add_shader(shadow_tracer_vision_raygen.spv shadow_tracer_vision_raygen.rgen ${SHADOW_TRACER_INCLUDES} )

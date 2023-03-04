@@ -14,7 +14,7 @@
 #include "graphic/graphics_object.h"
 #include "graphic/helper/top_acceleration_structure_buffer.h"
 #include "graphic/renderer/photon_mapper.h"
-#include "graphic/renderer/unidirectional_path_tracer.h"
+#include "graphic/renderer/path_tracer.h"
 #include "graphic/renderer/shadow_tracer.h"
 #include "graphic/renderer/majercik2019_renderer.h"
 #include "graphic/renderer/bitterli2020_renderer.h"
@@ -54,20 +54,20 @@ float microsecondsToSeconds(int64_t microseconds) {
 
 Renderer* getRenderer(const std::string& name, Device* device) {
 	if (name == "PhotonMapper")             return new PhotonMapper(device);
-	if (name == "UnidirectionalPathTracer") return new UnidirectionalPathTracer(device);
+	if (name == "PathTracer")               return new PathTracer(device);
 	if (name == "ShadowTracer")             return new ShadowTracer(device);
 	if (name == "Majercik2019")             return new Majercik2019(device);
 	if (name == "Bitterli2020")             return new Bitterli2020(device);
 	if (name == "Bitterli2020Custom")       return new Bitterli2020Custom(device);
 	if (name == "MetaRenderer")             return new MetaRenderer(device);
 	if (name == "PhongShader")              return new PhongRenderer(device);
-	else return nullptr;
+	else throw InitException("getRenderer not found", name);
 }
 
 Denoiser* getDenoiser(const std::string& name, Device* device) {
 	if      (name == "GaussDenoiser")  return new GaussDenoiser(device);
 	else if (name == "MedianDenoiser") return new MedianDenoiser(device);
-	else return nullptr;
+	else throw InitException("getDenoiser not found", name);
 }
 
 
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		InitException("SDL_Init", SDL_GetError());
+		throw InitException("SDL_Init", SDL_GetError());
 	}
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 

@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class UnidirectionalPathTracer: public Renderer {
+class PathTracer: public Renderer {
 	public:
-		UnidirectionalPathTracer(Device* device);
-		~UnidirectionalPathTracer();
+		PathTracer(Device* device);
+		~PathTracer();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;

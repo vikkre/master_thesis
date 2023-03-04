@@ -10,8 +10,8 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/build/RayTrace",
 			"args": [
-				"res/renderer/Bitterli2020.renderer",
-				"res/scene/labyrinth.scene",
+				"res/renderer/path_tracer.renderer",
+				"res/scene/cornell_box.scene",
 				"1280", "720",
 			],
 			"stopAtEntry": false,

@@ -1,7 +1,7 @@
 #version 460
 
 
-#include "unidirectional_path_tracer.glsl"
+#include "path_tracer.glsl"
 
 
 

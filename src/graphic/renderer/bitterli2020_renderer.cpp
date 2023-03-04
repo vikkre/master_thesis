@@ -101,14 +101,12 @@ void Bitterli2020::createBuffers() {
 }
 
 void Bitterli2020::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(6);
-
-	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(1) = outputImages;
-	descriptorCollection.bufferDescriptors.at(2) = &rayPayloadsBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &spatialReservoirsBuffers;
-	descriptorCollection.bufferDescriptors.at(4) = &prevTemporalReservoirs;
-	descriptorCollection.bufferDescriptors.at(5) = &nextTemporalReservoirs;
+	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
+	descriptorCollection.addBuffer(1, outputImages);
+	descriptorCollection.addBuffer(2, &rayPayloadsBuffers);
+	descriptorCollection.addBuffer(3, &spatialReservoirsBuffers);
+	descriptorCollection.addBuffer(4, &prevTemporalReservoirs);
+	descriptorCollection.addBuffer(5, &nextTemporalReservoirs);
 
 	descriptorCollection.init();
 

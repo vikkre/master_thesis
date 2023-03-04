@@ -94,11 +94,9 @@ void Bitterli2020Custom::createBuffers() {
 }
 
 void Bitterli2020Custom::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(3);
-
-	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(1) = outputImages;
-	descriptorCollection.bufferDescriptors.at(2) = &probeReservoirs;
+	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
+	descriptorCollection.addBuffer(1, outputImages);
+	descriptorCollection.addBuffer(2, &probeReservoirs);
 
 	descriptorCollection.init();
 

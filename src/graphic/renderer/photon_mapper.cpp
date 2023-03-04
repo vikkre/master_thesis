@@ -116,16 +116,14 @@ void PhotonMapper::createBuffers() {
 }
 
 void PhotonMapper::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(8);
-
-	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(1) = &countBuffers;
-	descriptorCollection.bufferDescriptors.at(2) = &lightPointBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &kdBuffers;
-	descriptorCollection.bufferDescriptors.at(4) = &storageImagesRed;
-	descriptorCollection.bufferDescriptors.at(5) = &storageImagesGreen;
-	descriptorCollection.bufferDescriptors.at(6) = &storageImagesBlue;
-	descriptorCollection.bufferDescriptors.at(7) = outputImages;
+	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
+	descriptorCollection.addBuffer(1, &countBuffers);
+	descriptorCollection.addBuffer(2, &lightPointBuffers);
+	descriptorCollection.addBuffer(3, &kdBuffers);
+	descriptorCollection.addBuffer(4, &storageImagesRed);
+	descriptorCollection.addBuffer(5, &storageImagesGreen);
+	descriptorCollection.addBuffer(6, &storageImagesBlue);
+	descriptorCollection.addBuffer(7, outputImages);
 
 	descriptorCollection.init();
 

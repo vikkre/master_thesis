@@ -37,11 +37,9 @@ void MedianDenoiser::createBuffers() {
 }
 
 void MedianDenoiser::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(3);
-
-	descriptorCollection.bufferDescriptors.at(0) = &inputImages;
-	descriptorCollection.bufferDescriptors.at(1) = outputImages;
-	descriptorCollection.bufferDescriptors.at(2) = &settingsBuffers;
+	descriptorCollection.addBuffer(0, &inputImages);
+	descriptorCollection.addBuffer(1, outputImages);
+	descriptorCollection.addBuffer(2, &settingsBuffers);
 
 	descriptorCollection.init();
 

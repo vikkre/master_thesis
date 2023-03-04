@@ -66,12 +66,10 @@ void GaussDenoiser::createBuffers() {
 }
 
 void GaussDenoiser::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(4);
-
-	descriptorCollection.bufferDescriptors.at(0) = &inputImages;
-	descriptorCollection.bufferDescriptors.at(1) = outputImages;
-	descriptorCollection.bufferDescriptors.at(2) = &settingsBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &gaussBuffers;
+	descriptorCollection.addBuffer(0, &inputImages);
+	descriptorCollection.addBuffer(1, outputImages);
+	descriptorCollection.addBuffer(2, &settingsBuffers);
+	descriptorCollection.addBuffer(3, &gaussBuffers);
 
 	descriptorCollection.init();
 

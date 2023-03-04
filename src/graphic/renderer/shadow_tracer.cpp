@@ -40,10 +40,8 @@ void ShadowTracer::createBuffers() {
 }
 
 void ShadowTracer::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(2);
-
-	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(1) = outputImages;
+	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
+	descriptorCollection.addBuffer(1, outputImages);
 
 	descriptorCollection.init();
 

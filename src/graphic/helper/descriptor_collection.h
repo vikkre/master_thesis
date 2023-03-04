@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <unordered_map>
 
 #include "../device.h"
 #include "buffer_descriptor.h"
@@ -18,7 +19,7 @@ class DescriptorCollection {
 		VkDescriptorSetLayout getLayout() const;
 
 		unsigned int bindingSetIndex;
-		std::vector<BufferDescriptor*> bufferDescriptors;
+		void addBuffer(uint32_t bindingIndex, BufferDescriptor* bufferDescriptor);
 	
 	private:
 		void createDescriptorSetLayout();
@@ -30,4 +31,6 @@ class DescriptorCollection {
 		VkDescriptorSetLayout descriptorSetLayout;
 		VkDescriptorPool descriptorPool;
 		std::vector<VkDescriptorSet> descriptorSets;
+
+		std::unordered_map<uint32_t, BufferDescriptor*> bufferDescriptorsNew;
 };

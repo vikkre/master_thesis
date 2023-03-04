@@ -124,15 +124,13 @@ void Majercik2019::createBuffers() {
 }
 
 void Majercik2019::createDescriptorCollection() {
-	descriptorCollection.bufferDescriptors.resize(7);
-
-	descriptorCollection.bufferDescriptors.at(0) = &renderSettingsBuffers;
-	descriptorCollection.bufferDescriptors.at(1) = &surfelBuffer;
-	descriptorCollection.bufferDescriptors.at(2) = &irradianceBuffer;
-	descriptorCollection.bufferDescriptors.at(3) = &depthBuffer;
-	descriptorCollection.bufferDescriptors.at(4) = &irradianceSampler;
-	descriptorCollection.bufferDescriptors.at(5) = &depthSampler;
-	descriptorCollection.bufferDescriptors.at(6) = outputImages;
+	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
+	descriptorCollection.addBuffer(1, &surfelBuffer);
+	descriptorCollection.addBuffer(2, &irradianceBuffer);
+	descriptorCollection.addBuffer(3, &depthBuffer);
+	descriptorCollection.addBuffer(4, &irradianceSampler);
+	descriptorCollection.addBuffer(5, &depthSampler);
+	descriptorCollection.addBuffer(6, outputImages);
 
 	descriptorCollection.init();
 

@@ -5,10 +5,9 @@
 
 
 DescriptorCollection::DescriptorCollection(Device* device)
-:bindingSetIndex(DEFAULT_BINDING_SET_INDEX), bufferDescriptors(), device(device),
-descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSets() {
-
-}
+:bindingSetIndex(DEFAULT_BINDING_SET_INDEX), device(device),
+descriptorSetLayout(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSets(),
+bufferDescriptorsNew() {}
 
 DescriptorCollection::~DescriptorCollection() {
 	vkDestroyDescriptorPool(device->getDevice(), descriptorPool, nullptr);
@@ -41,11 +40,32 @@ VkDescriptorSetLayout DescriptorCollection::getLayout() const {
 	return descriptorSetLayout;
 }
 
-void DescriptorCollection::createDescriptorSetLayout() {
-	std::vector<VkDescriptorSetLayoutBinding> layoutBindings(bufferDescriptors.size());
+void DescriptorCollection::addBuffer(uint32_t bindingIndex, BufferDescriptor* bufferDescriptor) {
+	if (bufferDescriptorsNew.count(bindingIndex) > 0) {
+		std::string msg = "Index already used: ";
+		msg += std::to_string(bindingIndex);
+		throw InitException("DescriptorCollection::addBuffer", msg);
+	}
+	bufferDescriptorsNew[bindingIndex] = bufferDescriptor;
+}
 
-	for (unsigned int i = 0; i < bufferDescriptors.size(); ++i) {
-		layoutBindings.at(i) = bufferDescriptors.at(i)->getLayoutBinding(i);
+void DescriptorCollection::createDescriptorSetLayout() {
+	if (bufferDescriptorsNew.size() == 0) {
+		throw InitException("DescriptorCollection::createDescriptorSetLayout", "bufferDescriptors is empty");
+	}
+
+	uint32_t maxIndex = 0;
+	for (std::pair<uint32_t, BufferDescriptor*> bd: bufferDescriptorsNew) {
+		if (bd.first > maxIndex) maxIndex = bd.first;
+	}
+	if (maxIndex >= bufferDescriptorsNew.size()) {
+		throw InitException("DescriptorCollection::createDescriptorSetLayout", "bufferDescriptors is not tightly packed");
+	}
+
+	std::vector<VkDescriptorSetLayoutBinding> layoutBindings(bufferDescriptorsNew.size());
+
+	for (std::pair<uint32_t, BufferDescriptor*> bd: bufferDescriptorsNew) {
+		layoutBindings.at(bd.first) = bd.second->getLayoutBinding(bd.first);
 	}
 	
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -59,13 +79,13 @@ void DescriptorCollection::createDescriptorSetLayout() {
 }
 
 void DescriptorCollection::createDescriptorPool() {
-	std::vector<VkDescriptorPoolSize> poolSizes;
+	std::vector<VkDescriptorPoolSize> poolSizes(bufferDescriptorsNew.size());
 
-	for (BufferDescriptor* bufferDescriptor: bufferDescriptors) {
+	for (std::pair<uint32_t, BufferDescriptor*> bd: bufferDescriptorsNew) {
 		VkDescriptorPoolSize poolSize{};
-		poolSize.type = bufferDescriptor->getBuffer()->getDescriptorType();
+		poolSize.type = bd.second->getBuffer()->getDescriptorType();
 		poolSize.descriptorCount = device->renderInfo.swapchainImageCount;
-		poolSizes.push_back(poolSize);
+		poolSizes.at(bd.first) = poolSize;
 	}
 
 	VkDescriptorPoolCreateInfo poolInfo{};
@@ -99,8 +119,8 @@ void DescriptorCollection::createDescriptorSets() {
 
 	std::vector<VkWriteDescriptorSet> writeSets;
 
-	for (unsigned int i = 0; i < bufferDescriptors.size(); ++i) {
-		bufferDescriptors[i]->getWriteDescriptorSets(writeSets, descriptorSets, i);
+	for (std::pair<uint32_t, BufferDescriptor*> bd: bufferDescriptorsNew) {
+		bd.second->getWriteDescriptorSets(writeSets, descriptorSets, bd.first);
 	}
 
 	vkUpdateDescriptorSets(device->getDevice(), writeSets.size(), writeSets.data(), 0, VK_NULL_HANDLE);

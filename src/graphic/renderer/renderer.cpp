@@ -135,12 +135,11 @@ void Renderer::createBuffers() {
 
 void Renderer::createDescriptorCollection() {
 	descriptorCollection.bindingSetIndex = 1;
-	descriptorCollection.bufferDescriptors.resize(4);
-
-	descriptorCollection.bufferDescriptors.at(0) = &tlas;
-	descriptorCollection.bufferDescriptors.at(1) = &objDataBuffers;
-	descriptorCollection.bufferDescriptors.at(2) = &rtDataBuffers;
-	descriptorCollection.bufferDescriptors.at(3) = &lightSourceDataBuffers;
+	
+	descriptorCollection.addBuffer(0, &tlas);
+	descriptorCollection.addBuffer(1, &objDataBuffers);
+	descriptorCollection.addBuffer(2, &rtDataBuffers);
+	descriptorCollection.addBuffer(3, &lightSourceDataBuffers);
 
 	descriptorCollection.init();
 

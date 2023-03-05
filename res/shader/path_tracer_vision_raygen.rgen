@@ -31,7 +31,7 @@ void main() {
 				uint traceValue = handleHit(rayInfo, rng);
 
 				if (traceValue == DIFFUSE_VALUE) {
-					color *= rayPayload.color;
+					color *= rayPayload.color * dot(rayInfo.direction, rayPayload.normal);
 				}
 
 				traceRay(rayInfo);

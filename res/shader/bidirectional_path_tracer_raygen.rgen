@@ -25,13 +25,14 @@ uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth,
 		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
-			color *= rayPayload.color;
+			color *= rayPayload.color * dot(rayInfo.direction, rayPayload.normal);
 			hitPoints[hp_index][i].diffuse = true;
 		} else {
 			hitPoints[hp_index][i].diffuse = false;
 		}
 
 		hitPoints[hp_index][i].pos = rayPayload.pos;
+		hitPoints[hp_index][i].normal = rayPayload.normal;
 		hitPoints[hp_index][i].cumulativeColor = color;
 		hitPoints[hp_index][i].lightHit = false;
 
@@ -61,24 +62,29 @@ void main() {
 		hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
 
 		uint visionPathDepth = tracePath(rng, VISION_HP_INDEX, startVisionRayInfo, renderSettings.visionJumpCount, 0);
+
+		if (hitPoints[VISION_HP_INDEX][visionPathDepth - 1].lightHit) {
+			finalColor += hitPoints[VISION_HP_INDEX][visionPathDepth - 1].cumulativeColor;
+			continue;
+		}
+
 		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1);
 
 		uint done = 0;
 		vec3 color = vec3(0.0);
 
 		for (uint vi = 0; vi < visionPathDepth; ++vi) {
-			if (!hitPoints[VISION_HP_INDEX][vi].diffuse) continue;
-
 			for (uint li = 0; li < lightPathDepth; ++li) {
-				if (!hitPoints[LIGHT_HP_INDEX][li].diffuse) continue;
-
-				vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos;
-				vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos;
+				vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos + RAY_NORMAL_OFFSET * hitPoints[VISION_HP_INDEX][vi].normal;
+				vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos + RAY_NORMAL_OFFSET * hitPoints[LIGHT_HP_INDEX][li].normal;
 				bool occluded = isOccluded(startPos, endPos);
 				if (!occluded) {
+					vec3 direction = normalize(endPos - startPos);
+					vec3 normal = hitPoints[VISION_HP_INDEX][vi].normal;
+
 					vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
-					vec3 lightColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
-					color += visionColor * lightColor;
+					vec3 lightColor = hitPoints[LIGHT_HP_INDEX][li].cumulativeColor;
+					color += visionColor * lightColor * dot(direction, normal);
 					++done;
 				}
 			}
@@ -87,7 +93,7 @@ void main() {
 		if (done > 0) finalColor += color / done;
 	}
 	
-	finalColor *= 1 / float(renderSettings.raysPerPixelCount);
+	finalColor *= (2*PI) / float(renderSettings.raysPerPixelCount);
 
 	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(finalColor, 0.0));
 }

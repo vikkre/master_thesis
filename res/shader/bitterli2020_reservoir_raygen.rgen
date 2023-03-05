@@ -9,13 +9,17 @@ void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
 		Sample s;
 		s.lsp = getRandomLightSourcePoint(rng);
 		vec3 direction = hitPos - s.lsp.pos;
-		s.weight = s.lsp.lightStrength * (1.0 / square_length(direction)) * dot(normalize(direction), s.lsp.normal);
+		s.weight = s.lsp.lightStrength * (1.0 / square_length(direction));
 		if (s.weight < 0.0) continue;
 
 		updateReservoir(r, rng, s, s.weight);
 	}
 
-	r.W = r.w_sum / (r.y.weight * float(r.M));
+	r.W = r.w_sum / (r.y.weight * float(r.M)); // (1.0 / r.y.weight) * (1.0 / float(r.M)) * r.w_sum;
+
+	if (isShadowed(r.y.lsp, hitPos)) {
+		r.W = 0;
+	}
 }
 
 

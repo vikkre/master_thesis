@@ -65,15 +65,6 @@ void updateReservoir(inout Reservoir r, inout RNG rng, Sample x_i, float w_i) {
 	if (rand(rng) < (w_i / r.w_sum)) r.y = x_i;
 }
 
-Reservoir combineReservoirs(inout RNG rng, Reservoir r1, Reservoir r2) {
-	Reservoir s;
-	updateReservoir(s, rng, r1.y, r1.y.weight * r1.W * r1.M);
-	updateReservoir(s, rng, r2.y, r2.y.weight * r2.W * r2.M);
-	s.M = r1.M + r2.M;
-	s.W = (1.0 / s.y.weight) * ((1.0 / s.M) * s.w_sum);
-	return s;
-}
-
 uint getPayloadIndex(uvec2 launchID, uvec2 launchSize) {
 	return launchID.x * launchSize.y + launchID.y;
 }

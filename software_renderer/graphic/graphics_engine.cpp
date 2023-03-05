@@ -86,7 +86,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 
 	Vector3f color;
 	for (unsigned int i = 0; i < raysPerPixel; ++i) {
-		color += traceRay(Ray(origin, direction));
+		color += tracePath(Ray(origin, direction));
 	}
 	color /= float(raysPerPixel);
 	color *= 2.0f * M_PI;
@@ -98,7 +98,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		image[index + i] = (char) (color[i] * 255.0f);
 }
 
-Vector3f GraphicsEngine::traceRay(Ray ray) {
+Vector3f GraphicsEngine::tracePath(Ray ray) {
 	Mesh::Vertex hitVertex;
 	const GraphicsObject* obj;
 

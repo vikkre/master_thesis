@@ -27,7 +27,7 @@ class GraphicsEngine {
 		void render();
 		void render(const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
 		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
-		Vector3f traceRay(Ray ray);
+		Vector3f tracePath(Ray ray);
 
 		Vector2u imageSize;
 		std::vector<char> image;

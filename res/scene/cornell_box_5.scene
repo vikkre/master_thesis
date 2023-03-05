@@ -1,0 +1,159 @@
+panel.obj
+	position(-1,  0, 0.0)
+
+panel.obj
+	position(1,  0, 0.0)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -1, 0.0)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  1, 0.0)
+	rotation(0, 0, 1, -1.57079)
+
+panel.obj
+	position(0,  0, -1.0)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0, 1.0)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+panel.obj
+	position(0, 0.99, 0.0)
+	scale(0.2, 0.2, 0.2)
+	rotation(0, 0, 1, -1.57079)
+	lightSource(1.0)
+
+panel.obj
+	position(-1,  0, 5.7)
+
+panel.obj
+	position(1,  0, 5.7)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -1, 5.7)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  1, 5.7)
+	rotation(0, 0, 1, -1.57079)
+
+panel.obj
+	position(0,  0, 4.7)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0, 6.7)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+panel.obj
+	position(0, 0.99, 5.7)
+	scale(0.2, 0.2, 0.2)
+	rotation(0, 0, 1, -1.57079)
+	lightSource(1.0)
+
+panel.obj
+	position(-1,  0, 11.4)
+
+panel.obj
+	position(1,  0, 11.4)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -1, 11.4)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  1, 11.4)
+	rotation(0, 0, 1, -1.57079)
+
+panel.obj
+	position(0,  0, 10.4)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0, 12.4)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+panel.obj
+	position(0, 0.99, 11.4)
+	scale(0.2, 0.2, 0.2)
+	rotation(0, 0, 1, -1.57079)
+	lightSource(1.0)
+
+panel.obj
+	position(-1,  0, 17.1)
+
+panel.obj
+	position(1,  0, 17.1)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -1, 17.1)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  1, 17.1)
+	rotation(0, 0, 1, -1.57079)
+
+panel.obj
+	position(0,  0, 16.1)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0, 18.1)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+panel.obj
+	position(0, 0.99, 17.1)
+	scale(0.2, 0.2, 0.2)
+	rotation(0, 0, 1, -1.57079)
+	lightSource(1.0)
+
+panel.obj
+	position(-1,  0, 22.8)
+
+panel.obj
+	position(1,  0, 22.8)
+	rotation(0, 1, 0, 3.14159)
+
+panel.obj
+	position(0, -1, 22.8)
+	rotation(0, 0, 1, 1.57079)
+
+panel.obj
+	position(0,  1, 22.8)
+	rotation(0, 0, 1, -1.57079)
+
+panel.obj
+	position(0,  0, 21.8)
+	rotation(0, 1, 0, -1.57079)
+	color(0, 1, 0)
+
+panel.obj
+	position(0,  0, 23.8)
+	rotation(0, 1, 0, 1.57079)
+	color(1, 0, 0)
+
+panel.obj
+	position(0, 0.99, 22.8)
+	scale(0.2, 0.2, 0.2)
+	rotation(0, 0, 1, -1.57079)
+	lightSource(1.0)
+
+Probes
+	probeCount(2, 2, 14)
+	probeStartCorner(-0.95, -0.95, -0.95)
+	betweenProbeDistance(1.9, 1.9, 1.9)

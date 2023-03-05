@@ -42,6 +42,6 @@ void main() {
 		if (s.M > 0) illumination += shadowTrace(s.y.lsp, p.pos, p.normal) * s.W;
 	}
 
-	illumination *= p.color * 2.0 * PI;
+	illumination *= p.color;
 	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
 }

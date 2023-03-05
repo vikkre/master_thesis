@@ -50,8 +50,6 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 layout(set = 0, binding = 1, rgba8) uniform image2D finalImage;
 layout(set = 0, binding = 2, scalar) buffer BitterliRayPayloads_ { BitterliRayPayload r[]; } rayPayloads;
 layout(set = 0, binding = 3, scalar) buffer spatialReservoirs_ { Reservoir r[]; } spatialReservoirs;
-layout(set = 0, binding = 4, scalar) buffer prevTemporalReservoirs_ { Reservoir r[]; } prevTemporalReservoirs;
-layout(set = 0, binding = 5, scalar) buffer nextTemporalReservoirs_ { Reservoir r[]; } nextTemporalReservoirs;
 
 Reservoir createReservoir() {
 	Reservoir r;
@@ -68,9 +66,11 @@ void updateReservoir(inout Reservoir r, inout RNG rng, Sample x_i, float w_i) {
 }
 
 uint getPayloadIndex(uvec2 launchID, uvec2 launchSize) {
-	return launchID.x + launchID.y * launchSize.x;
+	return launchID.x * launchSize.y + launchID.y;
 }
 
-uint getReservoirIndex(uvec2 launchID, uvec2 launchSize, uint i) {
-	return launchID.x + launchID.y * launchSize.x + i * launchSize.x * launchSize.y;
+uint getReservoirIndex(uvec2 launchID, uvec2 launchSize, uint sampleIndex) {
+	uint y_size = renderSettings.sampleCount;
+	uint x_size = launchSize.y * y_size;
+	return launchID.x * x_size + launchID.y * y_size + sampleIndex;
 }

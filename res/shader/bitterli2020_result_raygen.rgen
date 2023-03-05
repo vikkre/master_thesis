@@ -4,49 +4,44 @@
 #include "bitterli2020.glsl"
 
 
-vec3 getIllumination(inout Reservoir r, vec3 hitPos, vec3 hitNormal) {
-	return shadowTrace(r.y.lsp, hitPos, hitNormal);
-}
-
-
 void main() {
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
 	BitterliRayPayload p = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
 
-	if (p.hit) {
-		if (p.lightSource) {
-			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color, 0.0));
-		} else {
-			vec3 illumination = vec3(0.0);
-
-			for (uint i = 0; i < renderSettings.sampleCount; i++) {
-				uint reservoirIndex = getReservoirIndex(uvec2(gl_LaunchIDEXT), gl_LaunchSizeEXT.xy, i);
-				Reservoir r = createReservoir();
-				uint M_sum = 0;
-
-				Reservoir tr = prevTemporalReservoirs.r[reservoirIndex];
-				updateReservoir(r, rng, tr.y, tr.y.weight);
-				M_sum += tr.M;
-
-				for (uint d = 0; d < DIRECTION_COUNT; ++d) {
-					ivec2 p = ivec2(gl_LaunchIDEXT) + DIRECTIONS[d];
-					if (0 <= p.x && p.x < gl_LaunchSizeEXT.x && 0 <= p.y && p.y < gl_LaunchSizeEXT.y) {
-						Reservoir sr = spatialReservoirs.r[getReservoirIndex(uvec2(p), gl_LaunchSizeEXT.xy, i)];
-						updateReservoir(r, rng, sr.y, sr.y.weight);
-						M_sum += sr.M;
-					}
-				}
-				
-				r.M = M_sum;
-				r.W = r.w_sum / (r.y.weight * float(r.M));
-
-				illumination += getIllumination(r, p.pos, p.normal) / r.y.weight;
-				nextTemporalReservoirs.r[reservoirIndex] = r;
-			}
-			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color * illumination, 0.0));
-		}
-	} else {
+	if (!p.hit) {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+		return;
 	}
+
+	if (p.lightSource) {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color, 0.0));
+		return;
+	}
+
+
+	vec3 illumination = vec3(0.0);
+
+	for (uint sampleIndex = 0; sampleIndex < renderSettings.sampleCount; sampleIndex++) {
+		Reservoir s;
+		uint M_sum = 0;
+		for (uint d = 0; d < DIRECTION_COUNT; ++d) {
+			ivec2 p = ivec2(gl_LaunchIDEXT) + DIRECTIONS[d];
+			bool ok = (0 <= p.x) && (p.x < gl_LaunchSizeEXT.x) && (0 <= p.y) && (p.y < gl_LaunchSizeEXT.y);
+
+			if (ok) {
+				Reservoir r = spatialReservoirs.r[getReservoirIndex(uvec2(p), gl_LaunchSizeEXT.xy, sampleIndex)];
+				updateReservoir(s, rng, r.y, r.y.weight * r.W * float(r.M));
+				M_sum += r.M;
+			}
+		}
+
+		s.M = M_sum;
+		s.W = s.w_sum / (s.y.weight * float(s.M)); // (1.0 / s.y.weight) * (1.0 / float(s.M)) * s.w_sum;
+		
+		if (s.M > 0) illumination += shadowTrace(s.y.lsp, p.pos, p.normal) * s.W;
+	}
+
+	illumination *= p.color * 2.0 * PI;
+	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
 }

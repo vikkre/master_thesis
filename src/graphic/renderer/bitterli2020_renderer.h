@@ -53,6 +53,4 @@ class Bitterli2020: public Renderer {
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
 		MultiBufferDescriptor<DataBuffer> rayPayloadsBuffers;
 		MultiBufferDescriptor<DataBuffer> spatialReservoirsBuffers;
-		MultiBufferDescriptor<DataBuffer> prevTemporalReservoirs;
-		MultiBufferDescriptorOffset<DataBuffer> nextTemporalReservoirs;
 };

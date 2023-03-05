@@ -9,15 +9,16 @@ void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
 		Sample s;
 		s.lsp = getRandomLightSourcePoint(rng);
 		vec3 direction = hitPos - s.lsp.pos;
-		s.weight = s.lsp.lightStrength * (5.0 / square_length(direction)) * dot(normalize(direction), s.lsp.normal);
-		if (s.weight <= -0.01) continue;
+		s.weight = s.lsp.lightStrength * (1.0 / square_length(direction));
+		if (s.weight < 0.0) continue;
 
 		updateReservoir(r, rng, s, s.weight);
 	}
+
+	r.W = r.w_sum / (r.y.weight * float(r.M)); // (1.0 / r.y.weight) * (1.0 / float(r.M)) * r.w_sum;
+
 	if (isShadowed(r.y.lsp, hitPos)) {
-		r.W = 0.0;
-	}	else {
-		r.W = r.w_sum / (r.y.weight * float(r.M));
+		r.W = 0;
 	}
 }
 
@@ -52,10 +53,10 @@ void main() {
 		} else {
 			p.lightSource = false;
 
-			for (uint i = 0; i < renderSettings.sampleCount; i++) {
+			for (uint sampleIndex = 0; sampleIndex < renderSettings.sampleCount; sampleIndex++) {
 				Reservoir r = createReservoir();
 				fillReservoir(rng, r, rayPayload.pos);
-				spatialReservoirs.r[getReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, i)] = r;
+				spatialReservoirs.r[getReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, sampleIndex)] = r;
 			}
 		}
 	} else {

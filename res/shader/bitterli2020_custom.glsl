@@ -53,11 +53,3 @@ void updateReservoir(inout Reservoir r, inout RNG rng, Sample x_i, float w_i) {
 	r.M += 1;
 	if (rand(rng) < (w_i / r.w_sum)) r.y = x_i;
 }
-
-uint getPayloadIndex(uvec2 launchID, uvec2 launchSize) {
-	return launchID.x + launchID.y * launchSize.x;
-}
-
-uint getReservoirIndex(uvec2 launchID, uvec2 launchSize, uint i) {
-	return launchID.x + launchID.y * launchSize.x + i * launchSize.x * launchSize.y;
-}

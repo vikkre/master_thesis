@@ -29,13 +29,14 @@ vec3 getIllumination(vec3 hitPos, vec3 hitNormal) {
 		for (uint d = 0; d < renderSettings.sampleCount; ++d) {
 			uint probeDataIndex = probeIndex * renderSettings.sampleCount + d;
 			Reservoir r = probeReservoirs.r[probeDataIndex];
-			illumination += shadowTrace(r.y.lsp, hitPos, hitNormal)  / r.y.weight;
+
+			// illumination += shadowTrace(r.y.lsp, hitPos, hitNormal) / r.y.weight;
+			if (r.M > 0) illumination += shadowTrace(r.y.lsp, hitPos, hitNormal);
+			// if (r.M > 0) illumination += shadowTrace(r.y.lsp, hitPos, hitNormal) * r.W;
+			// illumination += shadowTrace(r.y.lsp, hitPos, hitNormal) * r.W;
 		}
 	}
 
-	// illumination /= 10;
-	// illumination /= renderSettings.sampleCount;
-	illumination /= 8;
 	return illumination;
 }
 
@@ -61,9 +62,11 @@ void main() {
 		if (rayPayload.lightSource) {
 			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
 		} else {
-			vec3 color = rayPayload.color * getIllumination(rayPayload.pos, rayPayload.normal);
+			vec3 illumination = getIllumination(rayPayload.pos, rayPayload.normal);
+			// illumination *= rayPayload.color * 2.0 * PI;
+			illumination *= rayPayload.color;
 
-			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(color, 0.0));
+			imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
 		}
 	} else {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));

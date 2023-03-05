@@ -5,26 +5,25 @@
 
 
 void fillReservoir(inout RNG rng, inout Reservoir r, vec3 probePos) {
-	for (uint i = 0; i < renderSettings.candidateCount; ++i) {
+	for (uint i = 0; i < renderSettings.candidateCount / renderSettings.sampleCount; ++i) {
 		Sample s;
 		s.lsp = getRandomLightSourcePoint(rng);
 		vec3 direction = probePos - s.lsp.pos;
-		float slength = square_length(direction);
-		// if (slength > 3.0) continue;
-		s.weight = s.lsp.lightStrength * (1.0 / slength) * dot(normalize(direction), s.lsp.normal);
+		s.weight = s.lsp.lightStrength * (1.0 / square_length(direction));
 		if (s.weight < 0.0) continue;
 
 		updateReservoir(r, rng, s, s.weight);
 	}
 
-	r.W = r.w_sum / (r.y.weight * float(r.M));
+	r.W = r.w_sum / (r.y.weight * float(r.M)); // (1.0 / r.y.weight) * (1.0 / float(r.M)) * r.w_sum;
 }
 
 
 void main() {
 	uint probeDataIndex = gl_LaunchIDEXT.x * renderSettings.sampleCount + gl_LaunchIDEXT.y;
 	Reservoir r_tmp = probeReservoirs.r[probeDataIndex];
-	RNG rng = initRNG(gl_LaunchIDEXT + uvec3(r_tmp.w_sum));
+	// RNG rng = initRNG(gl_LaunchIDEXT + uvec3(r_tmp.w_sum));
+	RNG rng = initRNG(gl_LaunchIDEXT);
 
 	uint i = gl_LaunchIDEXT.x;
 

@@ -10,7 +10,7 @@
 HitPoint hitPoints[2][MAX_PATH_LENGTH];
 
 
-uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth, uint startDepth) {
+uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth, uint startDepth, bool toLight) {
 	vec3 color = vec3(1.0);
 	uint pathDepth = startDepth;
 
@@ -25,7 +25,8 @@ uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth,
 		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
-			color *= rayPayload.color * dot(rayInfo.direction, rayPayload.normal);
+			vec3 direction = toLight ? rayInfo.direction : rayInfo.prevDirection;
+			color *= rayPayload.color * dot(direction, rayPayload.normal);
 			hitPoints[hp_index][i].diffuse = true;
 		} else {
 			hitPoints[hp_index][i].diffuse = false;
@@ -61,14 +62,14 @@ void main() {
 		hitPoints[LIGHT_HP_INDEX][0].cumulativeColor = startLightRayInfo.startColor;
 		hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
 
-		uint visionPathDepth = tracePath(rng, VISION_HP_INDEX, startVisionRayInfo, renderSettings.visionJumpCount, 0);
+		uint visionPathDepth = tracePath(rng, VISION_HP_INDEX, startVisionRayInfo, renderSettings.visionJumpCount, 0, true);
 
 		if (hitPoints[VISION_HP_INDEX][visionPathDepth - 1].lightHit) {
 			finalColor += hitPoints[VISION_HP_INDEX][visionPathDepth - 1].cumulativeColor;
 			continue;
 		}
 
-		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1);
+		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1, false);
 
 		uint done = 0;
 		vec3 color = vec3(0.0);

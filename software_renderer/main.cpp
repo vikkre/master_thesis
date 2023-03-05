@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
 
 	engine->parseInput(rendererParser.getInputEntry(0));
 	engine->objects = meshManager->getCreatedObjects();
+	engine->lightSources = meshManager->getCreatedLightSources();
 
 	engine->init();
 

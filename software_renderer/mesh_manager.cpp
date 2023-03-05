@@ -52,6 +52,7 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 		if (entry.keyExists("lightSource")) {
 			obj->lightSource = true;
 			obj->lightStrength = entry.get<float>("lightSource", 0);
+			createdLightSources.push_back(obj);
 		}
 
 		createdObjects.push_back(obj);
@@ -60,6 +61,10 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 
 std::vector<GraphicsObject*> MeshManager::getCreatedObjects() const {
 	return createdObjects;
+}
+
+std::vector<GraphicsObject*> MeshManager::getCreatedLightSources() const {
+	return createdLightSources;
 }
 
 Mesh* MeshManager::loadObj(const std::string& filename) {

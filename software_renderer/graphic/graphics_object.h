@@ -46,7 +46,6 @@ class GraphicsObject {
 		std::vector<Mesh::Vertex> vertices;
 		AABB aabb;
 
-	private:
 		const Mesh* mesh;
 		Matrix4f objectMatrix;
 		std::vector<Triangle> triangles;

@@ -54,3 +54,22 @@ bool Scene::traceRay(const Ray& ray, Mesh::Vertex& hitVertex, const GraphicsObje
 
 	return true;
 }
+
+bool Scene::isOccluded(const Vector3f& startPos, const Vector3f& endPos) const {
+	Vector3f stretch = endPos - startPos;
+	float dist = stretch.magnitude();
+	Vector3f direction = stretch / dist;
+
+	Ray ray(startPos, direction);
+	Mesh::Vertex hitVertex;
+	const GraphicsObject* obj;
+
+	bool hit = traceRay(ray, hitVertex, obj);
+
+	if (!hit) {
+		return false;
+	} else {
+		Vector3f foundStretch = hitVertex.pos - startPos;
+		return dist >= foundStretch.magnitude();
+	}
+}

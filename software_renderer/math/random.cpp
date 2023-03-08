@@ -7,7 +7,10 @@ RandomGenerator::RandomGenerator()
 RandomGenerator::~RandomGenerator() {}
 
 float RandomGenerator::rand() {
-	return distribution(rng);
+	mutex.lock();
+	float ret = distribution(rng);
+	mutex.unlock();
+	return ret;
 }
 
 Vector3f RandomGenerator::randomNormal() {

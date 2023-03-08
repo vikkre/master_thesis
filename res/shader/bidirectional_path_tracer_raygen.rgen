@@ -72,7 +72,7 @@ void main() {
 		hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
 		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1, false);
 
-		uint done = 0;
+		bool done = false;
 		vec3 color = vec3(0.0);
 
 		for (uint vi = 0; vi < visionPathDepth; ++vi) {
@@ -87,12 +87,12 @@ void main() {
 					vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
 					vec3 lightColor = hitPoints[LIGHT_HP_INDEX][li].cumulativeColor;
 					color += visionColor * lightColor * dot(direction, normal);
-					++done;
+					done = true;
 				}
 			}
 		}
 
-		if (done > 0) finalColor += color / done;
+		if (done) finalColor += color / float(visionPathDepth * lightPathDepth);
 	}
 	
 	finalColor *= (2*PI) / float(renderSettings.raysPerPixelCount);

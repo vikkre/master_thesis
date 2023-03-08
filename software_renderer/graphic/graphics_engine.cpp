@@ -106,7 +106,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		lightPath[0].diffuse = true;
 		uint lightPathDepth = traceSinglePath(startLightRay, lightPath, lightJumpCount, 1, false);
 
-		uint done = 0;
+		bool done = false;
 		Vector3f color({0.0f, 0.0f, 0.0f});
 
 		for (uint vi = 0; vi < visionPathDepth; ++vi) {
@@ -122,12 +122,12 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 					Vector3f visionColor = visionPath[vi].cumulativeColor;
 					Vector3f lightColor = lightPath[li].cumulativeColor;
 					color += visionColor * lightColor * direction.dot(normal);
-					++done;
+					done = true;
 				}
 			}
 		}
 
-		if (done > 0) finalColor += color / done;
+		if (done) finalColor += color / float(visionPathDepth * lightPathDepth);
 	}
 	
 	finalColor *= (2.0f * M_PI) / float(raysPerPixel);

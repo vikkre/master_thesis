@@ -57,19 +57,28 @@ bool Scene::traceRay(const Ray& ray, Mesh::Vertex& hitVertex, const GraphicsObje
 
 bool Scene::isOccluded(const Vector3f& startPos, const Vector3f& endPos) const {
 	Vector3f stretch = endPos - startPos;
-	float dist = stretch.magnitude();
-	Vector3f direction = stretch / dist;
+	float dist2 = stretch.magnitudeSquared();
 
+	Vector3f direction = stretch;
+	direction.normalize();
 	Ray ray(startPos, direction);
-	Mesh::Vertex hitVertex;
-	const GraphicsObject* obj;
 
-	bool hit = traceRay(ray, hitVertex, obj);
+	std::vector<size_t> elems = bvh.getHits(ray);
+	if (elems.empty()) return false;
 
-	if (!hit) {
-		return false;
-	} else {
-		Vector3f foundStretch = hitVertex.pos - startPos;
-		return dist >= foundStretch.magnitude();
+	std::vector<GraphicsObject*> potentialHits(elems.size());
+	for (size_t i = 0; i < elems.size(); ++i) {
+		potentialHits[i] = objs[elems[i]];
 	}
+
+	float minDistance2 = INFINITY;
+	const Triangle* currentTriangle = nullptr;
+	Vector3f hitPos;
+	for (const GraphicsObject* obj: potentialHits) {
+		if (obj->traceRay(ray, hitPos, currentTriangle, minDistance2)) {
+			if (minDistance2 <= dist2) return true;
+		}
+	}
+
+	return false;
 }

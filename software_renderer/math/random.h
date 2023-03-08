@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <mutex>
 
 #include "vector.h"
 
@@ -17,4 +18,5 @@ class RandomGenerator {
 	private:
 		std::mt19937 rng;
 		std::uniform_real_distribution<float> distribution;
+		std::mutex mutex;
 };

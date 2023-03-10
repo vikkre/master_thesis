@@ -5,20 +5,20 @@
 
 
 void main() {
+	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
-	BitterliRayPayload p = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
+	BitterliRayPayload payload = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
 
-	if (!p.hit) {
+	if (payload.hit == 0) {
 		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 		return;
 	}
 
-	if (p.lightSource) {
-		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(p.color, 0.0));
+	if (payload.lightSource == 1) {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(payload.color, 0.0));
 		return;
 	}
-
 
 	vec3 illumination = vec3(0.0);
 
@@ -26,22 +26,25 @@ void main() {
 		Reservoir s;
 		uint M_sum = 0;
 		for (uint d = 0; d < DIRECTION_COUNT; ++d) {
-			ivec2 p = ivec2(gl_LaunchIDEXT) + DIRECTIONS[d];
+			ivec2 p = ivec2(gl_LaunchIDEXT.xy) + DIRECTIONS[d];
 			bool ok = (0 <= p.x) && (p.x < gl_LaunchSizeEXT.x) && (0 <= p.y) && (p.y < gl_LaunchSizeEXT.y);
 
 			if (ok) {
 				Reservoir r = spatialReservoirs.r[getReservoirIndex(uvec2(p), gl_LaunchSizeEXT.xy, sampleIndex)];
-				updateReservoir(s, rng, r.y, r.y.weight * r.W * float(r.M));
-				M_sum += r.M;
+				if (r.W > 0.0) {
+					updateReservoir(s, rng, r.y, r.y.weight * r.W * float(r.M));
+					M_sum += r.M;
+				}
 			}
 		}
 
 		s.M = M_sum;
-		s.W = s.w_sum / (s.y.weight * float(s.M)); // (1.0 / s.y.weight) * (1.0 / float(s.M)) * s.w_sum;
+		s.W = (1.0 / s.y.weight) * (1.0 / float(s.M)) * s.w_sum;
 		
-		if (s.M > 0) illumination += shadowTrace(s.y.lsp, p.pos, p.normal) * s.W;
+		shadowTrace(s.y.lsp, payload.pos, payload.normal);
+		if (s.M > 0) illumination += shadowTrace(s.y.lsp, payload.pos, payload.normal);
 	}
 
-	illumination *= p.color;
+	illumination *= payload.color / float(renderSettings.sampleCount);
 	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
 }

@@ -38,8 +38,8 @@ struct BitterliRayPayload {
 	vec3 pos;
 	vec3 normal;
 	vec3 color;
-	bool hit;
-	bool lightSource;
+	uint hit;
+	uint lightSource;
 };
 
 layout(set = 0, binding = 0, scalar) uniform RenderSettings {
@@ -49,7 +49,7 @@ layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 } renderSettings;
 layout(set = 0, binding = 1, rgba8) uniform image2D finalImage;
 layout(set = 0, binding = 2, scalar) buffer BitterliRayPayloads_ { BitterliRayPayload r[]; } rayPayloads;
-layout(set = 0, binding = 3, scalar) buffer spatialReservoirs_ { Reservoir r[]; } spatialReservoirs;
+layout(set = 0, binding = 3, scalar) buffer SpatialReservoirs_ { Reservoir r[]; } spatialReservoirs;
 
 Reservoir createReservoir() {
 	Reservoir r;

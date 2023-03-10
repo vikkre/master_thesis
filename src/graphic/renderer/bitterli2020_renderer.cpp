@@ -28,8 +28,8 @@ struct RayPayload {
 	Vector3f pos;
 	Vector3f normal;
 	Vector3f color;
-	bool hit;
-	bool lightSource;
+	u_int32_t hit;
+	u_int32_t lightSource;
 };
 
 

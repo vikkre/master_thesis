@@ -56,10 +56,9 @@ bool Scene::traceRay(const Ray& ray, Mesh::Vertex& hitVertex, const GraphicsObje
 }
 
 bool Scene::isOccluded(const Vector3f& startPos, const Vector3f& endPos) const {
-	Vector3f stretch = endPos - startPos;
-	float dist2 = stretch.magnitudeSquared();
+	Vector3f direction = endPos - startPos;
+	float dist2 = direction.magnitudeSquared();
 
-	Vector3f direction = stretch;
 	direction.normalize();
 	Ray ray(startPos, direction);
 

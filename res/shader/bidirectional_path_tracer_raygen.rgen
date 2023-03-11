@@ -82,7 +82,7 @@ void main() {
 				bool occluded = isOccluded(startPos, endPos);
 				if (!occluded) {
 					vec3 direction = normalize(endPos - startPos);
-					vec3 normal = hitPoints[VISION_HP_INDEX][vi].normal;
+					vec3 normal = hitPoints[LIGHT_HP_INDEX][vi].normal;
 
 					vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
 					vec3 lightColor = hitPoints[LIGHT_HP_INDEX][li].cumulativeColor;
@@ -92,10 +92,10 @@ void main() {
 			}
 		}
 
-		if (done) finalColor += color / float(visionPathDepth * lightPathDepth);
+		if (done) finalColor += color * (1.0 / float(visionPathDepth * lightPathDepth));
 	}
 	
-	finalColor *= (2*PI) / float(renderSettings.raysPerPixelCount);
+	finalColor *= (2*PI) * (1.0 / float(renderSettings.raysPerPixelCount));
 
 	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(finalColor, 0.0));
 }

@@ -117,7 +117,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 				if (!occluded) {
 					Vector3f direction = endPos - startPos;
 					direction.normalize();
-					Vector3f normal = visionPath[vi].normal;
+					Vector3f normal = lightPath[vi].normal;
 
 					Vector3f visionColor = visionPath[vi].cumulativeColor;
 					Vector3f lightColor = lightPath[li].cumulativeColor;
@@ -127,10 +127,10 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 			}
 		}
 
-		if (done) finalColor += color / float(visionPathDepth * lightPathDepth);
+		if (done) finalColor += color * (1.0f / float(visionPathDepth * lightPathDepth));
 	}
 	
-	finalColor *= (2.0f * M_PI) / float(raysPerPixel);
+	finalColor *= 2.0f * M_PI * (1.0f / float(raysPerPixel));
 
 	for (unsigned int i = 0; i < 3; ++i)
 		finalColor[i] = std::clamp(finalColor[i], 0.0f, 1.0f);

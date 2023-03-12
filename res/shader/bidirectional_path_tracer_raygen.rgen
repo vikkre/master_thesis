@@ -10,7 +10,8 @@
 HitPoint hitPoints[2][MAX_PATH_LENGTH];
 
 
-uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth, uint startDepth, bool toLight) {
+uint tracePath(inout RNG rng, RaySendInfo rayInfo, uint startDepth, uint maxDepth, bool isLightRay) {
+	uint hp_index = isLightRay ? LIGHT_HP_INDEX : VISION_HP_INDEX;
 	vec3 color = vec3(1.0);
 	uint pathDepth = startDepth;
 
@@ -25,7 +26,7 @@ uint tracePath(inout RNG rng, uint hp_index, RaySendInfo rayInfo, uint maxDepth,
 		uint traceValue = handleHit(rayInfo, rng);
 
 		if (traceValue == DIFFUSE_VALUE) {
-			vec3 direction = toLight ? rayInfo.direction : rayInfo.prevDirection;
+			vec3 direction = isLightRay ? rayInfo.prevDirection : rayInfo.direction;
 			color *= rayPayload.color * dot(direction, rayPayload.normal);
 			hitPoints[hp_index][i].diffuse = true;
 		} else {
@@ -57,7 +58,7 @@ void main() {
 	vec3 finalColor = vec3(0.0);
 
 	for (uint visionRayIndex = 0; visionRayIndex < renderSettings.raysPerPixelCount; ++visionRayIndex) {
-		uint visionPathDepth = tracePath(rng, VISION_HP_INDEX, startVisionRayInfo, renderSettings.visionJumpCount, 0, true);
+		uint visionPathDepth = tracePath(rng, startVisionRayInfo, 0, renderSettings.visionJumpCount, false);
 
 		if (visionPathDepth == 0) continue;
 
@@ -66,11 +67,15 @@ void main() {
 			continue;
 		}
 
-		RaySendInfo startLightRayInfo = getLightRayRandom(rng);
+		LightSourcePoint lsp = getRandomLightSourcePoint(rng);
+		vec3 direction = randomNormalDirection(rng, lsp.normal);
+		RaySendInfo startLightRayInfo = lightSourcePointToRayInfo(lsp, direction);
+
 		hitPoints[LIGHT_HP_INDEX][0].pos = startLightRayInfo.origin;
+		hitPoints[LIGHT_HP_INDEX][0].normal = lsp.normal;
 		hitPoints[LIGHT_HP_INDEX][0].cumulativeColor = startLightRayInfo.startColor;
 		hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
-		uint lightPathDepth = tracePath(rng, LIGHT_HP_INDEX, startLightRayInfo, renderSettings.lightJumpCount, 1, false);
+		uint lightPathDepth = tracePath(rng, startLightRayInfo, 1, renderSettings.lightJumpCount, true);
 
 		bool done = false;
 		vec3 color = vec3(0.0);
@@ -79,10 +84,10 @@ void main() {
 			for (uint li = 0; li < lightPathDepth; ++li) {
 				vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos + RAY_NORMAL_OFFSET * hitPoints[VISION_HP_INDEX][vi].normal;
 				vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos + RAY_NORMAL_OFFSET * hitPoints[LIGHT_HP_INDEX][li].normal;
-				bool occluded = isOccluded(startPos, endPos);
-				if (!occluded) {
+
+				if (!isOccluded(startPos, endPos)) {
 					vec3 direction = normalize(endPos - startPos);
-					vec3 normal = hitPoints[LIGHT_HP_INDEX][vi].normal;
+					vec3 normal = hitPoints[VISION_HP_INDEX][vi].normal;
 
 					vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
 					vec3 lightColor = hitPoints[LIGHT_HP_INDEX][li].cumulativeColor;

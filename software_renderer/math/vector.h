@@ -215,7 +215,10 @@ class Vector {
 			double magnitude = this->magnitude();
 
 			if (magnitude != 0) {
-				*this *= (1.0d / magnitude);
+				double factor = 1.0 / magnitude;
+				for (size_t i = 0; i < s; ++i) {
+					this->v[i] *= factor;
+				}
 			}
 
 			return *this;
@@ -246,36 +249,36 @@ class Vector {
 
 template<size_t s, typename T, typename S>
 Vector<s, T> operator+(const S scalar, const Vector<s, T>& vector) {
-	Vector<s, T> ret(vector);
+	Vector<s, T> ret;
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] = scalar + ret.v[i];
+		ret.v[i] = scalar + vector.v[i];
 	}
 	return ret;
 }
 
 template<size_t s, typename T, typename S>
 Vector<s, T> operator-(const S scalar, const Vector<s, T>& vector) {
-	Vector<s, T> ret(vector);
+	Vector<s, T> ret;
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] = scalar - ret.v[i];
+		ret.v[i] = scalar - vector.v[i];
 	}
 	return ret;
 }
 
 template<size_t s, typename T, typename S>
 Vector<s, T> operator*(const S scalar, const Vector<s, T>& vector) {
-	Vector<s, T> ret(vector);
+	Vector<s, T> ret;
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] = scalar * ret.v[i];
+		ret.v[i] = scalar * vector.v[i];
 	}
 	return ret;
 }
 
 template<size_t s, typename T, typename S>
 Vector<s, T> operator/(const S scalar, const Vector<s, T>& vector) {
-	Vector<s, T> ret(vector);
+	Vector<s, T> ret;
 	for (size_t i = 0; i < s; ++i) {
-		ret.v[i] = scalar / ret.v[i];
+		ret.v[i] = scalar / vector.v[i];
 	}
 	return ret;
 }

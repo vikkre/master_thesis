@@ -85,12 +85,12 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 	Vector3f target = cutVector(projInverse * Vector4f({d[0], d[1], 1.0f, 1.0f})).normalize();
 	Vector3f direction = cutVector(viewInverse * expandVector(target, 0.0f)).normalize();
 
-	Vector3f finalColor;
+	Vector3f finalColor({0.0f, 0.0f, 0.0f});
 	std::vector<HitPoint> visionPath(visionJumpCount);
 	std::vector<HitPoint> lightPath(lightJumpCount);
 	Ray startVisionRay(origin, direction);
 	for (unsigned int i = 0; i < raysPerPixel; ++i) {
-		uint visionPathDepth = traceSinglePath(startVisionRay, visionPath, visionJumpCount, 0, true);
+		uint visionPathDepth = traceSinglePath(visionPath, startVisionRay, 0, visionJumpCount, false);
 
 		if (visionPathDepth == 0) continue;
 
@@ -102,9 +102,10 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		LightSourcePoint lsp = getRandomLightSourcePoint();
 		Ray startLightRay(lsp.pos, rng.randomNormalDirection(lsp.normal));
 		lightPath[0].pos = startLightRay.origin;
+		lightPath[0].normal = lsp.normal;
 		lightPath[0].cumulativeColor = lsp.color;
 		lightPath[0].diffuse = true;
-		uint lightPathDepth = traceSinglePath(startLightRay, lightPath, lightJumpCount, 1, false);
+		uint lightPathDepth = traceSinglePath(lightPath, startLightRay, 1, lightJumpCount, true);
 
 		bool done = false;
 		Vector3f color({0.0f, 0.0f, 0.0f});
@@ -113,15 +114,16 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 			for (uint li = 0; li < lightPathDepth; ++li) {
 				Vector3f startPos = visionPath[vi].pos + SURFACE_DISTANCE_OFFSET * visionPath[vi].normal;
 				Vector3f endPos = lightPath[li].pos + SURFACE_DISTANCE_OFFSET * lightPath[li].normal;
+
 				bool occluded = scene.isOccluded(startPos, endPos);
 				if (!occluded) {
 					Vector3f direction = endPos - startPos;
 					direction.normalize();
-					Vector3f normal = lightPath[vi].normal;
 
 					Vector3f visionColor = visionPath[vi].cumulativeColor;
 					Vector3f lightColor = lightPath[li].cumulativeColor;
-					color += visionColor * lightColor * direction.dot(normal);
+
+					color += visionColor * lightColor * direction.dot(visionPath[vi].normal);
 					done = true;
 				}
 			}
@@ -131,7 +133,7 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 	}
 	
 	finalColor *= 2.0f * M_PI * (1.0f / float(raysPerPixel));
-
+	
 	for (unsigned int i = 0; i < 3; ++i)
 		finalColor[i] = std::clamp(finalColor[i], 0.0f, 1.0f);
 
@@ -140,15 +142,15 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 		image[index + i] = (char) (finalColor[i] * 255.0f);
 }
 
-size_t GraphicsEngine::traceSinglePath(Ray ray, std::vector<HitPoint>& path, size_t maxDepth, size_t startDepth, bool toLight) {
+size_t GraphicsEngine::traceSinglePath(std::vector<HitPoint>& path, Ray ray, size_t startDepth, size_t maxDepth, bool isLightRay) {
 	Vector3f color = Vector3f({1.0f, 1.0f, 1.0f});
 	size_t pathDepth = 0;
 
 	Mesh::Vertex hitVertex;
 	const GraphicsObject* obj;
-	bool backfaceCulling = toLight;
+	bool backfaceCulling = !isLightRay;
 
-	for (uint i = startDepth; i < maxDepth; ++i) {
+	for (size_t i = startDepth; i < maxDepth; ++i) {
 		if (!scene.traceRay(ray, hitVertex, obj)) {
 			break;
 		} else {
@@ -174,7 +176,7 @@ size_t GraphicsEngine::traceSinglePath(Ray ray, std::vector<HitPoint>& path, siz
 			ray.update();
 
 			if (rayHandlingValue <= obj->diffuseThreshold) {
-				Vector3f direction = toLight ? ray.direction : prevDirection;
+				Vector3f direction = isLightRay ? prevDirection : ray.direction;
 				color *= obj->color * hitVertex.normal.dot(direction);
 				path[i].diffuse = true;
 			} else {

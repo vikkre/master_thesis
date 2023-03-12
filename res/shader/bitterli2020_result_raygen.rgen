@@ -5,7 +5,6 @@
 
 
 void main() {
-	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
 	BitterliRayPayload payload = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];

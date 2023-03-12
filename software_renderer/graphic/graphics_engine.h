@@ -42,7 +42,7 @@ class GraphicsEngine {
 		void render();
 		void render(const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
 		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
-		size_t traceSinglePath(Ray ray, std::vector<HitPoint>& path, size_t maxDepth, size_t startDepth, bool toLight);
+		size_t traceSinglePath(std::vector<HitPoint>& path, Ray ray, size_t startDepth, size_t maxDepth, bool isLightRay);
 
 		LightSourcePoint getRandomLightSourcePoint();
 

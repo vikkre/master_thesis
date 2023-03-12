@@ -22,6 +22,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	std::cout << argv[0];
+	for (unsigned int i = 1; i < 7; ++i) {
+		std::cout << " " << argv[i];
+	}
+	std::cout << std::endl;
+
 	const std::string execpath = argv[0];
 	const std::string basepath = execpath.substr(0, execpath.size() - sizeof("SoftwareRenderer") + 1);
 

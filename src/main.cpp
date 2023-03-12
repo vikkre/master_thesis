@@ -100,6 +100,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	std::cout << argv[0];
+	for (unsigned int i = 1; i < (unsigned int)(argc); ++i) {
+		std::cout << " " << argv[i];
+	}
+	std::cout << std::endl;
+
 	const std::string execpath = argv[0];
 	const std::string basepath = execpath.substr(0, execpath.size() - sizeof("RayTrace") + 1);
 

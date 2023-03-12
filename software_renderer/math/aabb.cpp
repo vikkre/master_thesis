@@ -1,6 +1,9 @@
 #include "aabb.h"
 
 
+#define STARTING_OFFSET 0.0001f
+
+
 AABB::AABB()
 :empty(true), aabbMin(), aabbMax() {}
 
@@ -8,7 +11,7 @@ AABB::AABB(const Vector3f& aabbMin, const Vector3f& aabbMax)
 :empty(false), aabbMin(aabbMin), aabbMax(aabbMax) {}
 
 AABB::AABB(const Vector3f& point)
-:empty(false), aabbMin(point), aabbMax(point + 0.0001f) {}
+:empty(false), aabbMin(point - STARTING_OFFSET), aabbMax(point + STARTING_OFFSET) {}
 
 AABB::AABB(const AABB& a, const AABB& b)
 :empty(false), aabbMin(), aabbMax() {
@@ -22,8 +25,8 @@ AABB::~AABB() {}
 
 void AABB::addPoint(const Vector3f& point) {
 	if (empty) {
-		aabbMin = point;
-		aabbMax = point + 0.0001f;
+		aabbMin = point - STARTING_OFFSET;
+		aabbMax = point + STARTING_OFFSET;
 		empty = false;
 	} else {
 		for (size_t i = 0; i < 3; ++i) {

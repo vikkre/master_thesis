@@ -1,0 +1,55 @@
+#version 460
+
+
+#include "majercik2022.glsl"
+
+
+vec3 getDirectIllumination(inout RNG rng, BitterliRayPayload payload) {
+	vec3 illumination = vec3(0.0);
+
+	for (uint sampleIndex = 0; sampleIndex < renderSettings.probeSampleCount; sampleIndex++) {
+		Reservoir s = probeSpatialReservoirs.r[getProbeReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, sampleIndex)];
+		
+		if (s.M > 0) {
+			shadowTrace(s.y.lsp, payload.pos, payload.normal);
+			illumination += shadowTrace(s.y.lsp, payload.pos, payload.normal);
+		}
+	}
+
+	illumination *= 1.0 / float(renderSettings.probeSampleCount);
+	return illumination;
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	uint surfelIndex = gl_LaunchIDEXT.x * renderSettings.perProbeRayCount + gl_LaunchIDEXT.y;
+
+	uint i = gl_LaunchIDEXT.x;
+
+	uint x = (i % renderSettings.probeCount.x);
+	i = (i - x) / renderSettings.probeCount.x;
+
+	uint y = (i % renderSettings.probeCount.y);
+	i = (i - y) / renderSettings.probeCount.y;
+
+	uint z = (i % renderSettings.probeCount.z);
+	
+	vec3 probePos = vec3(x, y, z) * renderSettings.betweenProbeDistance + renderSettings.probeStartCorner;
+
+	BitterliRayPayload payload = probeRayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
+
+	surfels.s[surfelIndex].rayDirection = payload.direction;
+	
+	if (payload.hit == 1) {
+		vec3 modifiedPos = payload.pos + renderSettings.normalBias * payload.normal;
+		surfels.s[surfelIndex].hitRadiance = payload.color * getDirectIllumination(rng, payload);
+		surfels.s[surfelIndex].hitDistance = length(probePos - modifiedPos);
+		surfels.s[surfelIndex].hit = true;
+	} else {
+		surfels.s[surfelIndex].hitRadiance = vec3(0.0);
+		surfels.s[surfelIndex].hitDistance = 0.0;
+		surfels.s[surfelIndex].hit = false;
+	}
+}

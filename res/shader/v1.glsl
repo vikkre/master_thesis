@@ -44,6 +44,22 @@ layout(set = 1, binding = 3, scalar) buffer LightSources_ { ObjectProperties l[]
 layout(buffer_reference, scalar) buffer Vertices { Vertex v[]; };
 layout(buffer_reference, scalar) buffer Indices { ivec3 i[]; };
 
+struct RaySendInfo {
+	vec3 origin;
+	vec3 direction;
+	vec3 prevOrigin;
+	vec3 prevDirection;
+	vec3 startColor;
+	bool backfaceCulling;
+};
+
+struct LightSourcePoint {
+	vec3 pos;
+	vec3 normal;
+	vec3 color;
+	float lightStrength;
+};
+
 #ifndef COMPUTE_SHADER
 struct RayPayload {
 	bool hit;
@@ -64,22 +80,6 @@ layout(location = 1) rayPayloadInEXT bool shadowed;
 layout(location = 0) rayPayloadEXT RayPayload rayPayload;
 layout(location = 1) rayPayloadEXT bool shadowed;
 #endif
-
-struct RaySendInfo {
-	vec3 origin;
-	vec3 direction;
-	vec3 prevOrigin;
-	vec3 prevDirection;
-	vec3 startColor;
-	bool backfaceCulling;
-};
-
-struct LightSourcePoint {
-	vec3 pos;
-	vec3 normal;
-	vec3 color;
-	float lightStrength;
-};
 
 LightSourcePoint getRandomLightSourcePoint(inout RNG rng) {
 	uint lightIndex = uint(rand(rng) * float(rtSettings.lightSourceCount));

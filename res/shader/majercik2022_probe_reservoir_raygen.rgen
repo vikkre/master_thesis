@@ -1,0 +1,86 @@
+#version 460
+
+
+#include "majercik2022.glsl"
+
+
+void fillReservoir(inout RNG rng, inout Reservoir r, vec3 hitPos) {
+	for (uint i = 0; i < (renderSettings.probeCandidateCount / renderSettings.probeSampleCount); ++i) {
+		Sample s;
+		s.lsp = getRandomLightSourcePoint(rng);
+		s.weight = s.lsp.lightStrength / square_length(hitPos - s.lsp.pos);
+		if (s.weight < 0.0) continue;
+
+		updateReservoir(r, rng, s, s.weight);
+	}
+
+	if (r.M > 0) {
+		r.W = (1.0 / r.y.weight) * (1.0 / float(r.M)) * r.w_sum;
+
+		if (isShadowed(r.y.lsp, hitPos)) {
+			r.W = 0;
+		}
+	}
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	uint surfelIndex = gl_LaunchIDEXT.x * renderSettings.perProbeRayCount + gl_LaunchIDEXT.y;
+
+	uint i = gl_LaunchIDEXT.x;
+
+	uint x = (i % renderSettings.probeCount.x);
+	i = (i - x) / renderSettings.probeCount.x;
+
+	uint y = (i % renderSettings.probeCount.y);
+	i = (i - y) / renderSettings.probeCount.y;
+
+	uint z = (i % renderSettings.probeCount.z);
+	
+	vec3 probePos = vec3(x, y, z) * renderSettings.betweenProbeDistance + renderSettings.probeStartCorner;
+	vec3 direction = sphericalFibonacci(float(gl_LaunchIDEXT.y), float(renderSettings.perProbeRayCount));
+
+	RaySendInfo rayInfo;
+	rayInfo.origin = probePos;
+	rayInfo.direction = direction;
+	rayInfo.backfaceCulling = false;
+
+	for (int i = 0; i < renderSettings.visionJumpCount; i++) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) break;
+
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			break;
+		}
+	}
+
+	uint payloadIndex = getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+	BitterliRayPayload p;
+	if (rayPayload.hit) {
+		p.pos = rayPayload.pos;
+		p.normal = rayPayload.normal;
+		p.direction = rayInfo.direction;
+		p.color = rayPayload.color;
+		p.hit = 1;
+
+		if (rayPayload.lightSource) {
+			p.lightSource = 1;
+		} else {
+			p.lightSource = 0;
+
+			for (uint sampleIndex = 0; sampleIndex < renderSettings.probeSampleCount; sampleIndex++) {
+				Reservoir r = createReservoir();
+				fillReservoir(rng, r, rayPayload.pos);
+				probeSpatialReservoirs.r[getProbeReservoirIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy, sampleIndex)] = r;
+			}
+		}
+	} else {
+		p.hit = 0;
+	}
+	probeRayPayloads.r[payloadIndex] = p;
+}

@@ -1,0 +1,17 @@
+Majercik2022
+	visionJumpCount(3)
+	perProbeRayCount(256)
+	maxProbeRayDistance(1000)
+	probeSampleSideLength(8)
+	depthSharpness(0.8)
+	normalBias(0.001)
+	linearBlending(0)
+	energyPreservation(0.4)
+	shadowCountProbe(10)
+	shadowCountVision(50)
+# Bitterli2020
+	candidateCount(64)
+	sampleCount(8)
+# Majercik2022
+	probeCandidateCount(32)
+	probeSampleCount(2)

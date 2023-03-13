@@ -59,6 +59,13 @@ add_shader(majercik2019_probe_raygen.spv        majercik2019_probe_raygen.rgen  
 add_shader(majercik2019_shading_update_comp.spv majercik2019_shading_update_comp.comp ${MAJERCIK2019_INCLUDES} )
 add_shader(majercik2019_final_raygen.spv        majercik2019_final_raygen.rgen        ${MAJERCIK2019_INCLUDES} )
 
+set(MAJERCIK2022_INCLUDES ${SHADER_INCLUDES} majercik2022.glsl)
+add_shader(majercik2022_probe_reservoir_raygen.spv majercik2022_probe_reservoir_raygen.rgen ${MAJERCIK2022_INCLUDES} )
+add_shader(majercik2022_probe_raygen.spv           majercik2022_probe_raygen.rgen           ${MAJERCIK2022_INCLUDES} )
+add_shader(majercik2022_shading_update_comp.spv    majercik2022_shading_update_comp.comp    ${MAJERCIK2022_INCLUDES} )
+add_shader(majercik2022_reservoir_raygen.spv       majercik2022_reservoir_raygen.rgen       ${MAJERCIK2022_INCLUDES} )
+add_shader(majercik2022_final_raygen.spv           majercik2022_final_raygen.rgen           ${MAJERCIK2022_INCLUDES} )
+
 set(BITTERLI2020_RENDERER_INCLUDES ${SHADER_INCLUDES} bitterli2020.glsl)
 add_shader(bitterli2020_reservoir_raygen.spv bitterli2020_reservoir_raygen.rgen ${BITTERLI2020_RENDERER_INCLUDES} )
 add_shader(bitterli2020_result_raygen.spv    bitterli2020_result_raygen.rgen    ${BITTERLI2020_RENDERER_INCLUDES} )

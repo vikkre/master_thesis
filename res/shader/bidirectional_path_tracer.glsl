@@ -11,6 +11,7 @@
 layout(set = 0, binding = 0, scalar) uniform RenderSettings {
 	uint visionJumpCount;
 	uint lightJumpCount;
+	uint maxDepth;
 	uint raysPerPixelCount;
 } renderSettings;
 layout(set = 0, binding = 1, rgba8) uniform image2D image;

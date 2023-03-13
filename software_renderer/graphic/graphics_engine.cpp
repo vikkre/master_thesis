@@ -14,10 +14,11 @@ GraphicsEngine::GraphicsEngine()
 GraphicsEngine::~GraphicsEngine() {}
 
 void GraphicsEngine::parseInput(const InputEntry& inputEntry) {
-	raysPerPixel = inputEntry.get<unsigned int>("raysPerPixel");
 	visionJumpCount = inputEntry.get<unsigned int>("visionJumpCount");
-	lightJumpCount = inputEntry.get<unsigned int>("lightJumpCount");
-	threadCount = inputEntry.get<unsigned int>("threadCount");
+	lightJumpCount  = inputEntry.get<unsigned int>("lightJumpCount");
+	maxDepth        = inputEntry.get<unsigned int>("maxDepth");
+	raysPerPixel    = inputEntry.get<unsigned int>("raysPerPixel");
+	threadCount     = inputEntry.get<unsigned int>("threadCount");
 }
 
 void GraphicsEngine::init() {
@@ -112,6 +113,8 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 
 		for (uint vi = 0; vi < visionPathDepth; ++vi) {
 			for (uint li = 0; li < lightPathDepth; ++li) {
+				if (vi + li > maxDepth) continue;
+
 				Vector3f startPos = visionPath[vi].pos + SURFACE_DISTANCE_OFFSET * visionPath[vi].normal;
 				Vector3f endPos = lightPath[li].pos + SURFACE_DISTANCE_OFFSET * lightPath[li].normal;
 
@@ -129,7 +132,8 @@ void GraphicsEngine::renderPixel(unsigned int x, unsigned int y, const Matrix4f&
 			}
 		}
 
-		if (done) finalColor += color * (1.0f / float(visionPathDepth * lightPathDepth));
+		// if (done) finalColor += color * (1.0f / float(visionPathDepth * lightPathDepth));
+		if (done) finalColor += color * (1.0f / float(maxDepth));
 	}
 	
 	finalColor *= 2.0f * M_PI * (1.0f / float(raysPerPixel));

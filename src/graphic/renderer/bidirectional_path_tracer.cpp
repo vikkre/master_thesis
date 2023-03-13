@@ -30,6 +30,7 @@ void BidirectionalPathTracer::updateRendererUniforms(size_t index) {
 void BidirectionalPathTracer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
 	renderSettings.lightJumpCount = inputEntry.get<u_int32_t>("lightJumpCount");
+	renderSettings.maxDepth = inputEntry.get<u_int32_t>("maxDepth");
 	renderSettings.raysPerPixelCount = inputEntry.get<u_int32_t>("raysPerPixelCount");
 }
 

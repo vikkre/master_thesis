@@ -34,6 +34,7 @@ class BidirectionalPathTracer: public Renderer {
 		struct RenderSettings {
 			u_int32_t visionJumpCount;
 			u_int32_t lightJumpCount;
+			u_int32_t maxDepth;
 			u_int32_t raysPerPixelCount;
 		} renderSettings;
 

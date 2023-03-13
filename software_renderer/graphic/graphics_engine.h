@@ -54,9 +54,10 @@ class GraphicsEngine {
 		Scene scene;
 		RandomGenerator rng;
 
-		unsigned int raysPerPixel;
 		unsigned int visionJumpCount;
 		unsigned int lightJumpCount;
+		unsigned int maxDepth;
+		unsigned int raysPerPixel;
 		unsigned int threadCount;
 		std::atomic_uint32_t pixelCounter;
 };

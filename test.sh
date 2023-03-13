@@ -47,11 +47,11 @@ popd
 # build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/red_ball_room.scene 1280 720
 # build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/white_room.scene 1280 720
 
-# build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/ms_comparison_bpt_1.ppm 3
-# build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box_5.scene 1280 720 res/camera/default.camera out/ms_comparison_bpt_5.ppm 3
+build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/ms_comparison_bpt_1.ppm 3
+build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box_5.scene 1280 720 res/camera/default.camera out/ms_comparison_bpt_5.ppm 3
 
-build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/comparison_cbwb_hwr.ppm 3
-build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/comparison_cbwb_swr.ppm
+# build/RayTrace res/renderer/bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/comparison_cbwb_hwr.ppm 3
+# build/SoftwareRenderer res/renderer/SoftwareRenderer.renderer res/scene/cornell_box_with_blocks.scene 1280 720 res/camera/default.camera out/comparison_cbwb_swr.ppm
 
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1280 720 res/camera/default.camera out/shadow_tracer_cornell_box.ppm 30

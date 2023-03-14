@@ -20,7 +20,7 @@
 #include "graphic/renderer/majercik2019_renderer.h"
 #include "graphic/renderer/majercik2022_renderer.h"
 #include "graphic/renderer/bitterli2020_renderer.h"
-#include "graphic/renderer/bitterli2020_custom_renderer.h"
+#include "graphic/renderer/bitterli2020_bidirectional_path_tracer.h"
 #include "graphic/renderer/meta_renderer.h"
 #include "graphic/renderer/phong_renderer.h"
 #include "graphic/denoiser/gauss_denoiser.h"
@@ -55,16 +55,16 @@ float microsecondsToSeconds(int64_t microseconds) {
 }
 
 Renderer* getRenderer(const std::string& name, Device* device) {
-	if (name == "PhotonMapper")             return new PhotonMapper(device);
-	if (name == "PathTracer")               return new PathTracer(device);
-	if (name == "BidirectionalPathTracer")  return new BidirectionalPathTracer(device);
-	if (name == "ShadowTracer")             return new ShadowTracer(device);
-	if (name == "Majercik2019")             return new Majercik2019(device);
-	if (name == "Majercik2022")             return new Majercik2022(device);
-	if (name == "Bitterli2020")             return new Bitterli2020(device);
-	if (name == "Bitterli2020Custom")       return new Bitterli2020Custom(device);
-	if (name == "MetaRenderer")             return new MetaRenderer(device);
-	if (name == "PhongShader")              return new PhongRenderer(device);
+	if (name == "PhotonMapper")                        return new PhotonMapper(device);
+	if (name == "PathTracer")                          return new PathTracer(device);
+	if (name == "BidirectionalPathTracer")             return new BidirectionalPathTracer(device);
+	if (name == "ShadowTracer")                        return new ShadowTracer(device);
+	if (name == "Majercik2019")                        return new Majercik2019(device);
+	if (name == "Majercik2022")                        return new Majercik2022(device);
+	if (name == "Bitterli2020")                        return new Bitterli2020(device);
+	if (name == "Bitterli2020BidirectionalPathTracer") return new Bitterli2020BidirectionalPathTracer(device);
+	if (name == "MetaRenderer")                        return new MetaRenderer(device);
+	if (name == "PhongShader")                         return new PhongRenderer(device);
 	else throw InitException("getRenderer not found", name);
 }
 

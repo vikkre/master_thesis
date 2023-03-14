@@ -70,9 +70,9 @@ set(BITTERLI2020_RENDERER_INCLUDES ${SHADER_INCLUDES} bitterli2020.glsl)
 add_shader(bitterli2020_reservoir_raygen.spv bitterli2020_reservoir_raygen.rgen ${BITTERLI2020_RENDERER_INCLUDES} )
 add_shader(bitterli2020_result_raygen.spv    bitterli2020_result_raygen.rgen    ${BITTERLI2020_RENDERER_INCLUDES} )
 
-set(BITTERLI2020_CUSTOM_RENDERER_INCLUDES ${SHADER_INCLUDES} bitterli2020_custom.glsl)
-add_shader(bitterli2020_custom_reservoir_raygen.spv bitterli2020_custom_reservoir_raygen.rgen ${BITTERLI2020_CUSTOM_RENDERER_INCLUDES} )
-add_shader(bitterli2020_custom_result_raygen.spv    bitterli2020_custom_result_raygen.rgen    ${BITTERLI2020_CUSTOM_RENDERER_INCLUDES} )
+set(BITTERLI2020_BIDIRECTIONAL_PATH_TRACER_INCLUDES ${SHADER_INCLUDES} bitterli2020.glsl)
+add_shader(bitterli2020_bidirectional_path_tracer_reservoir_raygen.spv bitterli2020_bidirectional_path_tracer_reservoir_raygen.rgen ${BITTERLI2020_BIDIRECTIONAL_PATH_TRACER_INCLUDES} )
+add_shader(bitterli2020_bidirectional_path_tracer_result_raygen.spv    bitterli2020_bidirectional_path_tracer_result_raygen.rgen    ${BITTERLI2020_BIDIRECTIONAL_PATH_TRACER_INCLUDES} )
 
 set(META_RENDERER_INCLUDES ${SHADER_INCLUDES} meta_renderer.glsl)
 add_shader(meta_renderer_raygen.spv meta_renderer_raygen.rgen ${META_RENDERER_INCLUDES} )

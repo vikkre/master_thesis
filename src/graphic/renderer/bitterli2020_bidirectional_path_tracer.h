@@ -21,10 +21,10 @@
 #include "renderer.h"
 
 
-class Bitterli2020Custom: public Renderer {
+class Bitterli2020BidirectionalPathTracer: public Renderer {
 	public:
-		Bitterli2020Custom(Device* device);
-		~Bitterli2020Custom();
+		Bitterli2020BidirectionalPathTracer(Device* device);
+		~Bitterli2020BidirectionalPathTracer();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
@@ -33,12 +33,10 @@ class Bitterli2020Custom: public Renderer {
 
 		struct RenderSettings {
 			u_int32_t visionJumpCount;
+			u_int32_t lightJumpCount;
+			u_int32_t maxDepth;
 			u_int32_t candidateCount;
 			u_int32_t sampleCount;
-			Vector3u probeCount;
-			u_int32_t totalProbeCount;
-			Vector3f probeStartCorner;
-			Vector3f betweenProbeDistance;
 		} renderSettings;
 
 	private:
@@ -47,13 +45,13 @@ class Bitterli2020Custom: public Renderer {
 		void createReservoirPipeline();
 		void createResultPipeline();
 
-		Vector2u getIrradianceFieldSurfaceExtend() const;
-
 		Device* device;
 		DescriptorCollection descriptorCollection;
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		RayTracingPipeline reservoirPipeline;
 		RayTracingPipeline resultPipeline;
 
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
-		MultiBufferDescriptor<DataBuffer> probeReservoirs;
+		MultiBufferDescriptor<DataBuffer> rayPayloadsBuffers;
+		MultiBufferDescriptor<DataBuffer> spatialReservoirsBuffers;
 };

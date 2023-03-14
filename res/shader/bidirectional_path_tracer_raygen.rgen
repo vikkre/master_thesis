@@ -50,7 +50,6 @@ uint tracePath(inout RNG rng, RaySendInfo rayInfo, uint startDepth, uint maxDept
 }
 
 void main() {
-	if (gl_LaunchIDEXT.z > 0) return;
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
 	RaySendInfo startVisionRayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
@@ -102,10 +101,7 @@ void main() {
 			}
 		}
 
-		// if (done) finalColor += color * (1.0 / float(visionPathDepth * lightPathDepth));
 		if (done) finalColor += color * (1.0 / float(renderSettings.maxDepth));
-		// if (done) finalColor += color * (1.0 / float(count));
-		// if (done) finalColor += color;
 	}
 	
 	finalColor *= (2*PI) * (1.0 / float(renderSettings.raysPerPixelCount));

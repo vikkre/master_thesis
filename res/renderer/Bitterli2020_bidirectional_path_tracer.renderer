@@ -1,0 +1,6 @@
+Bitterli2020BidirectionalPathTracer
+	visionJumpCount(3)
+	lightJumpCount(3)
+	maxDepth(4)
+	candidateCount(64)
+	sampleCount(2)

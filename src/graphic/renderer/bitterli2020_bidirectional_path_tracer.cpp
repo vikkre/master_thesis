@@ -1,8 +1,8 @@
-#include "bitterli2020_renderer.h"
+#include "bitterli2020_bidirectional_path_tracer.h"
 
 
-#define RESERVOIR_RGEN_SHADER "bitterli2020_reservoir_raygen.spv"
-#define RESULT_RGEN_SHADER    "bitterli2020_result_raygen.spv"
+#define RESERVOIR_RGEN_SHADER "bitterli2020_bidirectional_path_tracer_reservoir_raygen.spv"
+#define RESULT_RGEN_SHADER    "bitterli2020_bidirectional_path_tracer_result_raygen.spv"
 
 
 struct LightSourcePoint {
@@ -33,15 +33,14 @@ struct RayPayload {
 };
 
 
-Bitterli2020::Bitterli2020(Device* device)
+Bitterli2020BidirectionalPathTracer::Bitterli2020BidirectionalPathTracer(Device* device)
 :Renderer(device), device(device), descriptorCollection(device),
 reservoirPipeline(device), resultPipeline(device),
-renderSettingsBuffers(device), rayPayloadsBuffers(device),
-spatialReservoirsBuffers(device) {}
+renderSettingsBuffers(device), rayPayloadsBuffers(device), spatialReservoirsBuffers(device) {}
 
-Bitterli2020::~Bitterli2020() {}
+Bitterli2020BidirectionalPathTracer::~Bitterli2020BidirectionalPathTracer() {}
 
-void Bitterli2020::initRenderer() {
+void Bitterli2020BidirectionalPathTracer::initRenderer() {
 	createBuffers();
 	createDescriptorCollection();
 	createPipelineLayout();
@@ -49,7 +48,7 @@ void Bitterli2020::initRenderer() {
 	createResultPipeline();
 }
 
-void Bitterli2020::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
+void Bitterli2020BidirectionalPathTracer::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	descriptorCollection.cmdBind(index, commandBuffer, getPipelineLayout());
 
 	reservoirPipeline.cmdExecutePipeline(commandBuffer);
@@ -59,18 +58,20 @@ void Bitterli2020::cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) {
 	resultPipeline.cmdExecutePipeline(commandBuffer);
 }
 
-void Bitterli2020::updateRendererUniforms(size_t index) {
+void Bitterli2020BidirectionalPathTracer::updateRendererUniforms(size_t index) {
 	renderSettingsBuffers.at(index).passData((void*) &renderSettings);
 }
 
-void Bitterli2020::parseRendererInput(const InputEntry& inputEntry) {
+void Bitterli2020BidirectionalPathTracer::parseRendererInput(const InputEntry& inputEntry) {
 	renderSettings.visionJumpCount = inputEntry.get<u_int32_t>("visionJumpCount");
+	renderSettings.lightJumpCount  = inputEntry.get<u_int32_t>("lightJumpCount");
+	renderSettings.maxDepth        = inputEntry.get<u_int32_t>("maxDepth");
 	renderSettings.candidateCount  = inputEntry.get<u_int32_t>("candidateCount");
 	renderSettings.sampleCount     = inputEntry.get<u_int32_t>("sampleCount");
 }
 
-void Bitterli2020::createBuffers() {
-	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(Bitterli2020::RenderSettings);
+void Bitterli2020BidirectionalPathTracer::createBuffers() {
+	renderSettingsBuffers.bufferProperties.bufferSize = sizeof(Bitterli2020BidirectionalPathTracer::RenderSettings);
 	renderSettingsBuffers.bufferProperties.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	renderSettingsBuffers.bufferProperties.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 	renderSettingsBuffers.init();
@@ -88,7 +89,7 @@ void Bitterli2020::createBuffers() {
 	spatialReservoirsBuffers.init();
 }
 
-void Bitterli2020::createDescriptorCollection() {
+void Bitterli2020BidirectionalPathTracer::createDescriptorCollection() {
 	descriptorCollection.addBuffer(0, &renderSettingsBuffers);
 	descriptorCollection.addBuffer(1, outputImages);
 	descriptorCollection.addBuffer(2, &rayPayloadsBuffers);
@@ -99,7 +100,7 @@ void Bitterli2020::createDescriptorCollection() {
 	descriptors.push_back(&descriptorCollection);
 }
 
-void Bitterli2020::createReservoirPipeline() {
+void Bitterli2020BidirectionalPathTracer::createReservoirPipeline() {
 	reservoirPipeline.raygenShaders.push_back(RESERVOIR_RGEN_SHADER);
 	reservoirPipeline.missShaders = Renderer::RMISS_SHADERS;
 	reservoirPipeline.hitShaders = Renderer::RCHIT_SHADERS;
@@ -112,7 +113,7 @@ void Bitterli2020::createReservoirPipeline() {
 	reservoirPipeline.init();
 }
 
-void Bitterli2020::createResultPipeline() {
+void Bitterli2020BidirectionalPathTracer::createResultPipeline() {
 	resultPipeline.raygenShaders.push_back(RESULT_RGEN_SHADER);
 	resultPipeline.missShaders = Renderer::RMISS_SHADERS;
 	resultPipeline.hitShaders = Renderer::RCHIT_SHADERS;

@@ -1,0 +1,159 @@
+#version 460
+
+
+#include "bitterli2020_bidirectional_path_tracer.glsl"
+
+
+#define MAX_PATH_LENGTH 20
+#define VISION_HP_INDEX 0
+#define LIGHT_HP_INDEX 1
+
+HitPoint hitPoints[2][MAX_PATH_LENGTH];
+
+
+uint tracePath(inout RNG rng, RaySendInfo rayInfo, uint startDepth, uint maxDepth, bool isLightRay) {
+	uint hp_index = isLightRay ? LIGHT_HP_INDEX : VISION_HP_INDEX;
+	vec3 color = vec3(1.0);
+	uint pathDepth = startDepth;
+
+	if (startDepth > 0) {
+		color = hitPoints[hp_index][startDepth - 1].cumulativeColor;
+	}
+
+	for (uint i = startDepth; i < maxDepth; ++i) {
+		traceRay(rayInfo);
+
+		if (!rayPayload.hit) {
+			break;
+		}
+
+		pathDepth = i + 1;
+		uint traceValue = handleHit(rayInfo, rng);
+
+		if (traceValue == DIFFUSE_VALUE) {
+			vec3 direction = isLightRay ? rayInfo.prevDirection : rayInfo.direction;
+			color *= rayPayload.color * dot(direction, rayPayload.normal);
+			hitPoints[hp_index][i].diffuse = true;
+		} else {
+			hitPoints[hp_index][i].diffuse = false;
+		}
+
+		hitPoints[hp_index][i].pos = rayPayload.pos;
+		hitPoints[hp_index][i].normal = rayPayload.normal;
+		hitPoints[hp_index][i].cumulativeColor = color;
+		hitPoints[hp_index][i].lightHit = false;
+
+		if (rayPayload.lightSource) {
+			if (dot(rayInfo.prevDirection, rayPayload.normal) <= 0.0) {
+				hitPoints[hp_index][i].lightHit = true;
+				break;
+			}
+		}
+	}
+
+	return pathDepth;
+}
+
+vec3 bidirectional_path_tracer(inout RNG rng, BitterliRayPayload payload, LightSourcePoint lsp) {
+	RaySendInfo startVisionRayInfo;
+	startVisionRayInfo.origin = payload.pos;
+	startVisionRayInfo.direction = randomNormalDirection(rng, payload.normal);
+	startVisionRayInfo.backfaceCulling = false;
+	startVisionRayInfo.startColor = payload.color;
+
+	hitPoints[VISION_HP_INDEX][0].pos = payload.pos;
+	hitPoints[VISION_HP_INDEX][0].normal = payload.normal;
+	hitPoints[VISION_HP_INDEX][0].cumulativeColor = payload.color;
+	hitPoints[VISION_HP_INDEX][0].diffuse = true;
+	uint visionPathDepth = tracePath(rng, startVisionRayInfo, 1, renderSettings.visionJumpCount, false);
+
+	if (visionPathDepth == 0) return vec3(0.0);
+
+	if (hitPoints[VISION_HP_INDEX][visionPathDepth - 1].lightHit) {
+		return hitPoints[VISION_HP_INDEX][visionPathDepth - 1].cumulativeColor;
+	}
+
+	vec3 direction = randomNormalDirection(rng, lsp.normal);
+	RaySendInfo startLightRayInfo = lightSourcePointToRayInfo(lsp, direction);
+
+	hitPoints[LIGHT_HP_INDEX][0].pos = startLightRayInfo.origin;
+	hitPoints[LIGHT_HP_INDEX][0].normal = lsp.normal;
+	hitPoints[LIGHT_HP_INDEX][0].cumulativeColor = startLightRayInfo.startColor;
+	hitPoints[LIGHT_HP_INDEX][0].diffuse = true;
+	uint lightPathDepth = tracePath(rng, startLightRayInfo, 1, renderSettings.lightJumpCount, true);
+
+	bool done = false;
+	uint count = 0;
+	vec3 color = vec3(0.0);
+
+	for (uint vi = 0; vi < visionPathDepth; ++vi) {
+		for (uint li = 0; li < lightPathDepth; ++li) {
+			if (vi + li > renderSettings.maxDepth) continue;
+			++count;
+
+			vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos + RAY_NORMAL_OFFSET * hitPoints[VISION_HP_INDEX][vi].normal;
+			vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos + RAY_NORMAL_OFFSET * hitPoints[LIGHT_HP_INDEX][li].normal;
+
+			if (!isOccluded(startPos, endPos)) {
+				vec3 direction = normalize(endPos - startPos);
+				vec3 normal = hitPoints[VISION_HP_INDEX][vi].normal;
+
+				vec3 visionColor = hitPoints[VISION_HP_INDEX][vi].cumulativeColor;
+				vec3 lightColor = hitPoints[LIGHT_HP_INDEX][li].cumulativeColor;
+
+				color += visionColor * lightColor * dot(direction, normal);
+				done = true;
+			}
+		}
+	}
+
+	if (done) color *= (1.0 / float(renderSettings.maxDepth));
+	return color;
+}
+
+
+void main() {
+	RNG rng = initRNG(gl_LaunchIDEXT);
+
+	BitterliRayPayload payload = rayPayloads.r[getPayloadIndex(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy)];
+
+	if (payload.hit == 0) {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+		return;
+	}
+
+	if (payload.lightSource == 1) {
+		imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(payload.color, 0.0));
+		return;
+	}
+
+	vec3 illumination = vec3(0.0);
+
+	for (uint sampleIndex = 0; sampleIndex < renderSettings.sampleCount; sampleIndex++) {
+		Reservoir s;
+		uint M_sum = 0;
+		for (uint d = 0; d < DIRECTION_COUNT; ++d) {
+			ivec2 p = ivec2(gl_LaunchIDEXT.xy) + DIRECTIONS[d];
+			bool ok = (0 <= p.x) && (p.x < gl_LaunchSizeEXT.x) && (0 <= p.y) && (p.y < gl_LaunchSizeEXT.y);
+
+			if (ok) {
+				Reservoir r = spatialReservoirs.r[getReservoirIndex(uvec2(p), gl_LaunchSizeEXT.xy, sampleIndex)];
+				if (r.W > 0.0) {
+					updateReservoir(s, rng, r.y, r.y.weight * r.W * float(r.M));
+					M_sum += r.M;
+				}
+			}
+		}
+
+		s.M = M_sum;
+		s.W = (1.0 / s.y.weight) * (1.0 / float(s.M)) * s.w_sum;
+
+		if (s.M > 0) {
+			shadowTrace(s.y.lsp, payload.pos, payload.normal);
+			illumination += bidirectional_path_tracer(rng, payload, s.y.lsp);
+		}
+	}
+
+	illumination *= 2.0 * PI * (1.0 / float(renderSettings.sampleCount));
+	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
+}

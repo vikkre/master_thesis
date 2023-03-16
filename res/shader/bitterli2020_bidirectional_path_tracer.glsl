@@ -85,18 +85,3 @@ uint getReservoirIndex(uvec2 launchID, uvec2 launchSize, uint sampleIndex) {
 	uint x_size = launchSize.y * y_size;
 	return launchID.x * x_size + launchID.y * y_size + sampleIndex;
 }
-
-bool isOccluded(vec3 startPos, vec3 endPos) {
-	vec3 stretch = endPos - startPos;
-	float dist = length(stretch);
-	vec3 direction = stretch / dist;
-
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	shadowed = true;
-
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, startPos, tmin, direction, dist, 1);
-
-	return shadowed;
-}

@@ -241,4 +241,22 @@ vec3 getIlluminationByShadowtrace(inout RNG rng, vec3 pos, vec3 normal, uint cou
 	return illumination / float(count);
 }
 
+bool isOccluded(vec3 startPos, vec3 endPos) {
+	vec3 stretch = endPos - startPos;
+	float dist = length(stretch);
+	vec3 direction = stretch * (1.0 / dist);
+
+	// startPos += RAY_NORMAL_OFFSET * direction;
+	// endPos   -= RAY_NORMAL_OFFSET * direction;
+
+	uint rayFlags = gl_RayFlagsOpaqueEXT;
+	uint cullMask = 0xFF;
+	float tmin = 0.001;
+	shadowed = true;
+
+	traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, startPos, tmin, direction, dist, 1);
+
+	return shadowed;
+}
+
 #endif

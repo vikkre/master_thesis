@@ -94,6 +94,9 @@ vec3 bidirectional_path_tracer(inout RNG rng, BitterliRayPayload payload, LightS
 			vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos + RAY_NORMAL_OFFSET * hitPoints[VISION_HP_INDEX][vi].normal;
 			vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos + RAY_NORMAL_OFFSET * hitPoints[LIGHT_HP_INDEX][li].normal;
 
+			// vec3 startPos = hitPoints[VISION_HP_INDEX][vi].pos;
+			// vec3 endPos = hitPoints[LIGHT_HP_INDEX][li].pos;
+
 			if (!isOccluded(startPos, endPos)) {
 				vec3 direction = normalize(endPos - startPos);
 				vec3 normal = hitPoints[VISION_HP_INDEX][vi].normal;

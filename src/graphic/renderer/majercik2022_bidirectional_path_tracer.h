@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fstream>
 #include <vector>
 
 #include <vulkan/vulkan.h>
@@ -22,10 +21,10 @@
 #include "renderer.h"
 
 
-class Majercik2019: public Renderer {
+class Majercik2022BidirectionalPathTracer: public Renderer {
 	public:
-		Majercik2019(Device* device);
-		~Majercik2019();
+		Majercik2022BidirectionalPathTracer(Device* device);
+		~Majercik2022BidirectionalPathTracer();
 
 		virtual void initRenderer() override;
 		virtual void cmdRenderFrame(size_t index, VkCommandBuffer commandBuffer) override;
@@ -34,6 +33,10 @@ class Majercik2019: public Renderer {
 
 		struct RenderSettings {
 			u_int32_t visionJumpCount;
+			u_int32_t lightJumpCount;
+			u_int32_t maxDepth;
+
+			float hysteresis;
 			Vector3u probeCount;
 			u_int32_t totalProbeCount;
 			Vector3f probeStartCorner;
@@ -45,23 +48,34 @@ class Majercik2019: public Renderer {
 			float normalBias;
 			u_int32_t linearBlending;
 			float energyPreservation;
-			u_int32_t shadowCountProbe;
-			u_int32_t shadowCountVision;
+
+			u_int32_t candidateCount;
+			u_int32_t sampleCount;
+
+			u_int32_t probeCandidateCount;
+			u_int32_t probeSampleCount;
+			u_int32_t probeVisionJumpCount;
+			u_int32_t probeLightJumpCount;
+			u_int32_t probeMaxDepth;
 		} renderSettings;
 
 	private:
 		void createBuffers();
 		void createDescriptorCollection();
+		void createProbeReservoirPipeline();
 		void createProbePipeline();
 		void createShadingUpdatePipeline();
+		void createReservoirPipeline();
 		void createFinalPipeline();
 
 		Vector2u getIrradianceFieldSurfaceExtend() const;
 
 		Device* device;
 		DescriptorCollection descriptorCollection;
+		RayTracingPipeline probeReservoirPipeline;
 		RayTracingPipeline probePipeline;
 		ComputePipeline shadingUpdatePipeline;
+		RayTracingPipeline reservoirPipeline;
 		RayTracingPipeline finalPipeline;
 
 		MultiBufferDescriptor<DataBuffer> renderSettingsBuffers;
@@ -70,4 +84,8 @@ class Majercik2019: public Renderer {
 		MultiBufferDescriptor<ImageBuffer> depthBuffer;
 		MultiSamplerDescriptor irradianceSampler;
 		MultiSamplerDescriptor depthSampler;
+		MultiBufferDescriptor<DataBuffer> rayPayloadsBuffers;
+		MultiBufferDescriptor<DataBuffer> spatialReservoirsBuffers;
+		MultiBufferDescriptor<DataBuffer> probeRayPayloadsBuffers;
+		MultiBufferDescriptor<DataBuffer> probeSpatialReservoirsBuffers;
 };

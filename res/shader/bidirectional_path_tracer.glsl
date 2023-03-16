@@ -23,18 +23,3 @@ struct HitPoint {
 	bool diffuse;
 	bool lightHit;
 };
-
-bool isOccluded(vec3 startPos, vec3 endPos) {
-	vec3 stretch = endPos - startPos;
-	float dist = length(stretch);
-	vec3 direction = stretch / dist;
-
-	uint rayFlags = gl_RayFlagsOpaqueEXT;
-	uint cullMask = 0xFF;
-	float tmin = 0.001;
-	shadowed = true;
-
-	traceRayEXT(topLevelAS, rayFlags, cullMask, 1, 0, 1, startPos, tmin, direction, dist, 1);
-
-	return shadowed;
-}

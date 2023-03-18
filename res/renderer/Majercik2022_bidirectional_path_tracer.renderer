@@ -9,9 +9,9 @@ Majercik2022BidirectionalPathTracer
 	maxProbeRayDistance(1000)
 	probeSampleSideLength(8)
 	depthSharpness(0.8)
-	normalBias(0.001)
+	normalBias(0.01)
 	linearBlending(0)
-	energyPreservation(0.5)
+	energyPreservation(0.4)
 # Bitterli2020
 	candidateCount(64)
 	sampleCount(2)
@@ -20,4 +20,4 @@ Majercik2022BidirectionalPathTracer
 	probeSampleCount(4)
 	probeVisionJumpCount(2)
 	probeLightJumpCount(4)
-	probeMaxDepth(2)
+	probeMaxDepth(4)

@@ -113,7 +113,7 @@ vec3 getDirectIllumination(inout RNG rng, BitterliRayPayload payload) {
 		s.W = (1.0 / s.y.weight) * (1.0 / float(s.M)) * s.w_sum;
 		
 		if (s.M > 0) {
-			shadowTrace(s.y.lsp, payload.pos, payload.normal);
+			// shadowTrace(s.y.lsp, payload.pos, payload.normal);
 			illumination += shadowTrace(s.y.lsp, payload.pos, payload.normal);
 		}
 	}

@@ -186,6 +186,9 @@ int main(int argc, char* argv[]) {
 	while (run) {
 		currentTime = SDL_GetTicks();
 		float deltaTime = float(currentTime - lastTime) / 1000.0f;
+		if (renderLimit) {
+			deltaTime = 0;
+		}
 
 		while(SDL_PollEvent(&event)) {
 			bool sdl_quit = event.type == SDL_QUIT;
@@ -194,6 +197,8 @@ int main(int argc, char* argv[]) {
 			bool button_save_camera = event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_c;
 
 			if (sdl_quit || window_quit) run = false;
+			if (renderLimit) continue;
+
 			else if (button_screenshot) screenshot(engine, rendererName);
 			else if (button_save_camera && !hasCamera) saveCamera(input, rendererName);
 			else input->handleEvents(event);

@@ -11,7 +11,7 @@ GraphicsObject::GraphicsObject(const Device* device, const Mesh* mesh, const Vec
 color(Vector3f({1.0f, 1.0f, 1.0f})),
 diffuseWeight(1.0f), reflectWeight(0.0f), transparentWeight(0.0f),
 move(false), rotate(false), weightDone(false),
-moveStartPos(position), moveStopPos(position), moveSpeed(0.0f), movedDistance(0.0f),
+moveStartPos(position), moveStopPos(position), moveSpeed(0.0f), movedDistance(-0.5f),
 rotationAxis({0.0f, 0.0f, 0.0f}), totalRotation(), rotationSpeed(0.0f), rotatedAngle(0.0f),
 mesh(mesh), device(device) {}
 

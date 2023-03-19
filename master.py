@@ -41,6 +41,23 @@ SCENE_NAMES = [
 
 SCENES = {name: os.path.join(SCENE_PATH, "{}.scene".format(name)) for name in SCENE_NAMES}
 
+SCENE_LABELS = {
+	"cornell_box": "Cornell Box",
+	# "cornell_box_5": "Cornell Box 5",
+	"cornell_box_with_blocks": "Cornell Box with blocks",
+	# "cornell_box_with_blocks_dancing": "Cornell Box with dancing blocks",
+	"cornell_box_with_ball": "Cornell Box with glass ball",
+	"cornell_box_with_blocks_and_ball": "Cornell Box with blocks and light ball",
+	"cornell_box_with_blocks_big_light": "Cornell Box with big light",
+	"labyrinth": "Labyrinth",
+	"red_ball_room": "Room with red ball",
+	"white_room": "White room with light coming through a door",
+}
+
+def get_scene_labels(scenes):
+	return tuple([SCENE_LABELS[scene] for scene in scenes])
+
+
 RENDERER_NAMES = [
 	"ShadowTracer",
 	"path_tracer",
@@ -53,6 +70,20 @@ RENDERER_NAMES = [
 ]
 
 RENDERER_PATHS = {name: os.path.join(RENDERER_PATH, "{}.renderer".format(name)) for name in RENDERER_NAMES}
+
+RENDERER_LABELS = {
+	"ShadowTracer": "Basic ray tracer",
+	"path_tracer": "Path tracer",
+	"bidirectional_path_tracer": "Bidirectional path tracer",
+	"Bitterli2020": "ReSTIR",
+	"Bitterli2020_bidirectional_path_tracer": "Bidirectional path tracer + ReSTIR",
+	"Majercik2019": "DDGI",
+	"Majercik2022": "DDGI + ReSTIR",
+	"Majercik2022_bidirectional_path_tracer": "Bidirectional path tracer + DDGI + ReSTIR",
+}
+
+def get_renderer_labels(renderers):
+	return tuple([RENDERER_LABELS[renderer] for renderer in renderers])
 
 def load_renderer(path):
 	params = {}
@@ -280,16 +311,12 @@ def all_scenes_algorithms_test():
 	if not os.path.exists(base_path):
 		os.makedirs(base_path)
 
-	result_only_tex = []
-	all_tex = []
-
 	for name, renderer in RENDERERS.items():
 		path = os.path.join(base_path, name)
 		if not os.path.exists(path):
 			os.makedirs(path)
 
 		results = []
-		results_tex = []
 
 		for scene_name, scene_path in SCENES.items():
 			out_path = os.path.join(path, "{}_test".format(scene_name))
@@ -312,11 +339,6 @@ def all_scenes_algorithms_test():
 				writer.writerow(times_header)
 				writer.writerows(times_body)
 
-			times_tex_label = "tab:frame_results_{}_{}".format(name, scene_name)
-			times_tex_caption = "Frame by frame results of renderer {} in scene {}".format(name, scene_name)
-			times_tex = compile_latex_table(times_tex_label, times_tex_caption, times_header, times_body)
-			results_tex.append(times_tex)
-
 		test_header = ["scene", "diff", "avg time", "avg fps"]
 		
 		csv_path = os.path.join(path, "test.csv")
@@ -325,47 +347,65 @@ def all_scenes_algorithms_test():
 			writer.writerow(test_header)
 			writer.writerows(results)
 
-		test_tex_label = "tab:results_overview_{}".format(name)
-		test_tex_caption = "Result data for renderer {}".format(name)
-		test_tex = ""
-		# test_tex += "\\section{" + convert_to_latex(name) + "}\n"
-		# test_tex += "\\label{sec:comparison_results:" + name + "}\n\n"
-		test_tex += compile_latex_table(test_tex_label, test_tex_caption, test_header, results)
-		result_only_tex.append(test_tex)
-		test_tex += "\n\n"
-		test_tex += "\n\n".join(results_tex)
-		all_tex.append(test_tex)
-
-	full_tex = "\n\n".join(all_tex)
-	tex_path = os.path.join(base_path, "comparison_results.tex")
-	with open(tex_path, "w") as texfile:
-		texfile.write(full_tex)
-
-	result_tex = "\n\n".join(result_only_tex)
-	result_tex_path = os.path.join(base_path, "comparison_results_only.tex")
-	with open(result_tex_path, "w") as texfile:
-		texfile.write(result_tex)
-
-# "ShadowTracer",
-# "path_tracer",
-# "bidirectional_path_tracer",
-# "Bitterli2020",
-# "Bitterli2020_bidirectional_path_tracer",
-# "Majercik2019",
-# "Majercik2022",
-# "Majercik2022_bidirectional_path_tracer"
 
 def all_scenes_algorithms_test_diagrams():
 	renderer_lists = {
 		"path_tracers": ["path_tracer", "bidirectional_path_tracer"],
 		"shadow_tracers": ["ShadowTracer", "Bitterli2020", "Majercik2019"],
 		"bitterlis": ["Bitterli2020", "Bitterli2020_bidirectional_path_tracer"],
-		"majercicks": ["Majercik2019", "Majercik2022", "Majercik2022_bidirectional_path_tracer"],
+		"majerciks": ["Majercik2019", "Majercik2022", "Majercik2022_bidirectional_path_tracer"],
 		"bitterli_vs_majercik": ["Bitterli2020", "Majercik2019", "Majercik2022"]
 	}
 
 	for name, use_renderers in renderer_lists.items():
 		scenes_algorithms_test_diagrams(name, use_renderers)
+
+	base_path = os.path.join(OUT_PATH, "all_scenes_algorithms_test")
+	scenes_data = collections.defaultdict(lambda: list())
+	result_tex = []
+	for name in RENDERERS.keys():
+		path = os.path.join(base_path, name)
+		csv_path = os.path.join(path, "test.csv")
+
+		results = []
+		with open(csv_path) as csvfile:
+			for row in csv.DictReader(csvfile, skipinitialspace=True):
+				value = float(round(float(row["diff"]), 2))
+				scenes_data[name].append(value)
+				results.append([(SCENE_LABELS[v] if k == "scene" else float(v)) for k, v in row.items()])
+
+		test_header = ["Scene name", "Difference to offline renderer", "Average time (ms)", "Average fps"]
+		test_tex_label = "tab:results_overview_{}".format(name)
+		test_tex_caption = "Result data for {}".format(RENDERER_LABELS[name])
+		test_tex = compile_latex_table(test_tex_label, test_tex_caption, test_header, results)
+		result_tex.append(test_tex)
+
+	scene_names = get_scene_labels(SCENES.keys())
+	scenes_data = {name: tuple(data) for name, data in scenes_data.items()}
+	fig, ax = plt.subplots(layout="constrained")
+
+	for name, data in scenes_data.items():
+		label = RENDERER_LABELS[name]
+		ax.plot(scene_names, data, label=label, linewidth=3)
+
+	ax.plot(scene_names, [33.3] * len(scene_names), label="30 FPS line", linewidth=3, color="gray", linestyle="dashed")
+	ax.plot(scene_names, [16.6] * len(scene_names), label="60 FPS line", linewidth=3, color="black", linestyle="dashed")
+
+	plt.xticks(rotation=45)
+	ax.set_ylabel("average rendering time per frame (ms)")
+	ax.set_title("rendertime by renderer and scene")
+	ax.legend()
+	ax.set_ylim(0, 50)
+
+	output_path = os.path.join(base_path, "rendering_times.svg")
+	fig.set_size_inches(14.5, 7.5)
+	fig.savefig(output_path)
+
+	result_tex = "\n\n".join(result_tex)
+	result_tex_path = os.path.join(base_path, "comparison_results_only.tex")
+	with open(result_tex_path, "w") as texfile:
+		texfile.write(result_tex)
+
 
 def scenes_algorithms_test_diagrams(file_name, use_renderers):
 	base_path = os.path.join(OUT_PATH, "all_scenes_algorithms_test")
@@ -384,7 +424,7 @@ def scenes_algorithms_test_diagrams(file_name, use_renderers):
 				scene_data[row["scene"]].append(value)
 				renderer_data[name].append(value)
 
-	scenes = tuple(scene_data.keys())
+	scenes = get_scene_labels(scene_data.keys())
 
 	# labels = renderers
 	# data = {name: tuple(d) for name, d in scene_data.items()}
@@ -399,8 +439,9 @@ def scenes_algorithms_test_diagrams(file_name, use_renderers):
 	fig, ax = plt.subplots(layout="constrained")
 
 	for name, renderer_data in data.items():
+		label = RENDERER_LABELS[name]
 		offset = width * multiplier
-		rects = ax.bar(x + offset, renderer_data, width, label=name)
+		rects = ax.bar(x + offset, renderer_data, width, label=label)
 		ax.bar_label(rects, padding=5)
 		multiplier += 1
 
@@ -482,7 +523,6 @@ def renderer_1_5_test():
 def renderer_1_5_test_diagrams_latex():
 	base_path = os.path.join(OUT_PATH, "renderer_1_5_test")
 
-	headers = None
 	full_table = []
 	renderers = []
 	scene_data = []
@@ -490,20 +530,18 @@ def renderer_1_5_test_diagrams_latex():
 
 	with open(csv_path) as csvfile:
 		for row in csv.DictReader(csvfile, skipinitialspace=True):
-			if headers is None:
-				headers = list(row.keys())
-			full_table.append([(x if i == "renderer" else float(x)) for i, x in row.items()])
+			full_table.append([(RENDERER_LABELS[x] if i == "renderer" else float(x)) for i, x in row.items()][:2])
 			renderers.append(row["renderer"])
 			value = float(round(float(row["diff"]) * 100.0, 1))
 			scene_data.append(value)
 
-	renderer_names = tuple(renderers)
+	renderer_names = get_renderer_labels(renderers)
 	diffs = tuple(scene_data)
 	
 	fig, ax = plt.subplots(layout="constrained")
 
 	plt.xticks(rotation=45)
-	ax.set_ylabel("equalness (%)")
+	ax.set_ylabel("equalness from one to five cornell boxes (%)")
 	ax.set_title("similarity between one and five cornellbox scene")
 	ax.set_ylim(0, 110)
 	ax.bar(renderer_names, diffs)
@@ -512,6 +550,7 @@ def renderer_1_5_test_diagrams_latex():
 	fig.set_size_inches(14.5, 7.5)
 	fig.savefig(output_path)
 
+	headers = ["Renderer name", "difference between one and five cornell boxes (\\%)"]
 	result_tex = compile_latex_table("tab:results_overview_1_5_test", "Results of the one and five cornell box test", headers, full_table)
 	tex_path = os.path.join(base_path, "test.tex")
 	with open(tex_path, "w") as texfile:
@@ -526,10 +565,10 @@ def main():
 	# bpt_test_r()
 
 	# all_scenes_algorithms_test()
-	# all_scenes_algorithms_test_diagrams()
+	all_scenes_algorithms_test_diagrams()
 
 	# renderer_1_5_test()
-	renderer_1_5_test_diagrams_latex()
+	# renderer_1_5_test_diagrams_latex()
 
 
 if __name__ == "__main__":

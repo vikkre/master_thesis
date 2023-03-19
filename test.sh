@@ -134,7 +134,7 @@ popd
 
 # build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box.scene 1920 1080
 # build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_5.scene 1920 1080
-# build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1920 1080
+build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks.scene 1920 1080
 # build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_dancing.scene 1920 1080
 # build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_with_blocks_big_light.scene 1920 1080
 # build/RayTrace res/renderer/Bitterli2020_bidirectional_path_tracer.renderer res/scene/cornell_box_with_ball.scene 1920 1080

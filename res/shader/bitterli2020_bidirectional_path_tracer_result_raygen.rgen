@@ -157,6 +157,7 @@ void main() {
 		}
 	}
 
-	illumination *= 2.0 * PI * (1.0 / float(renderSettings.sampleCount));
+	illumination *= 1.0 / float(renderSettings.sampleCount);
+	// illumination *= 2.0 * PI;
 	imageStore(finalImage, ivec2(gl_LaunchIDEXT.xy), vec4(illumination, 0.0));
 }

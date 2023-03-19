@@ -196,8 +196,8 @@ void main() {
 			directIllumination += bidirectional_path_tracer(rng, payload, s.y.lsp);
 		}
 	}
-	directIllumination *= 2.0 * PI * (1.0 / float(renderSettings.sampleCount));
-	directIllumination *= 0.5;
+	directIllumination *= 1.0 / float(renderSettings.sampleCount);
+	// directIllumination *= 2.0 * PI;
 
 	vec3 result;
 

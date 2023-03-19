@@ -104,7 +104,8 @@ void main() {
 		if (done) finalColor += color * (1.0 / float(renderSettings.maxDepth));
 	}
 	
-	finalColor *= (2*PI) * (1.0 / float(renderSettings.raysPerPixelCount));
+	finalColor *= 1.0 / float(renderSettings.raysPerPixelCount);
+	// finalColor *= 2*PI;
 
 	imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(finalColor, 0.0));
 }

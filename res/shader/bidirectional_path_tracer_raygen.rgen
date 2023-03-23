@@ -52,19 +52,24 @@ uint tracePath(inout RNG rng, RaySendInfo rayInfo, uint startDepth, uint maxDept
 void main() {
 	RNG rng = initRNG(gl_LaunchIDEXT);
 
-	RaySendInfo startVisionRayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+	RaySendInfo visionRayInfo = getVisionRay(gl_LaunchIDEXT.xy, gl_LaunchSizeEXT.xy);
+
+	traceRay(visionRayInfo);
+
+	if (!rayPayload.hit) {
+		imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(0.0));
+		return;
+	}
+
+	if (rayPayload.lightSource) {
+		imageStore(image, ivec2(gl_LaunchIDEXT.xy), vec4(rayPayload.color, 0.0));
+		return;
+	}
 
 	vec3 finalColor = vec3(0.0);
 
 	for (uint visionRayIndex = 0; visionRayIndex < renderSettings.raysPerPixelCount; ++visionRayIndex) {
-		uint visionPathDepth = tracePath(rng, startVisionRayInfo, 0, renderSettings.visionJumpCount, false);
-
-		if (visionPathDepth == 0) continue;
-
-		if (hitPoints[VISION_HP_INDEX][visionPathDepth - 1].lightHit) {
-			finalColor += hitPoints[VISION_HP_INDEX][visionPathDepth - 1].cumulativeColor;
-			continue;
-		}
+		uint visionPathDepth = tracePath(rng, visionRayInfo, 0, renderSettings.visionJumpCount, false);
 
 		LightSourcePoint lsp = getRandomLightSourcePoint(rng);
 		vec3 direction = randomNormalDirection(rng, lsp.normal);

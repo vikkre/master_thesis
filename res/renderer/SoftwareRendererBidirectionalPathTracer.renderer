@@ -1,6 +1,5 @@
-Bitterli2020
+BidirectionalPathTracer
 	visionJumpCount(5)
 	lightJumpCount(5)
 	maxDepth(5)
 	raysPerPixel(100)
-	threadCount(15)

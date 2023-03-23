@@ -1,0 +1,3 @@
+PathTracer
+	visionJumpCount(5)
+	raysPerPixel(2500)

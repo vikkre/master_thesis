@@ -5,6 +5,10 @@
 #include "graphic/mesh.h"
 #include "graphic/graphics_object.h"
 
+#include "graphic/renderer.h"
+#include "graphic/path_tracer.h"
+#include "graphic/bidirectional_path_tracer.h"
+
 #include "init_exception.h"
 #include "mesh_manager.h"
 #include "input_parser.h"
@@ -15,10 +19,16 @@
 #include "math/rotation.h"
 
 
+Renderer* getRenderer(const std::string& name) {
+	if (name == "PathTracer")              return new PathTracer();
+	if (name == "BidirectionalPathTracer") return new BidirectionalPathTracer();
+	else throw InitException("getRenderer not found", name);
+}
+
 int main(int argc, char* argv[]) {
-	if (argc != 7) {
+	if (argc != 8) {
 		std::cout << "Error: wrong paramter count!" << std::endl;
-		std::cout << "Usage: SoftwareRenderer renderer scene image_width image_height camera resultimage" << std::endl;
+		std::cout << "Usage: SoftwareRenderer renderer scene image_width image_height thread_count camera resultimage" << std::endl;
 		return -1;
 	}
 
@@ -34,8 +44,9 @@ int main(int argc, char* argv[]) {
 	std::string rendererPath = argv[1];
 	std::string scenePath = argv[2];
 	Vector2u imageSize = Vector2u({(unsigned int) std::atoi(argv[3]), (unsigned int) std::atoi(argv[4])});
-	std::string cameraFilePath = argv[5];
-	std::string resultImagePath = argv[6];
+	unsigned int threadCount = (unsigned int) std::atoi(argv[5]);
+	std::string cameraFilePath = argv[6];
+	std::string resultImagePath = argv[7];
 
 	size_t start = rendererPath.find_last_of('/') + 1;
 	size_t finish = rendererPath.find_last_of('.') - start;
@@ -51,11 +62,13 @@ int main(int argc, char* argv[]) {
 	InputParser rendererParser(rendererPath);
 	rendererParser.parse();
 
-	engine->parseInput(rendererParser.getInputEntry(0));
+	Renderer* renderer = getRenderer(rendererParser.getInputEntry(0).name);
+	renderer->parseInput(rendererParser.getInputEntry(0));
+
 	engine->objects = meshManager->getCreatedObjects();
 	engine->lightSources = meshManager->getCreatedLightSources();
 
-	engine->init();
+	engine->init(renderer, threadCount);
 
 	Camera* camera = new Camera();
 	InputParser cameraParser(cameraFilePath);

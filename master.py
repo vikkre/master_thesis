@@ -18,6 +18,9 @@ from skimage.restoration import estimate_sigma
 RENDERTIME_REGEX = re.compile(r"INFO: Render Time: ([0-9.]+) \(~(\d+) FPS\)")
 RENDERER_REGEX = re.compile(r"\t(\w+)\(([0-9.]+)\)")
 
+FIG_SIZES = (10, 7)
+FIG_ROUNDING = 1
+
 EXECPATH = os.path.join("build", "RayTrace")
 OUT_PATH = os.path.join("out", "master_results")
 SCENE_PATH = os.path.join("res", "scene")
@@ -25,6 +28,7 @@ CAMERA_PATH = os.path.join("res", "camera")
 RENDERER_PATH = os.path.join("res", "renderer")
 DEFAULT_CAMERA_PATH = os.path.join(CAMERA_PATH, "default.camera")
 LABYRINTH_CAMERA_PATH = os.path.join(CAMERA_PATH, "labyrinth.camera")
+CLOSE_CAMERA_PATH = os.path.join(CAMERA_PATH, "close.camera")
 
 SCENE_NAMES = [
 	"cornell_box",
@@ -52,6 +56,19 @@ SCENE_LABELS = {
 	"labyrinth": "Labyrinth",
 	"red_ball_room": "Room with red ball",
 	"white_room": "White room with light coming through a door",
+}
+
+SCENE_CAMERAS = {
+	"cornell_box": CLOSE_CAMERA_PATH,
+	# "cornell_box_5": CLOSE_CAMERA_PATH,
+	"cornell_box_with_blocks": CLOSE_CAMERA_PATH,
+	# "cornell_box_with_blocks_dancing": CLOSE_CAMERA_PATH,
+	"cornell_box_with_ball": CLOSE_CAMERA_PATH,
+	"cornell_box_with_blocks_and_ball": CLOSE_CAMERA_PATH,
+	"cornell_box_with_blocks_big_light": CLOSE_CAMERA_PATH,
+	"labyrinth": LABYRINTH_CAMERA_PATH,
+	"red_ball_room": CLOSE_CAMERA_PATH,
+	"white_room": DEFAULT_CAMERA_PATH,
 }
 
 def get_scene_labels(scenes):
@@ -137,8 +154,8 @@ def compile_latex_table(label, caption, header, content, digits=3):
 	content = [[convert_to_latex(r, digits) for r in row] for row in content]
 
 	table = "\\begin{table}[h]\n"
-	table += "\\label{" + label + "}\n"
 	table += "\\caption{" + caption + "}\n"
+	table += "\\label{" + label + "}\n"
 
 	ls = "|".join(["l"] * len(header))
 	table += "\\begin{tabular}{" + ls + "}\n"
@@ -229,10 +246,22 @@ def compare(img1, img2, diffpath, size=(1920, 1080)):
 
 def convert_sw_files():
 	sw_files = []
-	for scene in SCENE_NAMES:
+	for scene in SCENE_NAMES + ["cornell_box_5"]:
 		sw_files.append({
 			"ppm": os.path.join("out", "sw_renderer_{}.ppm".format(scene)),
 			"png": os.path.join("out", "ref_images", "sw_renderer_{}.png".format(scene))
+		})
+
+	for f in sw_files:
+		with Image.open(f["ppm"]) as im:
+			im.save(f["png"])
+
+def convert_1_5_files():
+	sw_files = []
+	for name in ["1", "5"]:
+		sw_files.append({
+			"ppm": os.path.join("out", "full_scene_1_5_test_{}.ppm".format(name)),
+			"png": os.path.join("out", "ref_images", "full_scene_1_5_test_{}.png".format(name))
 		})
 
 	for f in sw_files:
@@ -352,7 +381,7 @@ def all_scenes_algorithms_test_diagrams():
 	renderer_lists = {
 		"path_tracers": ["path_tracer", "bidirectional_path_tracer"],
 		"shadow_tracers": ["ShadowTracer", "Bitterli2020", "Majercik2019"],
-		"bitterlis": ["Bitterli2020", "Bitterli2020_bidirectional_path_tracer"],
+		"bitterlis": ["ShadowTracer", "Bitterli2020", "Bitterli2020_bidirectional_path_tracer"],
 		"majerciks": ["Majercik2019", "Majercik2022", "Majercik2022_bidirectional_path_tracer"],
 		"bitterli_vs_majercik": ["Bitterli2020", "Majercik2019", "Majercik2022"]
 	}
@@ -370,7 +399,7 @@ def all_scenes_algorithms_test_diagrams():
 		results = []
 		with open(csv_path) as csvfile:
 			for row in csv.DictReader(csvfile, skipinitialspace=True):
-				value = float(round(float(row["diff"]), 2))
+				value = float(round(float(row["diff"]), FIG_ROUNDING))
 				scenes_data[name].append(value)
 				results.append([(SCENE_LABELS[v] if k == "scene" else float(v)) for k, v in row.items()])
 
@@ -398,7 +427,7 @@ def all_scenes_algorithms_test_diagrams():
 	ax.set_ylim(0, 50)
 
 	output_path = os.path.join(base_path, "rendering_times.svg")
-	fig.set_size_inches(14.5, 7.5)
+	fig.set_size_inches(*FIG_SIZES)
 	fig.savefig(output_path)
 
 	result_tex = "\n\n".join(result_tex)
@@ -420,7 +449,7 @@ def scenes_algorithms_test_diagrams(file_name, use_renderers):
 
 		with open(csv_path) as csvfile:
 			for row in csv.DictReader(csvfile, skipinitialspace=True):
-				value = float(round(float(row["diff"]), 2))
+				value = float(round(float(row["diff"]), FIG_ROUNDING))
 				scene_data[row["scene"]].append(value)
 				renderer_data[name].append(value)
 
@@ -453,7 +482,7 @@ def scenes_algorithms_test_diagrams(file_name, use_renderers):
 	ax.set_ylim(0, 50)
 
 	output_path = os.path.join(base_path, "{}.svg".format(file_name))
-	fig.set_size_inches(14.5, 7.5)
+	fig.set_size_inches(*FIG_SIZES)
 	fig.savefig(output_path)
 
 
@@ -547,7 +576,7 @@ def renderer_1_5_test_diagrams_latex():
 	ax.bar(renderer_names, diffs)
 
 	output_path = os.path.join(base_path, "test.svg")
-	fig.set_size_inches(14.5, 7.5)
+	fig.set_size_inches(*FIG_SIZES)
 	fig.savefig(output_path)
 
 	headers = ["Renderer name", "difference between one and five cornell boxes (\\%)"]
@@ -561,11 +590,13 @@ def main():
 	print("Hello Master run!")
 
 	# convert_sw_files()
+	convert_1_5_files()
+	
 	# bpt_test_vl()
 	# bpt_test_r()
 
 	# all_scenes_algorithms_test()
-	all_scenes_algorithms_test_diagrams()
+	# all_scenes_algorithms_test_diagrams()
 
 	# renderer_1_5_test()
 	# renderer_1_5_test_diagrams_latex()

@@ -5,6 +5,7 @@
 #include <thread>
 #include <atomic>
 
+#include "renderer.h"
 #include "graphics_object.h"
 #include "scene.h"
 
@@ -30,21 +31,19 @@ class GraphicsEngine {
 			bool lightHit;
 		};
 
-		enum class TraceResult {NO_HIT, HIT_DIFFUSE, HIT_REFLECT, HIT_TRANSPARENT};
-
 		GraphicsEngine();
 		~GraphicsEngine();
 
-		void parseInput(const InputEntry& inputEntry);
-		void init();
+		// void parseInput(const InputEntry& inputEntry);
+		void init(Renderer* renderer, unsigned int threadCount);
 		void saveImage(const std::string path);
 
 		void render();
 		void render(const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
-		void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
-		size_t traceSinglePath(std::vector<HitPoint>& path, Ray ray, size_t startDepth, size_t maxDepth, bool isLightRay);
+		// void renderPixel(unsigned int x, unsigned int y, const Matrix4f& viewInverse, const Matrix4f& projInverse, const Vector3f& origin);
+		// size_t traceSinglePath(std::vector<HitPoint>& path, Ray ray, size_t startDepth, size_t maxDepth, bool isLightRay);
 
-		LightSourcePoint getRandomLightSourcePoint();
+		// LightSourcePoint getRandomLightSourcePoint();
 
 		Vector2u imageSize;
 		std::vector<char> image;
@@ -52,12 +51,13 @@ class GraphicsEngine {
 		std::vector<GraphicsObject*> objects;
 		std::vector<GraphicsObject*> lightSources;
 		Scene scene;
-		RandomGenerator rng;
+		// RandomGenerator rng;
 
-		unsigned int visionJumpCount;
-		unsigned int lightJumpCount;
-		unsigned int maxDepth;
-		unsigned int raysPerPixel;
+		// unsigned int visionJumpCount;
+		// unsigned int lightJumpCount;
+		// unsigned int maxDepth;
+		// unsigned int raysPerPixel;
 		unsigned int threadCount;
 		std::atomic_uint32_t pixelCounter;
+		Renderer* renderer;
 };

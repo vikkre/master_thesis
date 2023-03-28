@@ -1,8 +1,8 @@
 Majercik2022BidirectionalPathTracer
 # Bidirectional Path tracer
-	visionJumpCount(3)
-	lightJumpCount(3)
-	maxDepth(4)
+	visionJumpCount(4)
+	lightJumpCount(2)
+	maxDepth(3)
 # Majercik2019
 	hysteresis(0.85)
 	perProbeRayCount(64)
@@ -11,13 +11,13 @@ Majercik2022BidirectionalPathTracer
 	depthSharpness(0.8)
 	normalBias(0.01)
 	linearBlending(0)
-	energyPreservation(0.4)
+	energyPreservation(0.2)
 # Bitterli2020
 	candidateCount(64)
-	sampleCount(2)
+	sampleCount(1)
 # Majercik2022
-	probeCandidateCount(64)
-	probeSampleCount(4)
-	probeVisionJumpCount(2)
-	probeLightJumpCount(4)
-	probeMaxDepth(4)
+	probeCandidateCount(45)
+	probeSampleCount(1)
+	probeVisionJumpCount(3)
+	probeLightJumpCount(3)
+	probeMaxDepth(2)

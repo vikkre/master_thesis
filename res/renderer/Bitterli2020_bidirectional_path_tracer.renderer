@@ -3,4 +3,4 @@ Bitterli2020BidirectionalPathTracer
 	lightJumpCount(3)
 	maxDepth(2)
 	candidateCount(64)
-	sampleCount(2)
+	sampleCount(1)

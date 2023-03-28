@@ -34,7 +34,7 @@ Vector3f PathTracer::renderPixel(const PixelRenderData& prd) const {
 		finalColor += visionPath[visionPathDepth - 1].cumulativeColor;
 	}
 	
-	finalColor *= 15.0f * 2.0f * M_PI * (1.0f / float(raysPerPixel));
+	finalColor *= 2.0f * M_PI * (1.0f / float(raysPerPixel));
 
 	return finalColor;
 }

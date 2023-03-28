@@ -8,6 +8,7 @@ import time
 import collections
 import tempfile
 import subprocess
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -93,10 +94,10 @@ RENDERER_LABELS = {
 	"path_tracer": "Path tracer",
 	"bidirectional_path_tracer": "Bidirectional path tracer",
 	"Bitterli2020": "ReSTIR",
-	"Bitterli2020_bidirectional_path_tracer": "Bidirectional path tracer + ReSTIR",
+	"Bitterli2020_bidirectional_path_tracer": "own solution",
 	"Majercik2019": "DDGI",
 	"Majercik2022": "DDGI + ReSTIR",
-	"Majercik2022_bidirectional_path_tracer": "Bidirectional path tracer + DDGI + ReSTIR",
+	"Majercik2022_bidirectional_path_tracer": "own solution + DDGI",
 }
 
 def get_renderer_labels(renderers):
@@ -121,9 +122,10 @@ def load_renderer(path):
 RENDERERS = {name: load_renderer(path) for name, path in RENDERER_PATHS.items()}
 
 def load_sw_files():
+	img_paths = os.path.join("out", "ref_images", "png")
 	sw_files = {}
 	for scene in SCENE_NAMES:
-		path = os.path.join("out", "sw_renderer_{}.ppm".format(scene))
+		path = os.path.join(img_paths, "sw_pt_renderer_{}.png".format(scene))
 		with Image.open(path) as im:
 			sw_files[scene] = np.array(im)
 	return sw_files
@@ -245,14 +247,19 @@ def compare(img1, img2, diffpath, size=(1920, 1080)):
 	return total_error / float(size[0] * size[1])
 
 def convert_sw_files():
-	sw_files = []
-	for scene in SCENE_NAMES + ["cornell_box_5"]:
-		sw_files.append({
-			"ppm": os.path.join("out", "sw_renderer_{}.ppm".format(scene)),
-			"png": os.path.join("out", "ref_images", "sw_renderer_{}.png".format(scene))
+	images_path = os.path.join("out", "ref_images")
+	ppm_path = os.path.join(images_path, "ppm")
+	png_path = os.path.join(images_path, "png")
+
+	image_files = []
+	for file in os.listdir(ppm_path):
+		name = Path(file).stem
+		image_files.append({
+			"ppm": os.path.join(ppm_path, name + ".ppm"),
+			"png": os.path.join(png_path, name + ".png")
 		})
 
-	for f in sw_files:
+	for f in image_files:
 		with Image.open(f["ppm"]) as im:
 			im.save(f["png"])
 
@@ -349,7 +356,7 @@ def all_scenes_algorithms_test():
 
 		for scene_name, scene_path in SCENES.items():
 			out_path = os.path.join(path, "{}_test".format(scene_name))
-			camera = DEFAULT_CAMERA_PATH
+			camera = SCENE_CAMERAS[scene_name]
 			if scene_name == "labyrinth": camera = LABYRINTH_CAMERA_PATH
 
 			times, image = run(renderer, scene_path, out_path, camera_path=camera)
@@ -399,7 +406,7 @@ def all_scenes_algorithms_test_diagrams():
 		results = []
 		with open(csv_path) as csvfile:
 			for row in csv.DictReader(csvfile, skipinitialspace=True):
-				value = float(round(float(row["diff"]), FIG_ROUNDING))
+				value = float(round(float(row["avg time"]) * 1000, FIG_ROUNDING))
 				scenes_data[name].append(value)
 				results.append([(SCENE_LABELS[v] if k == "scene" else float(v)) for k, v in row.items()])
 
@@ -424,7 +431,7 @@ def all_scenes_algorithms_test_diagrams():
 	ax.set_ylabel("average rendering time per frame (ms)")
 	ax.set_title("rendertime by renderer and scene")
 	ax.legend()
-	ax.set_ylim(0, 50)
+	ax.set_ylim(0, 150)
 
 	output_path = os.path.join(base_path, "rendering_times.svg")
 	fig.set_size_inches(*FIG_SIZES)
@@ -590,13 +597,13 @@ def main():
 	print("Hello Master run!")
 
 	# convert_sw_files()
-	convert_1_5_files()
+	# convert_1_5_files()
 	
 	# bpt_test_vl()
 	# bpt_test_r()
 
 	# all_scenes_algorithms_test()
-	# all_scenes_algorithms_test_diagrams()
+	all_scenes_algorithms_test_diagrams()
 
 	# renderer_1_5_test()
 	# renderer_1_5_test_diagrams_latex()

@@ -50,8 +50,9 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 
 			// 			Mesh* mesh = getMesh("ball.obj");
 			// 			GraphicsObject* obj = new GraphicsObject(device, mesh, pos);
-			// 			constexpr float s = 0.02f;
+			// 			constexpr float s = 0.1f;
 			// 			obj->scale = Vector3f({s, s, s});
+			// 			obj->color = Vector3f({1.0f, 0.0f, 0.0f});
 			// 			createdObjects.push_back(obj);
 			// 		}
 			// 	}
@@ -59,6 +60,8 @@ void MeshManager::createObjectsFromFile(const std::string filename) {
 
 			continue;
 		}
+
+		// if (!entry.keyExists("lightSource")) continue;
 
 		Mesh* mesh = getMesh(entry.name);
 		Vector3f pos = entry.getVector<3, float>("position");

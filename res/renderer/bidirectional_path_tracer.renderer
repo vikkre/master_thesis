@@ -1,5 +1,5 @@
 BidirectionalPathTracer
 	visionJumpCount(5)
-	lightJumpCount(5)
+	lightJumpCount(3)
 	maxDepth(4)
 	raysPerPixelCount(1)

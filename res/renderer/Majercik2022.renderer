@@ -11,7 +11,7 @@ Majercik2022
 	shadowCountVision(50)
 # Bitterli2020
 	candidateCount(64)
-	sampleCount(8)
+	sampleCount(4)
 # Majercik2022
-	probeCandidateCount(32)
+	probeCandidateCount(64)
 	probeSampleCount(2)

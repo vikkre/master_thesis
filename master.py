@@ -24,6 +24,7 @@ FIG_ROUNDING = 1
 
 EXECPATH = os.path.join("build", "RayTrace")
 OUT_PATH = os.path.join("out", "master_results")
+REF_PATH = os.path.join("out", "ref_images")
 SCENE_PATH = os.path.join("res", "scene")
 CAMERA_PATH = os.path.join("res", "camera")
 RENDERER_PATH = os.path.join("res", "renderer")
@@ -47,16 +48,16 @@ SCENE_NAMES = [
 SCENES = {name: os.path.join(SCENE_PATH, "{}.scene".format(name)) for name in SCENE_NAMES}
 
 SCENE_LABELS = {
-	"cornell_box": "Cornell Box",
-	# "cornell_box_5": "Cornell Box 5",
-	"cornell_box_with_blocks": "Cornell Box with blocks",
-	# "cornell_box_with_blocks_dancing": "Cornell Box with dancing blocks",
-	"cornell_box_with_ball": "Cornell Box with glass ball",
-	"cornell_box_with_blocks_and_ball": "Cornell Box with blocks and light ball",
-	"cornell_box_with_blocks_big_light": "Cornell Box with big light",
-	"labyrinth": "Labyrinth",
-	"red_ball_room": "Room with red ball",
-	"white_room": "White room with light coming through a door",
+	"cornell_box": "empty Cornell Box",
+	# "cornell_box_5": "Cornell Box 5 times",
+	"cornell_box_with_blocks": "Cornell Box",
+	# "cornell_box_with_blocks_dancing": " dancing Cornell Box",
+	"cornell_box_with_ball": "Cornell Box glass",
+	"cornell_box_with_blocks_and_ball": "Cornell Box light ball",
+	"cornell_box_with_blocks_big_light": "Cornell Box big light",
+	"labyrinth": "labyrinth",
+	"red_ball_room": "red ball room",
+	"white_room": "white room",
 }
 
 SCENE_CAMERAS = {
@@ -94,10 +95,21 @@ RENDERER_LABELS = {
 	"path_tracer": "Path tracer",
 	"bidirectional_path_tracer": "Bidirectional path tracer",
 	"Bitterli2020": "ReSTIR",
-	"Bitterli2020_bidirectional_path_tracer": "own solution",
+	"Bitterli2020_bidirectional_path_tracer": "ReSTIR path tracer (own)",
 	"Majercik2019": "DDGI",
 	"Majercik2022": "DDGI + ReSTIR",
-	"Majercik2022_bidirectional_path_tracer": "own solution + DDGI",
+	"Majercik2022_bidirectional_path_tracer": "DDGI ReSTIR path tracer (own)",
+}
+
+RENDERER_COLORS = {
+	"ShadowTracer": "skyblue",
+	"path_tracer": "cyan",
+	"bidirectional_path_tracer": "blue",
+	"Bitterli2020": "lime",
+	"Bitterli2020_bidirectional_path_tracer": "green",
+	"Majercik2019": "yellow",
+	"Majercik2022": "orange",
+	"Majercik2022_bidirectional_path_tracer": "red",
 }
 
 def get_renderer_labels(renderers):
@@ -122,15 +134,54 @@ def load_renderer(path):
 RENDERERS = {name: load_renderer(path) for name, path in RENDERER_PATHS.items()}
 
 def load_sw_files():
-	img_paths = os.path.join("out", "ref_images", "png")
+	img_paths = os.path.join(REF_PATH, "png")
 	sw_files = {}
 	for scene in SCENE_NAMES:
-		path = os.path.join(img_paths, "sw_pt_renderer_{}.png".format(scene))
+		path = os.path.join(img_paths, "sw_bpt_renderer_{}.png".format(scene))
 		with Image.open(path) as im:
 			sw_files[scene] = np.array(im)
 	return sw_files
 
 OFFLINE_SCENES = load_sw_files()
+
+def load_icons():
+	img_paths = os.path.join(REF_PATH, "icons")
+	sw_files = {}
+	for scene in SCENE_NAMES:
+		path = os.path.join(img_paths, "sw_bpt_renderer_{}.png".format(scene))
+		with Image.open(path) as im:
+			sw_files[scene] = np.array(im)
+	return sw_files
+
+ICONS = load_icons()
+
+
+def cut_image(image, cut_parts, full_image_path, border_size=3):
+	full_image = copy.deepcopy(image)
+
+	for part in cut_parts:
+		start = part[0]
+		size = part[1]
+		cut_image_path = part[2]
+
+		sub_image = [[(0, 0, 0)] * size[1] for _ in range(size[0])]
+		for dx in range(size[0]):
+			for dy in range(size[1]):
+				x = start[0] + dx
+				y = start[1] + dy
+				sub_image[dx][dy] = image[x][y]
+
+				xborder = (dx < border_size) or (dx >= size[0] - border_size)
+				yborder = (dy < border_size) or (dy >= size[1] - border_size)
+				if xborder or yborder:
+					full_image[x][y] = (255, 0, 255)
+
+		sub_image = np.array(sub_image, dtype=np.uint8).reshape(size[0], size[1], 3)
+		img = Image.fromarray(sub_image)
+		img.save(cut_image_path)
+
+	img = Image.fromarray(full_image)
+	img.save(full_image_path)
 
 
 def compile_renderer(renderer_data):
@@ -140,7 +191,7 @@ def compile_renderer(renderer_data):
 	return result
 
 
-def convert_to_latex(elem, digits=3):
+def convert_to_latex(elem, digits=1):
 	if type(elem) == float:
 		elem = round(elem, digits)
 	if type(elem) != str:
@@ -150,7 +201,7 @@ def convert_to_latex(elem, digits=3):
 
 	return elem
 
-def compile_latex_table(label, caption, header, content, digits=3):
+def compile_latex_table(label, caption, header, content, digits=1):
 	caption = convert_to_latex(caption, digits)
 	header = [convert_to_latex(h, digits) for h in header]
 	content = [[convert_to_latex(r, digits) for r in row] for row in content]
@@ -247,9 +298,8 @@ def compare(img1, img2, diffpath, size=(1920, 1080)):
 	return total_error / float(size[0] * size[1])
 
 def convert_sw_files():
-	images_path = os.path.join("out", "ref_images")
-	ppm_path = os.path.join(images_path, "ppm")
-	png_path = os.path.join(images_path, "png")
+	ppm_path = os.path.join(REF_PATH, "ppm")
+	png_path = os.path.join(REF_PATH, "png")
 
 	image_files = []
 	for file in os.listdir(ppm_path):
@@ -263,17 +313,36 @@ def convert_sw_files():
 		with Image.open(f["ppm"]) as im:
 			im.save(f["png"])
 
-def convert_1_5_files():
-	sw_files = []
-	for name in ["1", "5"]:
-		sw_files.append({
-			"ppm": os.path.join("out", "full_scene_1_5_test_{}.ppm".format(name)),
-			"png": os.path.join("out", "ref_images", "full_scene_1_5_test_{}.png".format(name))
+def generate_icons():
+	png_path = os.path.join(REF_PATH, "png")
+	icons_path = os.path.join(REF_PATH, "icons")
+
+	image_files = []
+	for file in os.listdir(png_path):
+		image_files.append({
+			"png": os.path.join(png_path, file),
+			"icons": os.path.join(icons_path, file)
 		})
 
-	for f in sw_files:
-		with Image.open(f["ppm"]) as im:
-			im.save(f["png"])
+	height = 180
+	width = int((height * 16) / 9)
+	
+	for f in image_files:
+		with Image.open(f["png"]) as im:
+			im = im.resize((width, height))
+			im.save(f["icons"])
+
+# def convert_1_5_files():
+# 	sw_files = []
+# 	for name in ["1", "5"]:
+# 		sw_files.append({
+# 			"ppm": os.path.join("out", "full_scene_1_5_test_{}.ppm".format(name)),
+# 			"png": os.path.join("out", "ref_images", "full_scene_1_5_test_{}.png".format(name))
+# 		})
+
+# 	for f in sw_files:
+# 		with Image.open(f["ppm"]) as im:
+# 			im.save(f["png"])
 
 def bpt_test_vl():
 	bpt_vision = [1, 8]
@@ -386,11 +455,13 @@ def all_scenes_algorithms_test():
 
 def all_scenes_algorithms_test_diagrams():
 	renderer_lists = {
-		"path_tracers": ["path_tracer", "bidirectional_path_tracer"],
-		"shadow_tracers": ["ShadowTracer", "Bitterli2020", "Majercik2019"],
+		"path_tracers": ["ShadowTracer", "path_tracer", "bidirectional_path_tracer"],
+		"bidirectionals": ["bidirectional_path_tracer", "Bitterli2020", "Bitterli2020_bidirectional_path_tracer", "Majercik2022_bidirectional_path_tracer"],
 		"bitterlis": ["ShadowTracer", "Bitterli2020", "Bitterli2020_bidirectional_path_tracer"],
+		"shadow_tracers": ["Bitterli2020", "Majercik2022", "Bitterli2020_bidirectional_path_tracer", "Majercik2022_bidirectional_path_tracer"],
 		"majerciks": ["Majercik2019", "Majercik2022", "Majercik2022_bidirectional_path_tracer"],
-		"bitterli_vs_majercik": ["Bitterli2020", "Majercik2019", "Majercik2022"]
+		"bitterli_vs_majercik": ["Bitterli2020", "Majercik2019", "Majercik2022"],
+		"all": ["ShadowTracer", "path_tracer", "bidirectional_path_tracer", "Bitterli2020", "Bitterli2020_bidirectional_path_tracer", "Majercik2019", "Majercik2022", "Majercik2022_bidirectional_path_tracer"]
 	}
 
 	for name, use_renderers in renderer_lists.items():
@@ -403,14 +474,21 @@ def all_scenes_algorithms_test_diagrams():
 		path = os.path.join(base_path, name)
 		csv_path = os.path.join(path, "test.csv")
 
+		results_converter = {
+			"scene":    lambda v: SCENE_LABELS[v],
+			"diff":     lambda v: float(v),
+			"avg time": lambda v: float(v) * 1000,
+			"avg fps":  lambda v: float(v),
+		}
+
 		results = []
 		with open(csv_path) as csvfile:
 			for row in csv.DictReader(csvfile, skipinitialspace=True):
 				value = float(round(float(row["avg time"]) * 1000, FIG_ROUNDING))
 				scenes_data[name].append(value)
-				results.append([(SCENE_LABELS[v] if k == "scene" else float(v)) for k, v in row.items()])
+				results.append([results_converter[k](v) for k, v in row.items()])
 
-		test_header = ["Scene name", "Difference to offline renderer", "Average time (ms)", "Average fps"]
+		test_header = ["Scene name", "diff value", "Avg time (ms)", "Avg \\ac{fps}"]
 		test_tex_label = "tab:results_overview_{}".format(name)
 		test_tex_caption = "Result data for {}".format(RENDERER_LABELS[name])
 		test_tex = compile_latex_table(test_tex_label, test_tex_caption, test_header, results)
@@ -418,11 +496,12 @@ def all_scenes_algorithms_test_diagrams():
 
 	scene_names = get_scene_labels(SCENES.keys())
 	scenes_data = {name: tuple(data) for name, data in scenes_data.items()}
-	fig, ax = plt.subplots(layout="constrained")
+	fig, ax = plt.subplots()
 
 	for name, data in scenes_data.items():
 		label = RENDERER_LABELS[name]
-		ax.plot(scene_names, data, label=label, linewidth=3)
+		color = RENDERER_COLORS[name]
+		ax.plot(scene_names, data, label=label, linewidth=3, color=color)
 
 	ax.plot(scene_names, [33.3] * len(scene_names), label="30 FPS line", linewidth=3, color="gray", linestyle="dashed")
 	ax.plot(scene_names, [16.6] * len(scene_names), label="60 FPS line", linewidth=3, color="black", linestyle="dashed")
@@ -431,7 +510,18 @@ def all_scenes_algorithms_test_diagrams():
 	ax.set_ylabel("average rendering time per frame (ms)")
 	ax.set_title("rendertime by renderer and scene")
 	ax.legend()
-	ax.set_ylim(0, 150)
+	ax.set_ylim(0, 85)
+	fig.tight_layout(rect=(0, 0, 1, 1))
+
+	for index, name in enumerate(SCENES.keys()):
+		size=0.08
+
+		img = ICONS[name]
+		x = index * 0.107 + 0.12
+		y = 0.035
+		tmp_ax = fig.add_axes([x, y, size, size])
+		tmp_ax.axison = False
+		tmp_ax.imshow(img)
 
 	output_path = os.path.join(base_path, "rendering_times.svg")
 	fig.set_size_inches(*FIG_SIZES)
@@ -470,23 +560,36 @@ def scenes_algorithms_test_diagrams(file_name, use_renderers):
 	
 	x = np.arange(len(labels))
 	width = 1 / (len(data) + 2)
+	label_pos = x + width * (len(data) - 1) / 2
 	multiplier = 0
 
-	fig, ax = plt.subplots(layout="constrained")
+	fig, ax = plt.subplots()
 
 	for name, renderer_data in data.items():
 		label = RENDERER_LABELS[name]
+		color = RENDERER_COLORS[name]
 		offset = width * multiplier
-		rects = ax.bar(x + offset, renderer_data, width, label=label)
-		ax.bar_label(rects, padding=5)
+		rects = ax.bar(x + offset, renderer_data, width, label=label, color=color)
+		ax.bar_label(rects, padding=5, rotation=90)
 		multiplier += 1
 
 	plt.xticks(rotation=45)
 	ax.set_ylabel("difference value")
 	ax.set_title("differences by scene and renderer")
-	ax.set_xticks(x + width, labels)
+	ax.set_xticks(label_pos, labels)
 	ax.legend(loc='upper left', ncols=1)
-	ax.set_ylim(0, 50)
+	ax.set_ylim(0, 60)
+	fig.tight_layout(rect=(0, 0, 1, 1))
+
+	for index, name in enumerate(scene_data.keys()):
+		size=0.08
+
+		img = ICONS[name]
+		x = index * 0.107 + 0.12
+		y = 0.035
+		tmp_ax = fig.add_axes([x, y, size, size])
+		tmp_ax.axison = False
+		tmp_ax.imshow(img)
 
 	output_path = os.path.join(base_path, "{}.svg".format(file_name))
 	fig.set_size_inches(*FIG_SIZES)
@@ -562,6 +665,7 @@ def renderer_1_5_test_diagrams_latex():
 	full_table = []
 	renderers = []
 	scene_data = []
+	colors = []
 	csv_path = os.path.join(base_path, "test.csv")
 
 	with open(csv_path) as csvfile:
@@ -570,6 +674,7 @@ def renderer_1_5_test_diagrams_latex():
 			renderers.append(row["renderer"])
 			value = float(round(float(row["diff"]) * 100.0, 1))
 			scene_data.append(value)
+			colors.append(RENDERER_COLORS[row["renderer"]])
 
 	renderer_names = get_renderer_labels(renderers)
 	diffs = tuple(scene_data)
@@ -580,7 +685,9 @@ def renderer_1_5_test_diagrams_latex():
 	ax.set_ylabel("equalness from one to five cornell boxes (%)")
 	ax.set_title("similarity between one and five cornellbox scene")
 	ax.set_ylim(0, 110)
-	ax.bar(renderer_names, diffs)
+	bars = ax.bar(renderer_names, diffs)
+	for i, c in enumerate(colors):
+		bars[i].set_color(c)
 
 	output_path = os.path.join(base_path, "test.svg")
 	fig.set_size_inches(*FIG_SIZES)
@@ -593,10 +700,32 @@ def renderer_1_5_test_diagrams_latex():
 		texfile.write(result_tex)
 
 
+def cut_images():
+	result_path = os.path.join(OUT_PATH, "all_scenes_algorithms_test")
+	cuts_path = os.path.join(OUT_PATH, "cuts")
+	glas_ball_cuts = os.path.join(cuts_path, "glas_ball")
+
+	for name in RENDERER_NAMES:
+		scene_path = os.path.join(result_path, name, "cornell_box_with_ball_test.png")
+		full_img_path = os.path.join(glas_ball_cuts, "{}_full.png".format(name))
+		top_cut_img_path = os.path.join(glas_ball_cuts, "{}_top_cut.png".format(name))
+		bottom_cut_img_path = os.path.join(glas_ball_cuts, "{}_bottom_cut.png".format(name))
+
+		with Image.open(scene_path) as im:
+			scene = np.array(im)
+		
+		cut_parts = [
+			((100, 750), (200, 200), top_cut_img_path),
+			((750, 750), (300, 400), bottom_cut_img_path),
+		]
+		cut_image(scene, cut_parts, full_img_path)
+
+
 def main():
 	print("Hello Master run!")
 
 	# convert_sw_files()
+	# generate_icons()
 	# convert_1_5_files()
 	
 	# bpt_test_vl()
@@ -607,6 +736,8 @@ def main():
 
 	# renderer_1_5_test()
 	# renderer_1_5_test_diagrams_latex()
+
+	# cut_images()
 
 
 if __name__ == "__main__":

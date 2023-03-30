@@ -61,8 +61,8 @@ popd
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/red_ball_room.scene 1920 1080 res/camera/close.camera
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/white_room.scene 1920 1080
 
-# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1920 1080 res/camera/default.camera out/ms_comparison_st_1.ppm 3
-# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_5.scene 1920 1080 res/camera/default.camera out/ms_comparison_st_5.ppm 3
+# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1920 1080 res/camera/close.camera out/ms_comparison_st_1.ppm 3
+# build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_5.scene 1920 1080 res/camera/close.camera out/ms_comparison_st_5.ppm 3
 
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box.scene 1920 1080 res/camera/full_scene_1_5.camera out/full_scene_1_5_test_1.ppm 3
 # build/RayTrace res/renderer/ShadowTracer.renderer res/scene/cornell_box_5.scene 1920 1080 res/camera/full_scene_1_5.camera out/full_scene_1_5_test_5.ppm 3

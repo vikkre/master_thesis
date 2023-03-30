@@ -6,6 +6,7 @@ import csv
 import copy
 import time
 import collections
+import shutil
 import tempfile
 import subprocess
 from pathlib import Path
@@ -312,6 +313,15 @@ def convert_sw_files():
 	for f in image_files:
 		with Image.open(f["ppm"]) as im:
 			im.save(f["png"])
+
+def copy_sw_files():
+	origin_path = os.path.join(REF_PATH, "png")
+	dst_path = os.path.join(OUT_PATH, "all_scenes_algorithms_test", "SoftwareRenderer")
+
+	for name in SCENE_NAMES:
+		origin_image = os.path.join(origin_path, "sw_bpt_renderer_{}.png".format(name))
+		dst_image = os.path.join(dst_path, "{}_test.png".format(name))
+		shutil.copyfile(origin_image, dst_image)
 
 def generate_icons():
 	png_path = os.path.join(REF_PATH, "png")
@@ -704,27 +714,46 @@ def cut_images():
 	result_path = os.path.join(OUT_PATH, "all_scenes_algorithms_test")
 	cuts_path = os.path.join(OUT_PATH, "cuts")
 	glas_ball_cuts = os.path.join(cuts_path, "glas_ball")
+	cornell_box_cuts = os.path.join(cuts_path, "cornell_box")
 
-	for name in RENDERER_NAMES:
-		scene_path = os.path.join(result_path, name, "cornell_box_with_ball_test.png")
-		full_img_path = os.path.join(glas_ball_cuts, "{}_full.png".format(name))
-		top_cut_img_path = os.path.join(glas_ball_cuts, "{}_top_cut.png".format(name))
-		bottom_cut_img_path = os.path.join(glas_ball_cuts, "{}_bottom_cut.png".format(name))
+	for name in (RENDERER_NAMES + ["SoftwareRenderer"]):
+		ball_scene_path = os.path.join(result_path, name, "cornell_box_with_ball_test.png")
+		ball_full_img_path = os.path.join(glas_ball_cuts, "{}_full.png".format(name))
+		ball_top_cut_img_path = os.path.join(glas_ball_cuts, "{}_top_cut.png".format(name))
+		ball_bottom_cut_img_path = os.path.join(glas_ball_cuts, "{}_bottom_cut.png".format(name))
 
-		with Image.open(scene_path) as im:
-			scene = np.array(im)
+		with Image.open(ball_scene_path) as im:
+			ball_scene = np.array(im)
 		
-		cut_parts = [
-			((100, 750), (200, 200), top_cut_img_path),
-			((750, 750), (300, 400), bottom_cut_img_path),
+		ball_cut_parts = [
+			((100, 960), (200, 200), ball_top_cut_img_path),
+			((750, 750), (300, 400), ball_bottom_cut_img_path),
 		]
-		cut_image(scene, cut_parts, full_img_path)
+		cut_image(ball_scene, ball_cut_parts, ball_full_img_path, 6)
+
+
+		box_scene_path = os.path.join(result_path, name, "cornell_box_with_blocks_test.png")
+		box_full_img_path = os.path.join(cornell_box_cuts, "{}_full.png".format(name))
+		box_top_cut_img_path = os.path.join(cornell_box_cuts, "{}_top_cut.png".format(name))
+		box_middle_cut_img_path = os.path.join(cornell_box_cuts, "{}_middle_cut.png".format(name))
+		box_bottom_cut_img_path = os.path.join(cornell_box_cuts, "{}_bottom_cut.png".format(name))
+		
+		with Image.open(box_scene_path) as im:
+			box_scene = np.array(im)
+		
+		box_cut_parts = [
+			((100, 960),  (200, 200), box_top_cut_img_path),
+			((750, 600),  (200, 200), box_middle_cut_img_path),
+			((880, 1200), (200, 200), box_bottom_cut_img_path),
+		]
+		cut_image(box_scene, box_cut_parts, box_full_img_path, 6)
 
 
 def main():
 	print("Hello Master run!")
 
 	# convert_sw_files()
+	# copy_sw_files()
 	# generate_icons()
 	# convert_1_5_files()
 	
@@ -732,7 +761,7 @@ def main():
 	# bpt_test_r()
 
 	# all_scenes_algorithms_test()
-	all_scenes_algorithms_test_diagrams()
+	# all_scenes_algorithms_test_diagrams()
 
 	# renderer_1_5_test()
 	# renderer_1_5_test_diagrams_latex()
